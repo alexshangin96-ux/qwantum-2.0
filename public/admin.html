@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Nexus - Админ Панель</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --admin-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-bg: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-accent: #00f5ff;
+            --neon-red: #ff0080;
+            --neon-blue: #00f5ff;
+            --neon-green: #00ff41;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--dark-bg);
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 107, 107, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(238, 90, 36, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 0, 128, 0.2) 0%, transparent 50%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: var(--admin-gradient);
+            border-radius: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.8em;
+            font-weight: 900;
+            margin-bottom: 15px;
+            background: var(--admin-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            0% { filter: drop-shadow(0 0 10px rgba(255, 107, 107, 0.5)); }
+            100% { filter: drop-shadow(0 0 20px rgba(238, 90, 36, 0.8)); }
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            font-weight: 300;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .login-form {
+            background: var(--glass-bg);
+            padding: 40px;
+            border-radius: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .login-form h2 {
+            font-family: 'Orbitron', monospace;
+            margin-bottom: 30px;
+            color: var(--text-accent);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--neon-red);
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.3);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--admin-gradient);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+        }
+
+        .admin-panel {
+            display: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--admin-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: var(--admin-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: numberPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes numberPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .stat-label {
+            font-size: 1em;
+            opacity: 0.8;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .users-table {
+            background: var(--glass-bg);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .table-header h3 {
+            font-family: 'Orbitron', monospace;
+            color: var(--text-accent);
+        }
+
+        .refresh-btn {
+            background: var(--success-gradient);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: scale(1.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: var(--card-bg);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-accent);
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .edit-btn {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        .ban-btn {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        .freeze-btn {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--glass-bg);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            width: 90%;
+            animation: modalAppear 0.3s ease-out;
+        }
+
+        @keyframes modalAppear {
+            0% { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0.5); 
+            }
+            100% { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1); 
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-family: 'Orbitron', monospace;
+            color: var(--text-accent);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--neon-red);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .modal-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-btn.primary {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active {
+            background: rgba(67, 233, 123, 0.2);
+            color: var(--neon-green);
+            border: 1px solid rgba(67, 233, 123, 0.3);
+        }
+
+        .status-banned {
+            background: rgba(255, 107, 107, 0.2);
+            color: var(--neon-red);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            opacity: 0.8;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--neon-red);
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: var(--danger-gradient);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: errorShake 0.5s ease-in-out;
+        }
+
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .success {
+            background: var(--success-gradient);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: successBounce 0.5s ease-out;
+        }
+
+        @keyframes successBounce {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .users-table {
+                padding: 15px;
+            }
+            
+            table {
+                font-size: 0.9em;
+            }
+            
+            th, td {
+                padding: 10px;
+            }
+            
+            .user-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">⚛️ Quantum Nexus</div>
+            <div class="subtitle">Админ Панель</div>
+        </div>
+
+        <div id="login-form" class="login-form">
+            <h2>🔐 Авторизация</h2>
+            <form onsubmit="login(event)">
+                <div class="form-group">
+                    <label for="username">Логин:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-btn">Войти</button>
+            </form>
+        </div>
+
+        <div id="admin-panel" class="admin-panel">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-users">0</div>
+                    <div class="stat-label">Всего пользователей</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-coins">0</div>
+                    <div class="stat-label">Всего коинов</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-quanhash">0</div>
+                    <div class="stat-label">Всего QuanHash</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-taps">0</div>
+                    <div class="stat-label">Всего тапов</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="banned-users">0</div>
+                    <div class="stat-label">Заблокированных</div>
+                </div>
+            </div>
+
+            <div class="users-table">
+                <div class="table-header">
+                    <h3>👥 Управление пользователями</h3>
+                    <button class="refresh-btn" onclick="loadUsers()">🔄 Обновить</button>
+                </div>
+                <div id="users-content">
+                    <div class="loading">Загрузка пользователей...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для редактирования баланса -->
+    <div id="balance-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💰 Изменить баланс</h3>
+                <button class="close-btn" onclick="closeModal('balance-modal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="balance-coins">Коины:</label>
+                <input type="number" id="balance-coins" placeholder="Введите количество коинов">
+            </div>
+            <div class="form-group">
+                <label for="balance-quanhash">QuanHash:</label>
+                <input type="number" id="balance-quanhash" placeholder="Введите количество QuanHash">
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeModal('balance-modal')">Отмена</button>
+                <button class="modal-btn primary" onclick="updateBalance()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для блокировки -->
+    <div id="ban-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🚫 Блокировка пользователя</h3>
+                <button class="close-btn" onclick="closeModal('ban-modal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="ban-reason">Причина блокировки:</label>
+                <input type="text" id="ban-reason" placeholder="Введите причину блокировки">
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeModal('ban-modal')">Отмена</button>
+                <button class="modal-btn primary" onclick="toggleBan()">Заблокировать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для заморозки -->
+    <div id="freeze-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>❄️ Временная заморозка</h3>
+                <button class="close-btn" onclick="closeModal('freeze-modal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="freeze-hours">Часы заморозки:</label>
+                <input type="number" id="freeze-hours" placeholder="Введите количество часов" min="1" max="168">
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeModal('freeze-modal')">Отмена</button>
+                <button class="modal-btn primary" onclick="freezeUser()">Заморозить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let adminToken = null;
+        let currentUserId = null;
+
+        // Авторизация
+        async function login(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    adminToken = result.token;
+                    document.getElementById('login-form').style.display = 'none';
+                    document.getElementById('admin-panel').style.display = 'block';
+                    loadStats();
+                    loadUsers();
+                } else {
+                    showError('Неверные учетные данные');
+                }
+            } catch (error) {
+                showError('Ошибка авторизации');
+            }
+        }
+
+        // Загрузка статистики
+        async function loadStats() {
+            try {
+                const response = await fetch(`/api/admin/stats?token=${adminToken}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+                
+                document.getElementById('total-users').textContent = formatNumber(data.totalUsers);
+                document.getElementById('total-coins').textContent = formatNumber(data.totalCoins);
+                document.getElementById('total-quanhash').textContent = formatNumber(data.totalQuanhash);
+                document.getElementById('total-taps').textContent = formatNumber(data.totalTaps);
+                document.getElementById('banned-users').textContent = formatNumber(data.bannedUsers);
+            } catch (error) {
+                showError('Ошибка загрузки статистики');
+            }
+        }
+
+        // Загрузка пользователей
+        async function loadUsers() {
+            try {
+                const response = await fetch(`/api/admin/users?token=${adminToken}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+                
+                const container = document.getElementById('users-content');
+                container.innerHTML = '';
+                
+                if (data.users.length === 0) {
+                    container.innerHTML = '<div class="loading">Пользователи не найдены</div>';
+                    return;
+                }
+                
+                const table = document.createElement('table');
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Имя</th>
+                            <th>Коины</th>
+                            <th>QuanHash</th>
+                            <th>Уровень</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.users.map(user => `
+                            <tr>
+                                <td>${user.id}</td>
+                                <td>${user.first_name || 'Пользователь'}</td>
+                                <td>${formatNumber(user.coins)}</td>
+                                <td>${formatNumber(user.quanhash)}</td>
+                                <td>${user.level}</td>
+                                <td>
+                                    <span class="status-badge ${user.is_banned ? 'status-banned' : 'status-active'}">
+                                        ${user.is_banned ? 'Заблокирован' : 'Активен'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="user-actions">
+                                        <button class="action-btn edit-btn" onclick="openBalanceModal(${user.id})">
+                                            💰 Баланс
+                                        </button>
+                                        <button class="action-btn ban-btn" onclick="openBanModal(${user.id}, ${user.is_banned})">
+                                            ${user.is_banned ? '🔓 Разблокировать' : '🚫 Заблокировать'}
+                                        </button>
+                                        <button class="action-btn freeze-btn" onclick="openFreezeModal(${user.id})">
+                                            ❄️ Заморозить
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                `;
+                
+                container.appendChild(table);
+            } catch (error) {
+                showError('Ошибка загрузки пользователей');
+            }
+        }
+
+        // Открытие модального окна баланса
+        function openBalanceModal(userId) {
+            currentUserId = userId;
+            document.getElementById('balance-modal').style.display = 'block';
+        }
+
+        // Открытие модального окна блокировки
+        function openBanModal(userId, isBanned) {
+            currentUserId = userId;
+            const modal = document.getElementById('ban-modal');
+            const button = modal.querySelector('.modal-btn.primary');
+            
+            if (isBanned) {
+                button.textContent = 'Разблокировать';
+                button.style.background = 'var(--success-gradient)';
+            } else {
+                button.textContent = 'Заблокировать';
+                button.style.background = 'var(--danger-gradient)';
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        // Открытие модального окна заморозки
+        function openFreezeModal(userId) {
+            currentUserId = userId;
+            document.getElementById('freeze-modal').style.display = 'block';
+        }
+
+        // Закрытие модального окна
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Обновление баланса
+        async function updateBalance() {
+            const coins = document.getElementById('balance-coins').value;
+            const quanhash = document.getElementById('balance-quanhash').value;
+            
+            if (!coins && !quanhash) {
+                showError('Введите хотя бы одно значение');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/admin/update-balance', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: adminToken,
+                        userId: currentUserId,
+                        coins: coins ? parseInt(coins) : undefined,
+                        quanhash: quanhash ? parseInt(quanhash) : undefined
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showSuccess(result.message);
+                    closeModal('balance-modal');
+                    loadUsers();
+                    loadStats();
+                } else {
+                    showError(result.error);
+                }
+            } catch (error) {
+                showError('Ошибка обновления баланса');
+            }
+        }
+
+        // Блокировка/разблокировка
+        async function toggleBan() {
+            const reason = document.getElementById('ban-reason').value;
+            const button = document.querySelector('#ban-modal .modal-btn.primary');
+            const ban = button.textContent === 'Заблокировать';
+            
+            try {
+                const response = await fetch('/api/admin/toggle-ban', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: adminToken,
+                        userId: currentUserId,
+                        ban: ban,
+                        reason: reason
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showSuccess(result.message);
+                    closeModal('ban-modal');
+                    loadUsers();
+                    loadStats();
+                } else {
+                    showError(result.error);
+                }
+            } catch (error) {
+                showError('Ошибка изменения статуса');
+            }
+        }
+
+        // Заморозка пользователя
+        async function freezeUser() {
+            const hours = document.getElementById('freeze-hours').value;
+            
+            if (!hours || hours < 1) {
+                showError('Введите корректное количество часов');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/admin/freeze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: adminToken,
+                        userId: currentUserId,
+                        freezeHours: parseInt(hours)
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showSuccess(result.message);
+                    closeModal('freeze-modal');
+                    loadUsers();
+                    loadStats();
+                } else {
+                    showError(result.error);
+                }
+            } catch (error) {
+                showError('Ошибка заморозки пользователя');
+            }
+        }
+
+        // Показать ошибку
+        function showError(message) {
+            const error = document.createElement('div');
+            error.className = 'error';
+            error.textContent = message;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(error, container.firstChild);
+            
+            setTimeout(() => {
+                if (container.contains(error)) {
+                    container.removeChild(error);
+                }
+            }, 5000);
+        }
+
+        // Показать успех
+        function showSuccess(message) {
+            const success = document.createElement('div');
+            success.className = 'success';
+            success.textContent = message;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(success, container.firstChild);
+            
+            setTimeout(() => {
+                if (container.contains(success)) {
+                    container.removeChild(success);
+                }
+            }, 3000);
+        }
+
+        // Форматирование чисел
+        function formatNumber(num) {
+            if (num >= 1000000000) {
+                return (num / 1000000000).toFixed(1) + 'B';
+            } else if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        // Закрытие модальных окон по клику вне их
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
