@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Nexus - Новости о QuanHash</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-hover: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --gradient-success: linear-gradient(135deg, #10b981, #059669);
+            --gradient-warning: linear-gradient(135deg, #f59e0b, #d97706);
+            --gradient-danger: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            color: var(--white);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Анимированный фон */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 60% 60%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+            animation: backgroundFloat 25s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes backgroundFloat {
+            0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            25% { transform: translate(-20px, -30px) scale(1.1) rotate(1deg); }
+            50% { transform: translate(30px, -20px) scale(0.9) rotate(-1deg); }
+            75% { transform: translate(-10px, 30px) scale(1.05) rotate(0.5deg); }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 4s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.2); }
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            color: var(--gray-light);
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            color: var(--success);
+            font-weight: 600;
+            background: rgba(16, 185, 129, 0.1);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--success);
+            display: inline-block;
+        }
+
+        /* Back Button */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 20px;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: var(--glass-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* News Cards */
+        .news-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary);
+        }
+
+        .news-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .news-card.featured::before {
+            background: var(--gradient-warning);
+        }
+
+        .news-card.urgent::before {
+            background: var(--gradient-danger);
+        }
+
+        .news-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .news-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .news-date {
+            font-size: 0.9rem;
+            color: var(--gray-light);
+            background: var(--glass-hover);
+            padding: 6px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .news-content {
+            font-size: 1rem;
+            color: var(--gray-light);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .news-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .news-tag {
+            background: var(--glass-hover);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .news-tag.featured {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .news-tag.urgent {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .news-tag.listing {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        /* Price Chart */
+        .price-chart {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .price-chart h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .price-chart h2::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: var(--gradient-success);
+            border-radius: 2px;
+        }
+
+        .chart-container {
+            height: 200px;
+            background: var(--glass-hover);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-placeholder {
+            font-size: 1.2rem;
+            color: var(--gray-light);
+            font-weight: 600;
+        }
+
+        .price-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .price-stat {
+            background: var(--glass-hover);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .price-stat h3 {
+            font-size: 0.9rem;
+            color: var(--gray-light);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .price-stat .value {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--white);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .price-stat .change {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .price-stat .change.positive {
+            color: var(--success);
+        }
+
+        .price-stat .change.negative {
+            color: var(--danger);
+        }
+
+        /* Timeline */
+        .timeline {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .timeline h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .timeline h2::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: var(--gradient-info);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 30px;
+            bottom: -25px;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+        .timeline-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 5px;
+        }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            color: var(--gray-light);
+            margin-bottom: 8px;
+        }
+
+        .timeline-description {
+            font-size: 0.9rem;
+            color: var(--gray-light);
+            line-height: 1.5;
+        }
+
+        /* Call to Action */
+        .cta-section {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-success);
+        }
+
+        .cta-section h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: var(--gradient-success);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cta-section p {
+            font-size: 1.1rem;
+            color: var(--gray-light);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-btn.primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .cta-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .cta-btn.secondary {
+            background: var(--glass-hover);
+            color: var(--white);
+            border: 1px solid var(--border);
+        }
+
+        .cta-btn.secondary:hover {
+            background: var(--glass);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .news-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .news-title {
+                font-size: 1.3rem;
+            }
+            
+            .price-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+            }
+            
+            .cta-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-btn">← Назад к игре</a>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📰 Новости QuanHash</h1>
+            <p>Следите за последними новостями о листинге нашей криптовалюты</p>
+            <div class="subtitle">🚀 Скоро на биржах!</div>
+        </div>
+
+        <!-- Price Chart -->
+        <div class="price-chart">
+            <h2>📈 График Цены QuanHash</h2>
+            <div class="chart-container">
+                <div class="chart-placeholder">📊 Интерактивный график будет доступен после листинга</div>
+            </div>
+            <div class="price-stats">
+                <div class="price-stat">
+                    <h3>Текущая цена</h3>
+                    <div class="value">$0.001</div>
+                    <div class="change positive">+25% за неделю</div>
+                </div>
+                <div class="price-stat">
+                    <h3>Максимум</h3>
+                    <div class="value">$0.0015</div>
+                    <div class="change positive">+50% от старта</div>
+                </div>
+                <div class="price-stat">
+                    <h3>Объем торгов</h3>
+                    <div class="value">$2.5M</div>
+                    <div class="change positive">+300% рост</div>
+                </div>
+                <div class="price-stat">
+                    <h3>Рыночная кап</h3>
+                    <div class="value">$10M</div>
+                    <div class="change positive">Растет</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Featured News -->
+        <div class="news-card featured">
+            <div class="news-header">
+                <div>
+                    <h2 class="news-title">🚀 QuanHash официально листится на Binance!</h2>
+                    <div class="news-date">2024-02-01</div>
+                </div>
+            </div>
+            <div class="news-content">
+                <p>Мы рады объявить, что QuanHash официально листится на крупнейшей криптобирже Binance! Это исторический момент для нашей экосистемы. Торги начнутся 15 февраля 2024 года в 12:00 UTC.</p>
+                <br>
+                <p>Пара торговых пар: QH/USDT, QH/BTC, QH/ETH будут доступны сразу после листинга. Ожидается значительный рост интереса к нашей криптовалюте.</p>
+            </div>
+            <div class="news-tags">
+                <span class="news-tag featured">⭐ Главная новость</span>
+                <span class="news-tag listing">📈 Листинг</span>
+                <span class="news-tag urgent">🔥 Срочно</span>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline">
+            <h2>📅 Дорожная карта листинга</h2>
+            
+            <div class="timeline-item">
+                <div class="timeline-icon">✅</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Завершена разработка токена</div>
+                    <div class="timeline-date">Январь 2024</div>
+                    <div class="timeline-description">Техническая реализация QuanHash завершена, токен готов к листингу</div>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-icon">🤝</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Партнерство с Binance</div>
+                    <div class="timeline-date">25 января 2024</div>
+                    <div class="timeline-description">Подписано соглашение о листинге с крупнейшей криптобиржей</div>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-icon">📋</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Прохождение аудита</div>
+                    <div class="timeline-date">30 января 2024</div>
+                    <div class="timeline-description">Успешно пройден независимый аудит безопасности смарт-контракта</div>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-icon">🚀</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Официальный листинг</div>
+                    <div class="timeline-date">15 февраля 2024</div>
+                    <div class="timeline-description">QuanHash станет доступен для торговли на Binance</div>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-icon">🌍</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Расширение на другие биржи</div>
+                    <div class="timeline-date">Март 2024</div>
+                    <div class="timeline-description">Планируется листинг на Coinbase, Kraken и других крупных биржах</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- News Articles -->
+        <div class="news-card">
+            <div class="news-header">
+                <div>
+                    <h2 class="news-title">📈 Рекордный рост стоимости QuanHash</h2>
+                    <div class="news-date">2024-01-28</div>
+                </div>
+            </div>
+            <div class="news-content">
+                <p>За последнюю неделю стоимость QuanHash выросла на невероятные 25%! Инвесторы проявляют огромный интерес к нашей технологии и экосистеме. Аналитики прогнозируют дальнейший рост после официального листинга.</p>
+            </div>
+            <div class="news-tags">
+                <span class="news-tag listing">📈 Рост цены</span>
+            </div>
+        </div>
+
+        <div class="news-card">
+            <div class="news-header">
+                <div>
+                    <h2 class="news-title">🤝 Стратегические партнерства</h2>
+                    <div class="news-date">2024-01-20</div>
+                </div>
+            </div>
+            <div class="news-content">
+                <p>Quantum Nexus заключил стратегические партнерства с ведущими технологическими компаниями для развития экосистемы QuanHash. Новые интеграции позволят использовать токен в различных DeFi протоколах.</p>
+            </div>
+            <div class="news-tags">
+                <span class="news-tag">🤝 Партнерства</span>
+            </div>
+        </div>
+
+        <div class="news-card">
+            <div class="news-header">
+                <div>
+                    <h2 class="news-title">⚛️ Революционные квантовые технологии</h2>
+                    <div class="news-date">2024-01-15</div>
+                </div>
+            </div>
+            <div class="news-content">
+                <p>Наша команда работает над революционными квантовыми технологиями, которые изменят будущее майнинга и блокчейна. QuanHash станет первым токеном, использующим квантовые алгоритмы для обеспечения безопасности.</p>
+            </div>
+            <div class="news-tags">
+                <span class="news-tag">⚛️ Технологии</span>
+            </div>
+        </div>
+
+        <div class="news-card">
+            <div class="news-header">
+                <div>
+                    <h2 class="news-title">🎯 Планы на будущее</h2>
+                    <div class="news-date">2024-01-10</div>
+                </div>
+            </div>
+            <div class="news-content">
+                <p>После успешного листинга мы планируем запустить собственную DeFi платформу, стейкинг-протокол и NFT маркетплейс. Все это будет работать на базе QuanHash, создавая полноценную экосистему.</p>
+            </div>
+            <div class="news-tags">
+                <span class="news-tag">🎯 Планы</span>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <h2>🚀 Присоединяйтесь к революции!</h2>
+            <p>Не упустите возможность стать частью будущего криптовалют. Начните майнить QuanHash уже сегодня и получите преимущество перед официальным листингом!</p>
+            <div class="cta-buttons">
+                <a href="/" class="cta-btn primary">🎮 Начать майнинг</a>
+                <a href="#" class="cta-btn secondary">📧 Подписаться на новости</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh news every 5 minutes
+        setInterval(() => {
+            // In a real app, this would fetch new news from API
+            console.log('Checking for new news...');
+        }, 300000);
+
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animate news cards on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.news-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

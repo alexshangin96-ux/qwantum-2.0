@@ -484,6 +484,11 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
+// Страница новостей
+app.get('/news', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'news.html'));
+});
+
 // Админ авторизация
 app.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body;
@@ -1740,7 +1745,7 @@ cron.schedule('0 * * * *', () => {
   db.run('UPDATE events SET is_active = 0 WHERE end_time < CURRENT_TIMESTAMP');
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 80;
 server.listen(PORT, () => {
   console.log(`🚀 Quantum Nexus сервер запущен на порту ${PORT}`);
   console.log(`⚛️ Квантовая тапалка готова к игре!`);

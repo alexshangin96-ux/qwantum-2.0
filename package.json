@@ -1,7 +1,7 @@
 {
   "name": "quantum-nexus",
   "version": "2.0.0",
-  "description": "Популярная квантовая тапалка Quantum Nexus для Telegram Web App с множеством механик - https://quantum-nexus.ru",
+  "description": "Ultra Quantum Nexus - Невероятная квантовая тапалка с ультра-современным дизайном - https://quantum-nexus.ru",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

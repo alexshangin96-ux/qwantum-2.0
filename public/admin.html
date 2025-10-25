@@ -3,8 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Nexus - Админ Панель</title>
+    <title>Quantum Nexus - Ultra Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-hover: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,95 +34,174 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
             min-height: 100vh;
-            color: #fff;
+            color: var(--white);
             overflow-x: hidden;
         }
 
-        .background-animation {
+        /* Анимированный фон */
+        body::before {
+            content: '';
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
-            animation: backgroundShift 20s ease-in-out infinite;
+                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            animation: backgroundFloat 20s ease-in-out infinite;
             z-index: -1;
         }
 
-        @keyframes backgroundShift {
-            0%, 100% { transform: translateX(0) translateY(0); }
-            25% { transform: translateX(-20px) translateY(-10px); }
-            50% { transform: translateX(20px) translateY(10px); }
-            75% { transform: translateX(-10px) translateY(20px); }
+        @keyframes backgroundFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-30px, -30px) scale(1.1); }
+            66% { transform: translate(30px, -20px) scale(0.9); }
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             padding: 20px;
             position: relative;
             z-index: 1;
         }
 
+        /* Header */
         .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
             border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
         }
 
-        .header h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
-            background-size: 400% 400%;
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-left h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: gradientShift 3s ease-in-out infinite;
+            margin-bottom: 5px;
         }
 
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+        .header-left p {
+            color: var(--gray-light);
+            font-size: 1.1rem;
         }
 
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
+        .header-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
         }
 
+        .logout-btn {
+            background: var(--danger);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Login Container */
         .login-container {
             display: none;
-            max-width: 400px;
-            margin: 50px auto;
+            max-width: 450px;
+            margin: 100px auto;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
             padding: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
         }
 
         .login-container.active {
             display: block;
-            animation: slideIn 0.5s ease-out;
+            animation: slideInUp 0.6s ease-out;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-30px); }
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--success));
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-header p {
+            color: var(--gray-light);
+        }
+
+        /* Form Styles */
         .form-group {
             margin-bottom: 25px;
         }
@@ -109,39 +210,38 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #fff;
+            color: var(--white);
         }
 
         .form-group input {
             width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--glass);
+            color: var(--white);
             font-size: 16px;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
         }
 
         .form-group input:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.2);
-            border-color: #4ecdc4;
-            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            background: var(--glass-hover);
         }
 
         .form-group input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--gray-light);
         }
 
         .btn {
             width: 100%;
-            padding: 15px;
+            padding: 16px;
             border: none;
-            border-radius: 10px;
-            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             font-size: 16px;
             font-weight: 600;
@@ -153,7 +253,7 @@
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(78, 205, 196, 0.4);
+            box-shadow: var(--shadow-lg);
         }
 
         .btn:active {
@@ -175,6 +275,7 @@
             left: 100%;
         }
 
+        /* Admin Panel */
         .admin-panel {
             display: none;
         }
@@ -189,20 +290,21 @@
             to { opacity: 1; }
         }
 
+        /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
             margin-bottom: 40px;
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -210,7 +312,8 @@
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary);
         }
 
         .stat-card::before {
@@ -219,60 +322,112 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
         }
 
-        .stat-card h3 {
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stat-card-title {
             font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-light);
+        }
+
+        .stat-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .stat-card-icon.users { background: rgba(99, 102, 241, 0.2); color: var(--primary); }
+        .stat-card-icon.balance { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .stat-card-icon.hash { background: rgba(6, 182, 212, 0.2); color: var(--info); }
+        .stat-card-icon.sessions { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+
+        .stat-card-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--white);
             margin-bottom: 10px;
-            color: #4ecdc4;
         }
 
-        .stat-card .value {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .stat-card .change {
+        .stat-card-change {
             font-size: 0.9rem;
-            opacity: 0.8;
+            color: var(--gray-light);
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
+        .stat-card-change.positive { color: var(--success); }
+        .stat-card-change.negative { color: var(--danger); }
+
+        /* Controls Section */
         .controls-section {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 30px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
             margin-bottom: 30px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-lg);
         }
 
         .controls-section h2 {
-            margin-bottom: 25px;
-            color: #4ecdc4;
             font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .controls-section h2::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 2px;
         }
 
         .controls-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
         }
 
         .control-group {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--glass-hover);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .control-group:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
         }
 
         .control-group h3 {
-            margin-bottom: 15px;
-            color: #fff;
             font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .form-row {
@@ -284,190 +439,301 @@
 
         .form-row input {
             flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--glass);
+            color: var(--white);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-row input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
         .form-row input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--gray-light);
         }
 
         .btn-small {
             padding: 12px 20px;
             border: none;
-            border-radius: 8px;
-            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
-            color: white;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             white-space: nowrap;
+            font-size: 14px;
         }
 
         .btn-small:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+            box-shadow: var(--shadow);
         }
 
-        .btn-success {
-            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; }
+
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-warning:hover { background: #d97706; }
+
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+
+        .btn-info { background: var(--info); color: white; }
+        .btn-info:hover { background: #0891b2; }
+
+        /* Bulk Actions */
+        .bulk-actions {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
         }
 
-        .btn-success:hover {
-            box-shadow: 0 8px 20px rgba(78, 205, 196, 0.4);
+        .bulk-actions h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--white);
         }
 
-        .btn-warning {
-            background: linear-gradient(45deg, #feca57, #ff9ff3);
+        .bulk-controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: end;
         }
 
-        .btn-warning:hover {
-            box-shadow: 0 8px 20px rgba(254, 202, 87, 0.4);
+        .bulk-controls select,
+        .bulk-controls input {
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--glass);
+            color: var(--white);
+            font-size: 14px;
         }
 
-        .btn-info {
-            background: linear-gradient(45deg, #45b7d1, #96ceb4);
+        .bulk-controls select {
+            min-width: 150px;
         }
 
-        .btn-info:hover {
-            box-shadow: 0 8px 20px rgba(69, 183, 209, 0.4);
+        .bulk-controls input {
+            width: 120px;
         }
 
-        .users-table {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            overflow-x: auto;
+        /* Users Table */
+        .users-section {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
         }
 
-        .users-table h2 {
-            margin-bottom: 25px;
-            color: #4ecdc4;
+        .users-section h2 {
             font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .users-section h2::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--success), var(--info));
+            border-radius: 2px;
+        }
+
+        .search-container {
+            margin-bottom: 25px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--glass);
+            color: var(--white);
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-box::placeholder {
+            color: var(--gray-light);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid var(--border);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            background: var(--glass);
         }
 
         th, td {
-            padding: 15px;
+            padding: 16px;
             text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border);
         }
 
         th {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--glass-hover);
             font-weight: 600;
-            color: #4ecdc4;
+            color: var(--white);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         tr:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--glass-hover);
         }
 
         .status-badge {
-            padding: 5px 12px;
+            padding: 6px 12px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 12px;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .status-active {
-            background: rgba(78, 205, 196, 0.2);
-            color: #4ecdc4;
-            border: 1px solid #4ecdc4;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
         }
 
         .status-banned {
-            background: rgba(255, 107, 107, 0.2);
-            color: #ff6b6b;
-            border: 1px solid #ff6b6b;
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
         }
 
         .status-frozen {
-            background: rgba(254, 202, 87, 0.2);
-            color: #feca57;
-            border: 1px solid #feca57;
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
         }
 
-        .search-box {
-            width: 100%;
-            padding: 15px;
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
             border: none;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            font-size: 16px;
-            margin-bottom: 20px;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .search-box::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .logout-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            background: rgba(255, 107, 107, 0.2);
-            border: 1px solid #ff6b6b;
-            border-radius: 10px;
-            color: #ff6b6b;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .logout-btn:hover {
-            background: rgba(255, 107, 107, 0.3);
-            transform: translateY(-2px);
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
         }
 
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 30px;
+        }
+
+        .pagination button {
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--glass);
+            color: var(--white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .pagination button:hover {
+            background: var(--glass-hover);
+            border-color: var(--primary);
+        }
+
+        .pagination button.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Notifications */
         .notification {
             position: fixed;
             top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 15px 25px;
-            border-radius: 10px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 12px;
             color: white;
             font-weight: 600;
             z-index: 1000;
-            animation: slideDown 0.3s ease-out;
+            animation: slideInRight 0.3s ease-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-lg);
         }
 
         .notification.success {
-            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            background: linear-gradient(135deg, var(--success), #059669);
         }
 
         .notification.error {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            background: linear-gradient(135deg, var(--danger), #dc2626);
         }
 
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .notification.info {
+            background: linear-gradient(135deg, var(--info), #0891b2);
         }
 
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Loading */
         .loading {
             display: inline-block;
             width: 20px;
             height: 20px;
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: #fff;
+            border-top-color: var(--primary);
             animation: spin 1s ease-in-out infinite;
         }
 
@@ -475,64 +741,71 @@
             to { transform: rotate(360deg); }
         }
 
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
         }
 
-        .pagination button {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .pagination button:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .pagination button.active {
-            background: #4ecdc4;
-        }
-
-        .bulk-actions {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .bulk-actions select {
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .bulk-actions option {
-            background: #333;
-            color: #fff;
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .header-left h1 {
+                font-size: 2rem;
+            }
+            
+            .bulk-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="background-animation"></div>
-    
     <div class="container">
+        <!-- Header -->
         <div class="header">
-            <h1>⚛️ Quantum Nexus</h1>
-            <p>Админ Панель - Управление Вселенной</p>
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>⚛️ Quantum Nexus</h1>
+                    <p>Ultra Admin Panel - Управление Вселенной</p>
+                </div>
+                <div class="header-right">
+                    <button class="logout-btn" onclick="logout()">
+                        <span>🚪</span>
+                        <span>Выйти</span>
+                    </button>
+                </div>
+            </div>
         </div>
 
+        <!-- Login Container -->
         <div class="login-container" id="loginContainer">
-            <h2 style="text-align: center; margin-bottom: 30px; color: #4ecdc4;">🔐 Вход в Админ Панель</h2>
+            <div class="login-header">
+                <h2>🔐 Ultra Admin Access</h2>
+                <p>Войдите в систему для управления Quantum Nexus</p>
+            </div>
             <form id="loginForm">
                 <div class="form-group">
                     <label for="username">Логин:</label>
@@ -542,38 +815,61 @@
                     <label for="password">Пароль:</label>
                     <input type="password" id="password" placeholder="Введите пароль" required>
                 </div>
-                <button type="submit" class="btn">🚀 Войти в Панель</button>
+                <button type="submit" class="btn">🚀 Войти в Ultra Panel</button>
             </form>
         </div>
 
+        <!-- Admin Panel -->
         <div class="admin-panel" id="adminPanel">
-            <button class="logout-btn" onclick="logout()">🚪 Выйти</button>
-
-            <!-- Статистика -->
+            <!-- Statistics -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <h3>👥 Всего Игроков</h3>
-                    <div class="value" id="totalUsers">0</div>
-                    <div class="change">+0 за сегодня</div>
+                    <div class="stat-card-header">
+                        <div class="stat-card-title">👥 Всего Игроков</div>
+                        <div class="stat-card-icon users">👤</div>
+                    </div>
+                    <div class="stat-card-value" id="totalUsers">0</div>
+                    <div class="stat-card-change positive" id="usersChange">
+                        <span>↗</span>
+                        <span>+0 за сегодня</span>
+                    </div>
                 </div>
                 <div class="stat-card">
-                    <h3>💰 Общий Баланс</h3>
-                    <div class="value" id="totalBalance">0</div>
-                    <div class="change">Монет в системе</div>
+                    <div class="stat-card-header">
+                        <div class="stat-card-title">💰 Общий Баланс</div>
+                        <div class="stat-card-icon balance">💎</div>
+                    </div>
+                    <div class="stat-card-value" id="totalBalance">0</div>
+                    <div class="stat-card-change positive" id="balanceChange">
+                        <span>↗</span>
+                        <span>Монет в системе</span>
+                    </div>
                 </div>
                 <div class="stat-card">
-                    <h3>⛏️ QuanHash</h3>
-                    <div class="value" id="totalQuanHash">0</div>
-                    <div class="change">Добыто всего</div>
+                    <div class="stat-card-header">
+                        <div class="stat-card-title">⛏️ QuanHash</div>
+                        <div class="stat-card-icon hash">🔗</div>
+                    </div>
+                    <div class="stat-card-value" id="totalQuanHash">0</div>
+                    <div class="stat-card-change positive" id="hashChange">
+                        <span>↗</span>
+                        <span>Добыто всего</span>
+                    </div>
                 </div>
                 <div class="stat-card">
-                    <h3>🎯 Активные Сессии</h3>
-                    <div class="value" id="activeSessions">0</div>
-                    <div class="change">Сейчас онлайн</div>
+                    <div class="stat-card-header">
+                        <div class="stat-card-title">🎯 Активные Сессии</div>
+                        <div class="stat-card-icon sessions">⚡</div>
+                    </div>
+                    <div class="stat-card-value" id="activeSessions">0</div>
+                    <div class="stat-card-change positive" id="sessionsChange">
+                        <span>↗</span>
+                        <span>Сейчас онлайн</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Быстрые действия -->
+            <!-- Quick Actions -->
             <div class="controls-section">
                 <h2>⚡ Быстрые Действия</h2>
                 <div class="controls-grid">
@@ -587,7 +883,7 @@
                         <div class="form-row">
                             <input type="text" id="balanceUserId2" placeholder="ID пользователя">
                             <input type="number" id="balanceAmount2" placeholder="Сумма">
-                            <button class="btn-small" onclick="subtractBalance()">Отнять</button>
+                            <button class="btn-small btn-danger" onclick="subtractBalance()">Отнять</button>
                         </div>
                     </div>
 
@@ -595,7 +891,7 @@
                         <h3>🔒 Управление Доступом</h3>
                         <div class="form-row">
                             <input type="text" id="banUserId" placeholder="ID пользователя">
-                            <button class="btn-small" onclick="toggleBan()">Заблокировать</button>
+                            <button class="btn-small btn-danger" onclick="toggleBan()">Заблокировать</button>
                         </div>
                         <div class="form-row">
                             <input type="text" id="freezeUserId" placeholder="ID пользователя">
@@ -627,10 +923,10 @@
                 </div>
             </div>
 
-            <!-- Массовые операции -->
-            <div class="controls-section">
+            <!-- Bulk Actions -->
+            <div class="bulk-actions">
                 <h2>📊 Массовые Операции</h2>
-                <div class="bulk-actions">
+                <div class="bulk-controls">
                     <select id="bulkAction">
                         <option value="ban">Заблокировать</option>
                         <option value="unban">Разблокировать</option>
@@ -639,36 +935,40 @@
                         <option value="bonus">Дать бонус</option>
                         <option value="reset">Сбросить прогресс</option>
                     </select>
-                    <input type="number" id="bulkAmount" placeholder="Сумма (для бонуса)" style="width: 150px;">
+                    <input type="number" id="bulkAmount" placeholder="Сумма (для бонуса)">
                     <button class="btn-small btn-warning" onclick="applyBulkAction()">Применить к Выбранным</button>
                     <button class="btn-small btn-info" onclick="selectAll()">Выбрать Все</button>
                 </div>
             </div>
 
-            <!-- Список пользователей -->
-            <div class="users-table">
-                <h2>👥 Список Игроков</h2>
-                <input type="text" class="search-box" id="searchBox" placeholder="🔍 Поиск по имени, ID или Telegram...">
+            <!-- Users Table -->
+            <div class="users-section">
+                <h2>👥 Управление Игроками</h2>
+                <div class="search-container">
+                    <input type="text" class="search-box" id="searchBox" placeholder="🔍 Поиск по имени, ID или Telegram...">
+                </div>
                 
-                <table>
-                    <thead>
-                        <tr>
-                            <th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
-                            <th>ID</th>
-                            <th>Имя</th>
-                            <th>Telegram</th>
-                            <th>Баланс</th>
-                            <th>QuanHash</th>
-                            <th>Уровень</th>
-                            <th>Статус</th>
-                            <th>Последний вход</th>
-                            <th>Действия</th>
-                        </tr>
-                    </thead>
-                    <tbody id="usersTableBody">
-                        <!-- Данные загружаются динамически -->
-                    </tbody>
-                </table>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
+                                <th>ID</th>
+                                <th>Имя</th>
+                                <th>Telegram</th>
+                                <th>Баланс</th>
+                                <th>QuanHash</th>
+                                <th>Уровень</th>
+                                <th>Статус</th>
+                                <th>Последний вход</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Данные загружаются динамически -->
+                        </tbody>
+                    </table>
+                </div>
 
                 <div class="pagination" id="pagination">
                     <!-- Пагинация загружается динамически -->
@@ -727,7 +1027,7 @@
 
                 if (data.success) {
                     localStorage.setItem('adminToken', data.token);
-                    showNotification('✅ Успешный вход в систему!', 'success');
+                    showNotification('✅ Успешный вход в Ultra Admin Panel!', 'success');
                     showAdminPanel();
                     loadStats();
                     loadUsers();
@@ -743,7 +1043,7 @@
         function logout() {
             localStorage.removeItem('adminToken');
             showLoginForm();
-            showNotification('👋 Вы вышли из системы', 'success');
+            showNotification('👋 Вы вышли из Ultra Admin Panel', 'info');
         }
 
         // Загрузка статистики
@@ -810,8 +1110,10 @@
                     <td><span class="status-badge ${getStatusClass(user)}">${getStatusText(user)}</span></td>
                     <td>${formatDate(user.last_login)}</td>
                     <td>
-                        <button class="btn-small btn-success" onclick="editUser(${user.id})">✏️</button>
-                        <button class="btn-small" onclick="viewUserDetails(${user.id})">👁️</button>
+                        <div class="action-buttons">
+                            <button class="action-btn btn-primary" onclick="editUser(${user.id})">✏️</button>
+                            <button class="action-btn btn-info" onclick="viewUserDetails(${user.id})">👁️</button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
@@ -1232,8 +1534,8 @@ QuanHash: ${user.quanhash.toLocaleString()}
             }
         }
 
-        // Показать уведомление
-        function showNotification(message, type = 'success') {
+        // Показать уведомления
+        function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.textContent = message;
@@ -1241,7 +1543,7 @@ QuanHash: ${user.quanhash.toLocaleString()}
 
             setTimeout(() => {
                 notification.remove();
-            }, 3000);
+            }, 4000);
         }
 
         // Инициализация
