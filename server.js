@@ -551,6 +551,17 @@ app.post('/api/tap', requireAuth, async (req, res) => {
                         return res.status(500).json({ error: 'Ошибка обновления данных' });
                     }
                     
+                    // Начисляем комиссию рефереру (5% от дохода)
+                    if (user.referred_by) {
+                        const commission = Math.floor(coinsEarned * 0.05);
+                        db.run('UPDATE users SET balance = balance + ? WHERE id = ?', 
+                            [commission, user.referred_by], (err) => {
+                                if (err) {
+                                    console.error('Ошибка начисления комиссии рефереру:', err);
+                                }
+                            });
+                    }
+                    
                     res.json({
                         success: true,
                         coinsEarned,
@@ -672,6 +683,17 @@ app.post('/api/buy-boost', requireAuth, (req, res) => {
         db.run(updateQuery, params, (err) => {
             if (err) {
                 return res.status(500).json({ error: 'Ошибка покупки буста' });
+            }
+            
+            // Начисляем комиссию рефереру (5% от стоимости покупки)
+            if (user.referred_by) {
+                const commission = Math.floor(boost.cost * 0.05);
+                db.run('UPDATE users SET balance = balance + ? WHERE id = ?', 
+                    [commission, user.referred_by], (err) => {
+                        if (err) {
+                            console.error('Ошибка начисления комиссии рефереру:', err);
+                        }
+                    });
             }
             
             res.json({
@@ -1302,14 +1324,53 @@ app.get('/api/referral-info', requireAuth, (req, res) => {
             }
             
             const referralsCount = result.count || 0;
-            const referralEarnings = referralsCount * 1000; // 1000 монет за каждого реферала
             
-            res.json({
-                success: true,
-                referralCode: user.referral_code,
-                referralsCount: referralsCount,
-                referralEarnings: referralEarnings
+            // Получаем общий доход всех рефералов
+            db.get(`SELECT SUM(u.balance + u.quanhash * 1000) as totalEarnings 
+                    FROM referrals r 
+                    JOIN users u ON r.referred_id = u.id 
+                    WHERE r.referrer_id = ?`, [userId], (err, earningsResult) => {
+                if (err) {
+                    return res.status(500).json({ error: 'Ошибка подсчета доходов рефералов' });
+                }
+                
+                const totalReferralEarnings = earningsResult.totalEarnings || 0;
+                const referralCommission = Math.floor(totalReferralEarnings * 0.05); // 5% комиссия
+                
+                res.json({
+                    success: true,
+                    referralCode: user.referral_code,
+                    referralsCount: referralsCount,
+                    totalReferralEarnings: totalReferralEarnings,
+                    referralCommission: referralCommission
+                });
             });
+        });
+    });
+});
+
+// Получение списка рефералов
+app.get('/api/referrals-list', requireAuth, (req, res) => {
+    const userId = req.telegramUser.id;
+    
+    db.all(`SELECT 
+                u.username,
+                u.balance,
+                u.quanhash,
+                r.created_at,
+                (u.balance + u.quanhash * 1000) as totalEarnings,
+                ((u.balance + u.quanhash * 1000) * 0.05) as commissionEarned
+            FROM referrals r 
+            JOIN users u ON r.referred_id = u.id 
+            WHERE r.referrer_id = ?
+            ORDER BY r.created_at DESC`, [userId], (err, referrals) => {
+        if (err) {
+            return res.status(500).json({ error: 'Ошибка получения списка рефералов' });
+        }
+        
+        res.json({
+            success: true,
+            referrals: referrals || []
         });
     });
 });
