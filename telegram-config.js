@@ -3,7 +3,7 @@
 
 const TELEGRAM_CONFIG = {
   BOT_TOKEN: '8426192106:AAGGlkfOYAhaQKPp-bcL-3oHXBE50tzAMog',
-  WEB_APP_URL: 'https://unlock-rent.online',
+  WEB_APP_URL: 'https://quantum-nexus.ru',
   
   // Настройки Web App
   WEB_APP_SETTINGS: {

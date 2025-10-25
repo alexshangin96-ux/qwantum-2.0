@@ -488,7 +488,7 @@ app.get('/admin', (req, res) => {
 app.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body;
   
-  if (username === 'smartfxinsk' && password === 'Magadan1996') {
+  if (username === 'smartfixnsk' && password === 'Maga1996') {
     res.json({ success: true, token: 'admin_token_' + Date.now() });
   } else {
     res.status(401).json({ error: 'Неверные учетные данные' });
@@ -620,24 +620,167 @@ app.get('/api/admin/stats', (req, res) => {
     return res.status(401).json({ error: 'Неавторизован' });
   }
   
-  db.get('SELECT COUNT(*) as totalUsers, SUM(coins) as totalCoins, SUM(quanhash) as totalQuanhash, SUM(total_taps) as totalTaps FROM users', (err, stats) => {
+  db.get('SELECT COUNT(*) as totalUsers, SUM(coins) as totalBalance, SUM(quanhash) as totalQuanHash, SUM(total_taps) as totalTaps FROM users', (err, stats) => {
     if (err) {
       return res.status(500).json({ error: 'Ошибка получения статистики' });
     }
     
-    db.get('SELECT COUNT(*) as bannedUsers FROM users WHERE is_banned = 1', (err, bannedStats) => {
+    db.get('SELECT COUNT(*) as activeSessions FROM users WHERE last_login > datetime("now", "-1 hour")', (err, activeStats) => {
       if (err) {
         return res.status(500).json({ error: 'Ошибка получения статистики' });
       }
       
       res.json({
-        totalUsers: stats.totalUsers,
-        totalCoins: stats.totalCoins || 0,
-        totalQuanhash: stats.totalQuanhash || 0,
+        totalUsers: stats.totalUsers || 0,
+        totalBalance: stats.totalBalance || 0,
+        totalQuanHash: stats.totalQuanHash || 0,
         totalTaps: stats.totalTaps || 0,
-        bannedUsers: bannedStats.bannedUsers
+        activeSessions: activeStats.activeSessions || 0
       });
     });
+  });
+});
+
+// Дать бонус всем игрокам
+app.post('/api/admin/give-bonus-all', (req, res) => {
+  const { token } = req.query;
+  const { amount } = req.body;
+  
+  if (!token || !token.startsWith('admin_token_')) {
+    return res.status(401).json({ error: 'Неавторизованный доступ' });
+  }
+  
+  if (!amount || amount <= 0) {
+    return res.status(400).json({ error: 'Неверная сумма бонуса' });
+  }
+  
+  db.run('UPDATE users SET coins = coins + ?', [amount], function(err) {
+    if (err) {
+      res.status(500).json({ error: 'Ошибка выдачи бонуса' });
+    } else {
+      res.json({ success: true, affectedRows: this.changes });
+    }
+  });
+});
+
+// Отправить событие всем игрокам
+app.post('/api/admin/send-event', (req, res) => {
+  const { token } = req.query;
+  const { message } = req.body;
+  
+  if (!token || !token.startsWith('admin_token_')) {
+    return res.status(401).json({ error: 'Неавторизованный доступ' });
+  }
+  
+  if (!message) {
+    return res.status(400).json({ error: 'Сообщение не может быть пустым' });
+  }
+  
+  // Отправляем событие через Socket.IO
+  io.emit('admin_event', {
+    type: 'notification',
+    message: message,
+    timestamp: new Date().toISOString()
+  });
+  
+  res.json({ success: true });
+});
+
+// Массовые операции
+app.post('/api/admin/bulk-action', (req, res) => {
+  const { token } = req.query;
+  const { userIds, action, amount } = req.body;
+  
+  if (!token || !token.startsWith('admin_token_')) {
+    return res.status(401).json({ error: 'Неавторизованный доступ' });
+  }
+  
+  if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
+    return res.status(400).json({ error: 'Неверный список пользователей' });
+  }
+  
+  const placeholders = userIds.map(() => '?').join(',');
+  let query = '';
+  
+  switch (action) {
+    case 'ban':
+      query = `UPDATE users SET is_banned = 1 WHERE id IN (${placeholders})`;
+      break;
+    case 'unban':
+      query = `UPDATE users SET is_banned = 0 WHERE id IN (${placeholders})`;
+      break;
+    case 'freeze':
+      query = `UPDATE users SET is_frozen = 1 WHERE id IN (${placeholders})`;
+      break;
+    case 'unfreeze':
+      query = `UPDATE users SET is_frozen = 0 WHERE id IN (${placeholders})`;
+      break;
+    case 'bonus':
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Неверная сумма бонуса' });
+      }
+      query = `UPDATE users SET coins = coins + ? WHERE id IN (${placeholders})`;
+      break;
+    case 'reset':
+      query = `UPDATE users SET coins = 0, quanhash = 0, level = 1 WHERE id IN (${placeholders})`;
+      break;
+    default:
+      return res.status(400).json({ error: 'Неверное действие' });
+  }
+  
+  const params = action === 'bonus' ? [amount, ...userIds] : userIds;
+  
+  db.run(query, params, function(err) {
+    if (err) {
+      res.status(500).json({ error: 'Ошибка выполнения операции' });
+    } else {
+      res.json({ success: true, affectedRows: this.changes });
+    }
+  });
+});
+
+// Сброс всех данных
+app.post('/api/admin/reset-all', (req, res) => {
+  const { token } = req.query;
+  
+  if (!token || !token.startsWith('admin_token_')) {
+    return res.status(401).json({ error: 'Неавторизованный доступ' });
+  }
+  
+  db.serialize(() => {
+    db.run('DELETE FROM users');
+    db.run('DELETE FROM achievements');
+    db.run('DELETE FROM cards');
+    db.run('DELETE FROM events');
+    db.run('DELETE FROM referrals');
+    db.run('DELETE FROM transactions');
+    
+    res.json({ success: true });
+  });
+});
+
+// Экспорт данных
+app.get('/api/admin/export-data', (req, res) => {
+  const { token } = req.query;
+  
+  if (!token || !token.startsWith('admin_token_')) {
+    return res.status(401).json({ error: 'Неавторизованный доступ' });
+  }
+  
+  db.all('SELECT * FROM users', (err, users) => {
+    if (err) {
+      res.status(500).json({ error: 'Ошибка экспорта данных' });
+    } else {
+      const exportData = {
+        timestamp: new Date().toISOString(),
+        users: users,
+        totalUsers: users.length
+      };
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', `attachment; filename="quantum-nexus-backup-${new Date().toISOString().split('T')[0]}.json"`);
+      res.json(exportData);
+    }
   });
 });
 
