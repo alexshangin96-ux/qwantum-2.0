@@ -162,25 +162,31 @@ db.serialize(() => {
         FOREIGN KEY (referred_id) REFERENCES users (id)
     )`);
 
-    // Таблица для отслеживания мультиаккаунтов
-    db.run(`CREATE TABLE IF NOT EXISTS device_fingerprints (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        fingerprint TEXT UNIQUE,
-        telegram_id INTEGER,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (telegram_id) REFERENCES users (id)
-    )`);
+// Таблица для отслеживания мультиаккаунтов
+db.run(`CREATE TABLE IF NOT EXISTS device_fingerprints (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fingerprint TEXT,
+    telegram_id INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (telegram_id) REFERENCES users (id)
+)`);
 
-    // Таблица для отслеживания IP адресов
-    db.run(`CREATE TABLE IF NOT EXISTS ip_tracking (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        ip_address TEXT,
-        telegram_id INTEGER,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (telegram_id) REFERENCES users (id)
-    )`);
+// Таблица для отслеживания IP адресов
+db.run(`CREATE TABLE IF NOT EXISTS ip_tracking (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ip_address TEXT,
+    telegram_id INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (telegram_id) REFERENCES users (id)
+)`);
+
+// Создаем индексы для оптимизации запросов
+db.run(`CREATE INDEX IF NOT EXISTS idx_device_fingerprint ON device_fingerprints (fingerprint)`);
+db.run(`CREATE INDEX IF NOT EXISTS idx_device_telegram_id ON device_fingerprints (telegram_id)`);
+db.run(`CREATE INDEX IF NOT EXISTS idx_ip_address ON ip_tracking (ip_address)`);
+db.run(`CREATE INDEX IF NOT EXISTS idx_ip_telegram_id ON ip_tracking (telegram_id)`);
 });
 
 // Функция генерации отпечатка устройства
@@ -199,26 +205,28 @@ function generateDeviceFingerprint(req) {
 
 // Функция проверки мультиаккаунтов
 function checkMultiAccount(telegramId, fingerprint, ipAddress, callback) {
-    // Проверяем отпечаток устройства
-    db.get('SELECT telegram_id FROM device_fingerprints WHERE fingerprint = ? AND telegram_id != ?', 
-        [fingerprint, telegramId], (err, deviceResult) => {
+    // Проверяем, сколько аккаунтов используют этот отпечаток устройства
+    db.get('SELECT COUNT(DISTINCT telegram_id) as count FROM device_fingerprints WHERE fingerprint = ?', 
+        [fingerprint], (err, deviceResult) => {
             if (err) {
                 return callback(err, false);
             }
             
-            if (deviceResult) {
-                return callback(null, true); // Найден мультиаккаунт по отпечатку
+            // Если больше 1 аккаунта использует это устройство - это мультиаккаунт
+            if (deviceResult.count > 1) {
+                return callback(null, true, 'device');
             }
             
-            // Проверяем IP адрес
-            db.get('SELECT telegram_id FROM ip_tracking WHERE ip_address = ? AND telegram_id != ?', 
-                [ipAddress, telegramId], (err, ipResult) => {
+            // Проверяем, сколько аккаунтов используют этот IP адрес
+            db.get('SELECT COUNT(DISTINCT telegram_id) as count FROM ip_tracking WHERE ip_address = ?', 
+                [ipAddress], (err, ipResult) => {
                     if (err) {
                         return callback(err, false);
                     }
                     
-                    if (ipResult) {
-                        return callback(null, true); // Найден мультиаккаунт по IP
+                    // Если больше 1 аккаунта использует этот IP - это мультиаккаунт
+                    if (ipResult.count > 1) {
+                        return callback(null, true, 'ip');
                     }
                     
                     callback(null, false); // Мультиаккаунт не найден
@@ -228,13 +236,21 @@ function checkMultiAccount(telegramId, fingerprint, ipAddress, callback) {
 
 // Функция сохранения отпечатка устройства и IP
 function saveDeviceInfo(telegramId, fingerprint, ipAddress) {
-    // Сохраняем отпечаток устройства
-    db.run(`INSERT OR REPLACE INTO device_fingerprints (fingerprint, telegram_id, last_seen) 
+    // Сохраняем отпечаток устройства (один аккаунт может иметь несколько устройств)
+    db.run(`INSERT OR IGNORE INTO device_fingerprints (fingerprint, telegram_id, last_seen) 
             VALUES (?, ?, CURRENT_TIMESTAMP)`, [fingerprint, telegramId]);
     
-    // Сохраняем IP адрес
-    db.run(`INSERT OR REPLACE INTO ip_tracking (ip_address, telegram_id, last_seen) 
+    // Обновляем время последнего использования
+    db.run(`UPDATE device_fingerprints SET last_seen = CURRENT_TIMESTAMP 
+            WHERE fingerprint = ? AND telegram_id = ?`, [fingerprint, telegramId]);
+    
+    // Сохраняем IP адрес (один аккаунт может иметь несколько IP)
+    db.run(`INSERT OR IGNORE INTO ip_tracking (ip_address, telegram_id, last_seen) 
             VALUES (?, ?, CURRENT_TIMESTAMP)`, [ipAddress, telegramId]);
+    
+    // Обновляем время последнего использования
+    db.run(`UPDATE ip_tracking SET last_seen = CURRENT_TIMESTAMP 
+            WHERE ip_address = ? AND telegram_id = ?`, [ipAddress, telegramId]);
 }
 
 // Функция проверки Telegram Web App
@@ -291,23 +307,31 @@ function requireAuth(req, res, next) {
     const fingerprint = generateDeviceFingerprint(req);
     const ipAddress = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'];
     
-    checkMultiAccount(req.telegramUser.id, fingerprint, ipAddress, (err, isMultiAccount) => {
-        if (err) {
-            console.error('Ошибка проверки мультиаккаунта:', err);
-            return next();
-        }
-        
-        if (isMultiAccount) {
-            return res.status(403).json({ 
-                error: 'Обнаружена подозрительная активность. Доступ ограничен.',
-                code: 'MULTI_ACCOUNT_DETECTED'
-            });
-        }
-        
-        // Сохраняем информацию об устройстве
-        saveDeviceInfo(req.telegramUser.id, fingerprint, ipAddress);
-        next();
-    });
+        checkMultiAccount(req.telegramUser.id, fingerprint, ipAddress, (err, isMultiAccount, type) => {
+            if (err) {
+                console.error('Ошибка проверки мультиаккаунта:', err);
+                return next();
+            }
+            
+            if (isMultiAccount) {
+                let message = '';
+                if (type === 'device') {
+                    message = '🚫 Обнаружена попытка обмануть систему!\n\n❌ На этом устройстве уже зарегистрирован другой аккаунт.\n\n💡 Один аккаунт может использоваться на разных устройствах, но одно устройство не может использоваться для нескольких аккаунтов.\n\n🔒 Доступ заблокирован для защиты честных игроков.';
+                } else if (type === 'ip') {
+                    message = '🚫 Обнаружена попытка обмануть систему!\n\n❌ С этого IP адреса уже зарегистрирован другой аккаунт.\n\n💡 Один аккаунт может использоваться с разных IP адресов, но один IP не может использоваться для нескольких аккаунтов.\n\n🔒 Доступ заблокирован для защиты честных игроков.';
+                }
+                
+                return res.status(403).json({ 
+                    error: message,
+                    code: 'MULTI_ACCOUNT_DETECTED',
+                    type: type
+                });
+            }
+            
+            // Сохраняем информацию об устройстве
+            saveDeviceInfo(req.telegramUser.id, fingerprint, ipAddress);
+            next();
+        });
 }
 
 // Middleware для админ авторизации
