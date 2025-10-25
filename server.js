@@ -1433,7 +1433,7 @@ app.post('/api/use-referral/:userId', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Ошибка использования реферального кода' });
-  });
+  }
 });
 
 // Получение реферального кода
@@ -1483,7 +1483,7 @@ app.post('/api/prestige/:userId', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Ошибка престижа' });
-  });
+  }
 });
 
 // Ежедневный бонус
@@ -1541,7 +1541,7 @@ app.post('/api/daily-bonus/:userId', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Ошибка получения ежедневного бонуса' });
-  });
+  }
 });
 
 // Socket.io для реального времени
