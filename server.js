@@ -68,7 +68,11 @@ db.serialize(() => {
         cards TEXT DEFAULT '[]',
         mining_machines TEXT DEFAULT '[]',
         premium_machines TEXT DEFAULT '[]',
-        boosts TEXT DEFAULT '[]'
+        boosts TEXT DEFAULT '[]',
+        tap_history TEXT DEFAULT '[]',
+        last_tap_time INTEGER DEFAULT 0,
+        tap_count INTEGER DEFAULT 0,
+        tap_start_time INTEGER DEFAULT 0
     )`);
 
     // Таблица достижений
@@ -193,6 +197,54 @@ function requireAdmin(req, res, next) {
     next();
 }
 
+// Функция проверки анти-кликера
+function checkAntiClicker(userId, tapTime) {
+    return new Promise((resolve, reject) => {
+        db.get('SELECT tap_history, last_tap_time, tap_count, tap_start_time FROM users WHERE telegram_id = ?', [userId], (err, user) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            
+            if (!user) {
+                reject(new Error('Пользователь не найден'));
+                return;
+            }
+            
+            const now = Date.now();
+            const timeSinceLastTap = now - (user.last_tap_time || 0);
+            
+            // Проверка на слишком быстрый тап (менее 100мс)
+            if (timeSinceLastTap < 100) {
+                reject(new Error('Слишком быстрый тап! Подозрение на автокликер.'));
+                return;
+            }
+            
+            // Проверка на паттерны автокликера
+            const tapHistory = JSON.parse(user.tap_history || '[]');
+            const recentTaps = tapHistory.filter(tap => now - tap < 10000); // Последние 10 секунд
+            
+            if (recentTaps.length > 20) {
+                reject(new Error('Обнаружена подозрительная активность!'));
+                return;
+            }
+            
+            // Обновляем историю тапов
+            tapHistory.push(now);
+            const updatedHistory = tapHistory.slice(-50); // Храним только последние 50 тапов
+            
+            db.run('UPDATE users SET tap_history = ?, last_tap_time = ?, tap_count = tap_count + 1 WHERE telegram_id = ?', 
+                [JSON.stringify(updatedHistory), now, userId], (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(true);
+                    }
+                });
+        });
+    });
+}
+
 // API Routes
 
 // Главная страница
@@ -269,9 +321,9 @@ app.post('/api/auth', (req, res) => {
             const referredBy = req.body.referralCode ? 
                 db.get('SELECT id FROM users WHERE referral_code = ?', [req.body.referralCode]) : null;
             
-            db.run(`INSERT INTO users (telegram_id, username, referral_code, referred_by) 
-                    VALUES (?, ?, ?, ?)`, 
-                [telegramUser.id, telegramUser.username, referralCode, referredBy?.id || null], 
+            db.run(`INSERT INTO users (telegram_id, username, referral_code, referred_by, tap_start_time) 
+                    VALUES (?, ?, ?, ?, ?)`, 
+                [telegramUser.id, telegramUser.username, referralCode, referredBy?.id || null, Date.now()], 
                 function(err) {
                     if (err) {
                         return res.status(500).json({ error: 'Ошибка создания пользователя' });
@@ -309,75 +361,117 @@ app.post('/api/auth', (req, res) => {
     });
 });
 
-// Тап
-app.post('/api/tap', requireAuth, (req, res) => {
+// Тап с улучшенной защитой от автокликера
+app.post('/api/tap', requireAuth, async (req, res) => {
     const userId = req.telegramUser.id;
     
-    db.get('SELECT * FROM users WHERE telegram_id = ?', [userId], (err, user) => {
-        if (err || !user) {
-            return res.status(500).json({ error: 'Ошибка получения данных пользователя' });
-        }
+    try {
+        // Проверяем анти-кликер
+        await checkAntiClicker(userId, Date.now());
         
-        if (user.is_banned) {
-            return res.status(403).json({ error: 'Аккаунт заблокирован' });
-        }
-        
-        if (user.is_frozen && user.freeze_end_time > Date.now()) {
-            return res.status(403).json({ error: 'Аккаунт заморожен' });
-        }
-        
-        // Проверяем энергию
-        if (user.energy < 1) {
-            return res.status(400).json({ error: 'Недостаточно энергии' });
-        }
-        
-        // Рассчитываем доход
-        const coinsEarned = user.tap_power;
-        const experienceEarned = Math.floor(coinsEarned / 10);
-        
-        // Обновляем данные пользователя
-        db.run(`UPDATE users SET 
-                balance = balance + ?, 
-                experience = experience + ?, 
-                energy = energy - 1,
-                last_login = CURRENT_TIMESTAMP
-                WHERE telegram_id = ?`, 
-            [coinsEarned, experienceEarned, userId], (err) => {
-                if (err) {
-                    return res.status(500).json({ error: 'Ошибка обновления данных' });
-                }
-                
-                res.json({
-                    success: true,
-                    coinsEarned,
-                    experienceEarned,
-                    newBalance: user.balance + coinsEarned,
-                    newExperience: user.experience + experienceEarned,
-                    newEnergy: user.energy - 1
+        db.get('SELECT * FROM users WHERE telegram_id = ?', [userId], (err, user) => {
+            if (err || !user) {
+                return res.status(500).json({ error: 'Ошибка получения данных пользователя' });
+            }
+            
+            if (user.is_banned) {
+                return res.status(403).json({ error: 'Аккаунт заблокирован' });
+            }
+            
+            if (user.is_frozen && user.freeze_end_time > Date.now()) {
+                return res.status(403).json({ error: 'Аккаунт заморожен' });
+            }
+            
+            // Проверяем энергию
+            if (user.energy < 1) {
+                return res.status(400).json({ error: 'Недостаточно энергии' });
+            }
+            
+            // Рассчитываем доход
+            const coinsEarned = user.tap_power;
+            const experienceEarned = Math.floor(coinsEarned / 10);
+            
+            // Обновляем данные пользователя
+            db.run(`UPDATE users SET 
+                    balance = balance + ?, 
+                    experience = experience + ?, 
+                    energy = energy - 1,
+                    last_login = CURRENT_TIMESTAMP
+                    WHERE telegram_id = ?`, 
+                [coinsEarned, experienceEarned, userId], (err) => {
+                    if (err) {
+                        return res.status(500).json({ error: 'Ошибка обновления данных' });
+                    }
+                    
+                    res.json({
+                        success: true,
+                        coinsEarned,
+                        experienceEarned,
+                        newBalance: user.balance + coinsEarned,
+                        newExperience: user.experience + experienceEarned,
+                        newEnergy: user.energy - 1
+                    });
                 });
-            });
-    });
+        });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
 });
 
-// Покупка буста
+// Покупка буста с расширенным списком
 app.post('/api/buy-boost', requireAuth, (req, res) => {
     const userId = req.telegramUser.id;
     const { boostId, boostType } = req.body;
     
-    // Определяем стоимость и эффект буста
+    // Расширенный список бустов
     const boosts = {
+        // Тап усилители
         'tap_power_1': { cost: 100, effect: { tap_power: 1 }, coins_per_hour: 0 },
+        'tap_power_2': { cost: 200, effect: { tap_power: 2 }, coins_per_hour: 0 },
         'tap_power_5': { cost: 450, effect: { tap_power: 5 }, coins_per_hour: 0 },
         'tap_power_10': { cost: 800, effect: { tap_power: 10 }, coins_per_hour: 0 },
-        'energy_capacity': { cost: 200, effect: { max_energy: 100 }, coins_per_hour: 0 },
-        'energy_regen': { cost: 300, effect: { energy_regen_rate: 0.1 }, coins_per_hour: 0 },
+        'tap_power_20': { cost: 1500, effect: { tap_power: 20 }, coins_per_hour: 0 },
+        'tap_power_50': { cost: 3000, effect: { tap_power: 50 }, coins_per_hour: 0 },
+        'tap_power_100': { cost: 6000, effect: { tap_power: 100 }, coins_per_hour: 0 },
+        'tap_power_200': { cost: 12000, effect: { tap_power: 200 }, coins_per_hour: 0 },
+        'tap_power_500': { cost: 25000, effect: { tap_power: 500 }, coins_per_hour: 0 },
+        'tap_power_1000': { cost: 50000, effect: { tap_power: 1000 }, coins_per_hour: 0 },
+        
+        // Энергия
+        'energy_capacity_100': { cost: 200, effect: { max_energy: 100 }, coins_per_hour: 0 },
+        'energy_capacity_200': { cost: 400, effect: { max_energy: 200 }, coins_per_hour: 0 },
+        'energy_capacity_500': { cost: 800, effect: { max_energy: 500 }, coins_per_hour: 0 },
+        'energy_capacity_1000': { cost: 1500, effect: { max_energy: 1000 }, coins_per_hour: 0 },
+        'energy_regen_01': { cost: 300, effect: { energy_regen_rate: 0.1 }, coins_per_hour: 0 },
+        'energy_regen_02': { cost: 600, effect: { energy_regen_rate: 0.2 }, coins_per_hour: 0 },
+        'energy_regen_05': { cost: 1200, effect: { energy_regen_rate: 0.5 }, coins_per_hour: 0 },
+        'energy_regen_1': { cost: 2000, effect: { energy_regen_rate: 1.0 }, coins_per_hour: 0 },
+        'energy_regen_2': { cost: 4000, effect: { energy_regen_rate: 2.0 }, coins_per_hour: 0 },
+        'energy_regen_5': { cost: 8000, effect: { energy_regen_rate: 5.0 }, coins_per_hour: 0 },
+        
+        // Пассивный доход
         'coins_per_hour_50': { cost: 500, effect: {}, coins_per_hour: 50 },
         'coins_per_hour_100': { cost: 900, effect: {}, coins_per_hour: 100 },
         'coins_per_hour_200': { cost: 1600, effect: {}, coins_per_hour: 200 },
+        'coins_per_hour_500': { cost: 3000, effect: {}, coins_per_hour: 500 },
+        'coins_per_hour_1000': { cost: 6000, effect: {}, coins_per_hour: 1000 },
+        'coins_per_hour_2000': { cost: 12000, effect: {}, coins_per_hour: 2000 },
+        'coins_per_hour_5000': { cost: 25000, effect: {}, coins_per_hour: 5000 },
+        'coins_per_hour_10000': { cost: 50000, effect: {}, coins_per_hour: 10000 },
+        'coins_per_hour_20000': { cost: 100000, effect: {}, coins_per_hour: 20000 },
+        'coins_per_hour_50000': { cost: 200000, effect: {}, coins_per_hour: 50000 },
+        
+        // Автотап
         'auto_tap_1h': { cost: 1000, effect: { auto_tap_hours: 1 }, coins_per_hour: 0 },
         'auto_tap_3h': { cost: 2500, effect: { auto_tap_hours: 3 }, coins_per_hour: 0 },
+        'auto_tap_6h': { cost: 4500, effect: { auto_tap_hours: 6 }, coins_per_hour: 0 },
         'auto_tap_12h': { cost: 8000, effect: { auto_tap_hours: 12 }, coins_per_hour: 0 },
-        'auto_tap_24h': { cost: 15000, effect: { auto_tap_hours: 24 }, coins_per_hour: 0 }
+        'auto_tap_24h': { cost: 15000, effect: { auto_tap_hours: 24 }, coins_per_hour: 0 },
+        'auto_tap_48h': { cost: 28000, effect: { auto_tap_hours: 48 }, coins_per_hour: 0 },
+        'auto_tap_72h': { cost: 50000, effect: { auto_tap_hours: 72 }, coins_per_hour: 0 },
+        'auto_tap_168h': { cost: 100000, effect: { auto_tap_hours: 168 }, coins_per_hour: 0 },
+        'auto_tap_720h': { cost: 500000, effect: { auto_tap_hours: 720 }, coins_per_hour: 0 },
+        'auto_tap_infinite': { cost: 1000000, effect: { auto_tap_hours: 999999 }, coins_per_hour: 0 }
     };
     
     const boost = boosts[boostId];
@@ -451,7 +545,12 @@ app.post('/api/buy-mining-machine', requireAuth, (req, res) => {
         'advanced_miner': { cost: 5000, hash_per_hour: 50 },
         'quantum_miner': { cost: 15000, hash_per_hour: 150 },
         'nexus_miner': { cost: 50000, hash_per_hour: 500 },
-        'ultra_miner': { cost: 150000, hash_per_hour: 1500 }
+        'ultra_miner': { cost: 150000, hash_per_hour: 1500 },
+        'cosmic_miner': { cost: 500000, hash_per_hour: 5000 },
+        'divine_miner': { cost: 1500000, hash_per_hour: 15000 },
+        'infinite_miner': { cost: 5000000, hash_per_hour: 50000 },
+        'legendary_miner': { cost: 15000000, hash_per_hour: 150000 },
+        'mythical_miner': { cost: 50000000, hash_per_hour: 500000 }
     };
     
     const machine = machines[machineId];
@@ -498,7 +597,12 @@ app.post('/api/buy-premium-machine', requireAuth, (req, res) => {
         'nexus_core': { cost: 5000, hash_per_hour: 5000 },
         'ultra_core': { cost: 15000, hash_per_hour: 15000 },
         'infinity_core': { cost: 50000, hash_per_hour: 50000 },
-        'cosmic_core': { cost: 150000, hash_per_hour: 150000 }
+        'cosmic_core': { cost: 150000, hash_per_hour: 150000 },
+        'divine_core': { cost: 500000, hash_per_hour: 500000 },
+        'eternal_core': { cost: 1500000, hash_per_hour: 1500000 },
+        'legendary_core': { cost: 5000000, hash_per_hour: 5000000 },
+        'mythical_core': { cost: 15000000, hash_per_hour: 15000000 },
+        'omnipotent_core': { cost: 50000000, hash_per_hour: 50000000 }
     };
     
     const machine = premiumMachines[machineId];

@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚛️ Quantum Nexus - Ultra Quantum Tapper</title>
+    <title>⚛️ Quantum Nexus - Ultra Crypto Tapper</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --info: #06b6d4;
+            --primary: #00d4aa;
+            --primary-dark: #00b894;
+            --secondary: #6c5ce7;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #e17055;
+            --info: #74b9ff;
+            --crypto-gold: #f39c12;
+            --crypto-silver: #95a5a6;
             --dark: #0f172a;
             --dark-light: #1e293b;
             --gray: #64748b;
@@ -36,7 +38,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2d3748 100%);
             min-height: 100vh;
             color: var(--white);
             overflow-x: hidden;
@@ -44,9 +46,10 @@
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
+            touch-action: manipulation;
         }
 
-        /* Анимированный фон */
+        /* Крипто-анимированный фон */
         body::before {
             content: '';
             position: fixed;
@@ -55,23 +58,24 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 60% 60%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
-            animation: backgroundFloat 25s ease-in-out infinite;
+                radial-gradient(circle at 20% 80%, rgba(0, 212, 170, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(108, 92, 231, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 184, 148, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 60% 60%, rgba(116, 185, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 30% 70%, rgba(243, 156, 18, 0.08) 0%, transparent 50%);
+            animation: cryptoFloat 30s ease-in-out infinite;
             z-index: -1;
         }
 
-        @keyframes backgroundFloat {
+        @keyframes cryptoFloat {
             0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            25% { transform: translate(-20px, -30px) scale(1.05) rotate(1deg); }
-            50% { transform: translate(30px, -20px) scale(0.95) rotate(-1deg); }
-            75% { transform: translate(-10px, 20px) scale(1.02) rotate(0.5deg); }
+            25% { transform: translate(-30px, -40px) scale(1.1) rotate(2deg); }
+            50% { transform: translate(40px, -30px) scale(0.9) rotate(-2deg); }
+            75% { transform: translate(-20px, 30px) scale(1.05) rotate(1deg); }
         }
 
-        /* Частицы */
-        .particles {
+        /* Крипто-частицы */
+        .crypto-particles {
             position: fixed;
             top: 0;
             left: 0;
@@ -81,18 +85,24 @@
             z-index: -1;
         }
 
-        .particle {
+        .crypto-particle {
             position: absolute;
-            width: 2px;
-            height: 2px;
-            background: var(--primary);
+            width: 3px;
+            height: 3px;
+            background: var(--crypto-gold);
             border-radius: 50%;
-            animation: particleFloat 15s linear infinite;
+            animation: cryptoParticleFloat 20s linear infinite;
+            box-shadow: 0 0 10px var(--crypto-gold);
         }
 
-        @keyframes particleFloat {
+        .crypto-particle:nth-child(odd) {
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        @keyframes cryptoParticleFloat {
             0% {
-                transform: translateY(100vh) translateX(0);
+                transform: translateY(100vh) translateX(0) rotate(0deg);
                 opacity: 0;
             }
             10% {
@@ -102,7 +112,7 @@
                 opacity: 1;
             }
             100% {
-                transform: translateY(-100px) translateX(100px);
+                transform: translateY(-100px) translateX(200px) rotate(360deg);
                 opacity: 0;
             }
         }
@@ -110,7 +120,7 @@
         .container {
             max-width: 480px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
             position: relative;
             z-index: 1;
         }
@@ -135,11 +145,11 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            animation: shimmer 3s infinite;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 170, 0.1), transparent);
+            animation: cryptoShimmer 4s infinite;
         }
 
-        @keyframes shimmer {
+        @keyframes cryptoShimmer {
             0% { left: -100%; }
             100% { left: 100%; }
         }
@@ -155,7 +165,7 @@
         .header-left h1 {
             font-size: 1.8rem;
             font-weight: 900;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--crypto-gold));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
@@ -179,7 +189,8 @@
             border-radius: 12px;
             font-size: 0.8rem;
             font-weight: 600;
-            color: var(--success);
+            color: var(--crypto-gold);
+            border: 1px solid var(--crypto-gold);
         }
 
         /* Stats Grid */
@@ -215,7 +226,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(90deg, var(--primary), var(--crypto-gold));
         }
 
         .stat-card-header {
@@ -241,8 +252,16 @@
             font-size: 1rem;
         }
 
-        .stat-card-icon.coins { background: rgba(16, 185, 129, 0.2); color: var(--success); }
-        .stat-card-icon.hash { background: rgba(6, 182, 212, 0.2); color: var(--info); }
+        .stat-card-icon.coins { 
+            background: rgba(0, 184, 148, 0.2); 
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        .stat-card-icon.hash { 
+            background: rgba(243, 156, 18, 0.2); 
+            color: var(--crypto-gold);
+            border: 1px solid var(--crypto-gold);
+        }
 
         .stat-card-value {
             font-size: 1.8rem;
@@ -306,7 +325,7 @@
 
         .energy-bar {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(90deg, var(--primary), var(--crypto-gold));
             border-radius: 12px;
             transition: width 0.3s ease;
             position: relative;
@@ -340,7 +359,7 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* Tap Button */
+        /* Tap Button - Квадратная кнопка по образцу */
         .tap-section {
             text-align: center;
             margin-bottom: 30px;
@@ -350,36 +369,38 @@
             width: 200px;
             height: 200px;
             border: none;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.8), rgba(108, 92, 231, 0.8));
             color: white;
-            font-size: 3rem;
+            font-size: 4rem;
             font-weight: 900;
             cursor: pointer;
             transition: all 0.1s ease;
             position: relative;
             overflow: hidden;
             box-shadow: 
-                0 0 30px rgba(99, 102, 241, 0.3),
-                0 0 60px rgba(139, 92, 246, 0.2),
-                inset 0 0 20px rgba(255, 255, 255, 0.1);
-            animation: tapPulse 2s ease-in-out infinite;
+                0 0 40px rgba(0, 212, 170, 0.4),
+                0 0 80px rgba(108, 92, 231, 0.3),
+                inset 0 0 30px rgba(255, 255, 255, 0.1);
+            animation: cryptoPulse 3s ease-in-out infinite;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
-        @keyframes tapPulse {
+        @keyframes cryptoPulse {
             0%, 100% { 
                 transform: scale(1);
                 box-shadow: 
-                    0 0 30px rgba(99, 102, 241, 0.3),
-                    0 0 60px rgba(139, 92, 246, 0.2),
-                    inset 0 0 20px rgba(255, 255, 255, 0.1);
+                    0 0 40px rgba(0, 212, 170, 0.4),
+                    0 0 80px rgba(108, 92, 231, 0.3),
+                    inset 0 0 30px rgba(255, 255, 255, 0.1);
             }
             50% { 
                 transform: scale(1.05);
                 box-shadow: 
-                    0 0 40px rgba(99, 102, 241, 0.4),
-                    0 0 80px rgba(139, 92, 246, 0.3),
-                    inset 0 0 25px rgba(255, 255, 255, 0.15);
+                    0 0 60px rgba(0, 212, 170, 0.6),
+                    0 0 120px rgba(108, 92, 231, 0.5),
+                    inset 0 0 40px rgba(255, 255, 255, 0.15);
             }
         }
 
@@ -401,7 +422,7 @@
             right: 0;
             bottom: 0;
             background: radial-gradient(circle at center, transparent 30%, rgba(255, 255, 255, 0.1) 100%);
-            border-radius: 50%;
+            border-radius: 18px;
         }
 
         .tap-button::after {
@@ -411,7 +432,7 @@
             left: 50%;
             width: 0;
             height: 0;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.4);
             border-radius: 50%;
             transform: translate(-50%, -50%);
             transition: all 0.3s ease;
@@ -508,7 +529,7 @@
             content: '';
             width: 4px;
             height: 25px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--crypto-gold));
             border-radius: 2px;
         }
 
@@ -652,7 +673,7 @@
             content: '';
             width: 4px;
             height: 25px;
-            background: linear-gradient(135deg, var(--info), var(--success));
+            background: linear-gradient(135deg, var(--crypto-gold), var(--info));
             border-radius: 2px;
         }
 
@@ -677,9 +698,9 @@
         }
 
         .mining-tab.active {
-            background: var(--info);
+            background: var(--crypto-gold);
             color: white;
-            border-color: var(--info);
+            border-color: var(--crypto-gold);
         }
 
         .mining-tab:hover:not(.active) {
@@ -704,7 +725,7 @@
         .mining-stat-value {
             font-size: 1.5rem;
             font-weight: 800;
-            color: var(--info);
+            color: var(--crypto-gold);
             font-family: 'JetBrains Mono', monospace;
         }
 
@@ -758,14 +779,14 @@
         .energy-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
         }
 
         .mine-button {
             padding: 12px 20px;
             border: none;
             border-radius: 10px;
-            background: linear-gradient(135deg, var(--info), var(--primary));
+            background: linear-gradient(135deg, var(--crypto-gold), var(--warning));
             color: white;
             font-weight: 600;
             cursor: pointer;
@@ -1113,7 +1134,7 @@
         .form-group textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
         }
 
         .form-group textarea {
@@ -1173,6 +1194,29 @@
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
+        /* Tap Effects */
+        .tap-effect {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--success);
+            animation: tapEffectAnimation 1s ease-out forwards;
+            text-shadow: 0 0 10px rgba(0, 184, 148, 0.5);
+        }
+
+        @keyframes tapEffectAnimation {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.5);
+            }
+        }
+
         /* Loading */
         .loading {
             display: inline-block;
@@ -1188,39 +1232,16 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Tap Effects */
-        .tap-effect {
-            position: fixed;
-            pointer-events: none;
-            z-index: 1000;
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--success);
-            animation: tapEffectAnimation 1s ease-out forwards;
-            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
-        }
-
-        @keyframes tapEffectAnimation {
-            0% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-100px) scale(1.5);
-            }
-        }
-
         /* Responsive */
         @media (max-width: 480px) {
             .container {
-                padding: 15px;
+                padding: 10px;
             }
             
             .tap-button {
                 width: 160px;
                 height: 160px;
-                font-size: 2.5rem;
+                font-size: 3rem;
             }
             
             .stats-grid {
@@ -1257,10 +1278,26 @@
             z-index: 100;
             box-shadow: var(--shadow-lg);
         }
+
+        /* Anti-clicker protection */
+        .tap-protection {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        .tap-protection.active {
+            pointer-events: all;
+            background: rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
-    <div class="particles" id="particles"></div>
+    <div class="crypto-particles" id="cryptoParticles"></div>
     
     <div class="container">
         <!-- Header -->
@@ -1268,7 +1305,7 @@
             <div class="header-content">
                 <div class="header-left">
                     <h1>⚛️ Quantum Nexus</h1>
-                    <p>Ultra Quantum Tapper</p>
+                    <p>Ultra Crypto Tapper</p>
                 </div>
                 <div class="header-right">
                     <div class="level-info" id="levelInfo">
@@ -1283,7 +1320,7 @@
             <div class="stat-card">
                 <div class="stat-card-header">
                     <div class="stat-card-title">💰 Монеты</div>
-                    <div class="stat-card-icon coins">💎</div>
+                    <div class="stat-card-icon coins">🪙</div>
                 </div>
                 <div class="stat-card-value" id="coinsValue">0</div>
                 <div class="stat-card-change positive" id="coinsPerHour">
@@ -1294,7 +1331,7 @@
             <div class="stat-card">
                 <div class="stat-card-header">
                     <div class="stat-card-title">⛏️ QuanHash</div>
-                    <div class="stat-card-icon hash">🔗</div>
+                    <div class="stat-card-icon hash">₿</div>
                 </div>
                 <div class="stat-card-value" id="hashValue">0</div>
                 <div class="stat-card-change positive" id="hashPerHour">
@@ -1442,6 +1479,9 @@
         </div>
     </div>
 
+    <!-- Anti-clicker protection overlay -->
+    <div class="tap-protection" id="tapProtection"></div>
+
     <script>
         // Game state
         let gameState = {
@@ -1470,6 +1510,9 @@
         let currentShopCategory = 'tap';
         let currentMiningTab = 'machines';
         let currentLeaderboardTab = 'coins';
+        let lastTapTime = 0;
+        let tapCount = 0;
+        let tapStartTime = Date.now();
 
         // Initialize Telegram Web App
         if (window.Telegram && window.Telegram.WebApp) {
@@ -1478,17 +1521,17 @@
             window.Telegram.WebApp.MainButton.hide();
         }
 
-        // Create particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            const particleCount = 20;
+        // Create crypto particles
+        function createCryptoParticles() {
+            const particlesContainer = document.getElementById('cryptoParticles');
+            const particleCount = 25;
             
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
-                particle.className = 'particle';
+                particle.className = 'crypto-particle';
                 particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 15 + 's';
-                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (20 + Math.random() * 10) + 's';
                 particlesContainer.appendChild(particle);
             }
         }
@@ -1555,8 +1598,42 @@
             document.getElementById('totalHashPerHour').textContent = gameState.hashPerHour.toLocaleString();
         }
 
-        // Tap function
+        // Anti-clicker protection
+        function checkAntiClicker() {
+            const now = Date.now();
+            const timeSinceLastTap = now - lastTapTime;
+            
+            // Check for too fast tapping (less than 100ms between taps)
+            if (timeSinceLastTap < 100) {
+                tapCount++;
+                if (tapCount > 5) {
+                    showNotification('⚠️ Слишком быстрый тап! Подозрение на автокликер.', 'error');
+                    return false;
+                }
+            } else {
+                tapCount = 0;
+            }
+            
+            // Check for human-like tapping patterns
+            const timeSinceStart = now - tapStartTime;
+            if (timeSinceStart > 10000) { // After 10 seconds
+                const avgTapInterval = timeSinceStart / Math.max(tapCount, 1);
+                if (avgTapInterval < 200) { // Less than 200ms average
+                    showNotification('⚠️ Обнаружена подозрительная активность!', 'error');
+                    return false;
+                }
+            }
+            
+            lastTapTime = now;
+            return true;
+        }
+
+        // Tap function with anti-clicker protection
         async function tap() {
+            if (!checkAntiClicker()) {
+                return;
+            }
+
             if (gameState.energy < 1) {
                 showNotification('❌ Недостаточно энергии!', 'error');
                 return;
@@ -1638,23 +1715,51 @@
             const shopItems = {
                 tap: [
                     { id: 'tap_power_1', name: 'Усилитель Тапа', price: 100, description: 'Увеличивает силу тапа', effect: '+1 к силе тапа', coinsPerHour: 0 },
-                    { id: 'tap_power_5', name: 'Мега Усилитель', price: 450, description: 'Значительно увеличивает силу тапа', effect: '+5 к силе тапа', coinsPerHour: 0 },
-                    { id: 'tap_power_10', name: 'Ультра Усилитель', price: 800, description: 'Максимально увеличивает силу тапа', effect: '+10 к силе тапа', coinsPerHour: 0 }
+                    { id: 'tap_power_2', name: 'Мега Усилитель', price: 200, description: 'Значительно увеличивает силу тапа', effect: '+2 к силе тапа', coinsPerHour: 0 },
+                    { id: 'tap_power_5', name: 'Ультра Усилитель', price: 450, description: 'Максимально увеличивает силу тапа', effect: '+5 к силе тапа', coinsPerHour: 0 },
+                    { id: 'tap_power_10', name: 'Квантовый Усилитель', price: 800, description: 'Квантовое усиление силы тапа', effect: '+10 к силе тапа', coinsPerHour: 0 },
+                    { id: 'tap_power_20', name: 'Нексус Усилитель', price: 1500, description: 'Нексус-уровень усиления', effect: '+20 к силе тапа', coinsPerHour: 0 },
+                    { id: 'tap_power_50', name: 'Космический Усилитель', price: 3000, description: 'Космическое усиление силы', effect: '+50 к силе тапа', coinsPerHour: 0 },
+                    { id: 'tap_power_100', name: 'Божественный Усилитель', price: 6000, description: 'Божественная сила тапа', effect: '+100 к силе тапа', coinsPerHour: 0 },
+                    { id: 'tap_power_200', name: 'Бесконечный Усилитель', price: 12000, description: 'Бесконечная сила тапа', effect: '+200 к силе тапа', coinsPerHour: 0 },
+                    { id: 'tap_power_500', name: 'Легендарный Усилитель', price: 25000, description: 'Легендарная сила тапа', effect: '+500 к силе тапа', coinsPerHour: 0 },
+                    { id: 'tap_power_1000', name: 'Мифический Усилитель', price: 50000, description: 'Мифическая сила тапа', effect: '+1000 к силе тапа', coinsPerHour: 0 }
                 ],
                 energy: [
-                    { id: 'energy_capacity', name: 'Расширитель Энергии', price: 200, description: 'Увеличивает максимальную энергию', effect: '+100 к максимальной энергии', coinsPerHour: 0 },
-                    { id: 'energy_regen', name: 'Регенератор', price: 300, description: 'Ускоряет восстановление энергии', effect: '+0.1 к скорости восстановления', coinsPerHour: 0 }
+                    { id: 'energy_capacity_100', name: 'Расширитель Энергии', price: 200, description: 'Увеличивает максимальную энергию', effect: '+100 к максимальной энергии', coinsPerHour: 0 },
+                    { id: 'energy_capacity_200', name: 'Мега Расширитель', price: 400, description: 'Значительно увеличивает энергию', effect: '+200 к максимальной энергии', coinsPerHour: 0 },
+                    { id: 'energy_capacity_500', name: 'Ультра Расширитель', price: 800, description: 'Максимально увеличивает энергию', effect: '+500 к максимальной энергии', coinsPerHour: 0 },
+                    { id: 'energy_capacity_1000', name: 'Квантовый Расширитель', price: 1500, description: 'Квантовое расширение энергии', effect: '+1000 к максимальной энергии', coinsPerHour: 0 },
+                    { id: 'energy_regen_01', name: 'Регенератор', price: 300, description: 'Ускоряет восстановление энергии', effect: '+0.1 к скорости восстановления', coinsPerHour: 0 },
+                    { id: 'energy_regen_02', name: 'Мега Регенератор', price: 600, description: 'Значительно ускоряет восстановление', effect: '+0.2 к скорости восстановления', coinsPerHour: 0 },
+                    { id: 'energy_regen_05', name: 'Ультра Регенератор', price: 1200, description: 'Максимально ускоряет восстановление', effect: '+0.5 к скорости восстановления', coinsPerHour: 0 },
+                    { id: 'energy_regen_1', name: 'Квантовый Регенератор', price: 2000, description: 'Квантовая регенерация', effect: '+1.0 к скорости восстановления', coinsPerHour: 0 },
+                    { id: 'energy_regen_2', name: 'Нексус Регенератор', price: 4000, description: 'Нексус-уровень регенерации', effect: '+2.0 к скорости восстановления', coinsPerHour: 0 },
+                    { id: 'energy_regen_5', name: 'Космический Регенератор', price: 8000, description: 'Космическая регенерация', effect: '+5.0 к скорости восстановления', coinsPerHour: 0 }
                 ],
                 passive: [
                     { id: 'coins_per_hour_50', name: 'Пассивный Доход', price: 500, description: 'Генерирует монеты каждый час', effect: '+50 монет/час', coinsPerHour: 50 },
                     { id: 'coins_per_hour_100', name: 'Усиленный Доход', price: 900, description: 'Больше пассивного дохода', effect: '+100 монет/час', coinsPerHour: 100 },
-                    { id: 'coins_per_hour_200', name: 'Максимальный Доход', price: 1600, description: 'Максимальный пассивный доход', effect: '+200 монет/час', coinsPerHour: 200 }
+                    { id: 'coins_per_hour_200', name: 'Максимальный Доход', price: 1600, description: 'Максимальный пассивный доход', effect: '+200 монет/час', coinsPerHour: 200 },
+                    { id: 'coins_per_hour_500', name: 'Квантовый Доход', price: 3000, description: 'Квантовый пассивный доход', effect: '+500 монет/час', coinsPerHour: 500 },
+                    { id: 'coins_per_hour_1000', name: 'Нексус Доход', price: 6000, description: 'Нексус-уровень дохода', effect: '+1000 монет/час', coinsPerHour: 1000 },
+                    { id: 'coins_per_hour_2000', name: 'Космический Доход', price: 12000, description: 'Космический пассивный доход', effect: '+2000 монет/час', coinsPerHour: 2000 },
+                    { id: 'coins_per_hour_5000', name: 'Божественный Доход', price: 25000, description: 'Божественный пассивный доход', effect: '+5000 монет/час', coinsPerHour: 5000 },
+                    { id: 'coins_per_hour_10000', name: 'Бесконечный Доход', price: 50000, description: 'Бесконечный пассивный доход', effect: '+10000 монет/час', coinsPerHour: 10000 },
+                    { id: 'coins_per_hour_20000', name: 'Легендарный Доход', price: 100000, description: 'Легендарный пассивный доход', effect: '+20000 монет/час', coinsPerHour: 20000 },
+                    { id: 'coins_per_hour_50000', name: 'Мифический Доход', price: 200000, description: 'Мифический пассивный доход', effect: '+50000 монет/час', coinsPerHour: 50000 }
                 ],
                 auto: [
                     { id: 'auto_tap_1h', name: 'Автотап 1ч', price: 1000, description: 'Автоматический тап на 1 час', effect: 'Автотап на 1 час', coinsPerHour: 0 },
                     { id: 'auto_tap_3h', name: 'Автотап 3ч', price: 2500, description: 'Автоматический тап на 3 часа', effect: 'Автотап на 3 часа', coinsPerHour: 0 },
+                    { id: 'auto_tap_6h', name: 'Автотап 6ч', price: 4500, description: 'Автоматический тап на 6 часов', effect: 'Автотап на 6 часов', coinsPerHour: 0 },
                     { id: 'auto_tap_12h', name: 'Автотап 12ч', price: 8000, description: 'Автоматический тап на 12 часов', effect: 'Автотап на 12 часов', coinsPerHour: 0 },
-                    { id: 'auto_tap_24h', name: 'Автотап 24ч', price: 15000, description: 'Автоматический тап на 24 часа', effect: 'Автотап на 24 часа', coinsPerHour: 0 }
+                    { id: 'auto_tap_24h', name: 'Автотап 24ч', price: 15000, description: 'Автоматический тап на 24 часа', effect: 'Автотап на 24 часа', coinsPerHour: 0 },
+                    { id: 'auto_tap_48h', name: 'Автотап 48ч', price: 28000, description: 'Автоматический тап на 48 часов', effect: 'Автотап на 48 часов', coinsPerHour: 0 },
+                    { id: 'auto_tap_72h', name: 'Автотап 72ч', price: 50000, description: 'Автоматический тап на 72 часа', effect: 'Автотап на 72 часа', coinsPerHour: 0 },
+                    { id: 'auto_tap_168h', name: 'Автотап 7д', price: 100000, description: 'Автоматический тап на 7 дней', effect: 'Автотап на 7 дней', coinsPerHour: 0 },
+                    { id: 'auto_tap_720h', name: 'Автотап 30д', price: 500000, description: 'Автоматический тап на 30 дней', effect: 'Автотап на 30 дней', coinsPerHour: 0 },
+                    { id: 'auto_tap_infinite', name: 'Бесконечный Автотап', price: 1000000, description: 'Бесконечный автоматический тап', effect: 'Бесконечный автотап', coinsPerHour: 0 }
                 ]
             };
 
@@ -1722,7 +1827,12 @@
                     { id: 'advanced_miner', name: 'Продвинутый Майнер', price: 5000, hashPerHour: 50, description: 'Улучшенная майнинг машина' },
                     { id: 'quantum_miner', name: 'Квантовый Майнер', price: 15000, hashPerHour: 150, description: 'Высокотехнологичный майнер' },
                     { id: 'nexus_miner', name: 'Nexus Майнер', price: 50000, hashPerHour: 500, description: 'Элитная майнинг машина' },
-                    { id: 'ultra_miner', name: 'Ультра Майнер', price: 150000, hashPerHour: 1500, description: 'Легендарная майнинг машина' }
+                    { id: 'ultra_miner', name: 'Ультра Майнер', price: 150000, hashPerHour: 1500, description: 'Легендарная майнинг машина' },
+                    { id: 'cosmic_miner', name: 'Космический Майнер', price: 500000, hashPerHour: 5000, description: 'Космическая майнинг машина' },
+                    { id: 'divine_miner', name: 'Божественный Майнер', price: 1500000, hashPerHour: 15000, description: 'Божественная майнинг машина' },
+                    { id: 'infinite_miner', name: 'Бесконечный Майнер', price: 5000000, hashPerHour: 50000, description: 'Бесконечная майнинг машина' },
+                    { id: 'legendary_miner', name: 'Легендарный Майнер', price: 15000000, hashPerHour: 150000, description: 'Легендарная майнинг машина' },
+                    { id: 'mythical_miner', name: 'Мифический Майнер', price: 50000000, hashPerHour: 500000, description: 'Мифическая майнинг машина' }
                 ];
                 
                 container.innerHTML = machines.map(machine => `
@@ -1746,7 +1856,12 @@
                     { id: 'nexus_core', name: 'Nexus Ядро', price: 5000, hashPerHour: 5000, description: 'Элитное майнинг ядро' },
                     { id: 'ultra_core', name: 'Ультра Ядро', price: 15000, hashPerHour: 15000, description: 'Легендарное майнинг ядро' },
                     { id: 'infinity_core', name: 'Бесконечное Ядро', price: 50000, hashPerHour: 50000, description: 'Мифическое майнинг ядро' },
-                    { id: 'cosmic_core', name: 'Космическое Ядро', price: 150000, hashPerHour: 150000, description: 'Божественное майнинг ядро' }
+                    { id: 'cosmic_core', name: 'Космическое Ядро', price: 150000, hashPerHour: 150000, description: 'Божественное майнинг ядро' },
+                    { id: 'divine_core', name: 'Божественное Ядро', price: 500000, hashPerHour: 500000, description: 'Божественное майнинг ядро' },
+                    { id: 'eternal_core', name: 'Вечное Ядро', price: 1500000, hashPerHour: 1500000, description: 'Вечное майнинг ядро' },
+                    { id: 'legendary_core', name: 'Легендарное Ядро', price: 5000000, hashPerHour: 5000000, description: 'Легендарное майнинг ядро' },
+                    { id: 'mythical_core', name: 'Мифическое Ядро', price: 15000000, hashPerHour: 15000000, description: 'Мифическое майнинг ядро' },
+                    { id: 'omnipotent_core', name: 'Всемогущее Ядро', price: 50000000, hashPerHour: 50000000, description: 'Всемогущее майнинг ядро' }
                 ];
                 
                 container.innerHTML = premiumMachines.map(machine => `
@@ -1877,7 +1992,12 @@
                 { id: 'nexus_card', name: 'Nexus Карта', icon: '🔗', income: 50, price: 2500 },
                 { id: 'ultra_card', name: 'Ультра Карта', icon: '💎', income: 100, price: 5000 },
                 { id: 'infinity_card', name: 'Бесконечная Карта', icon: '♾️', income: 250, price: 10000 },
-                { id: 'cosmic_card', name: 'Космическая Карта', icon: '🌌', income: 500, price: 25000 }
+                { id: 'cosmic_card', name: 'Космическая Карта', icon: '🌌', income: 500, price: 25000 },
+                { id: 'divine_card', name: 'Божественная Карта', icon: '👑', income: 1000, price: 50000 },
+                { id: 'eternal_card', name: 'Вечная Карта', icon: '⏳', income: 2500, price: 100000 },
+                { id: 'legendary_card', name: 'Легендарная Карта', icon: '🏆', income: 5000, price: 250000 },
+                { id: 'mythical_card', name: 'Мифическая Карта', icon: '🌟', income: 10000, price: 500000 },
+                { id: 'omnipotent_card', name: 'Всемогущая Карта', icon: '💫', income: 25000, price: 1000000 }
             ];
             
             const container = document.getElementById('cardsGrid');
@@ -2009,7 +2129,7 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            createParticles();
+            createCryptoParticles();
             initGame();
         });
     </script>
