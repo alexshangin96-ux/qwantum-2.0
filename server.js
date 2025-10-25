@@ -162,25 +162,79 @@ db.serialize(() => {
         FOREIGN KEY (referred_id) REFERENCES users (id)
     )`);
 
-    // Таблица выводов
-    db.run(`CREATE TABLE IF NOT EXISTS withdrawals (
+    // Таблица для отслеживания мультиаккаунтов
+    db.run(`CREATE TABLE IF NOT EXISTS device_fingerprints (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER,
+        fingerprint TEXT UNIQUE,
         telegram_id INTEGER,
-        username TEXT,
-        amount INTEGER,
-        usdt_address TEXT,
-        status TEXT DEFAULT 'pending',
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        processed_at DATETIME,
-        tx_hash TEXT,
-        FOREIGN KEY (user_id) REFERENCES users (id)
+        last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (telegram_id) REFERENCES users (id)
+    )`);
+
+    // Таблица для отслеживания IP адресов
+    db.run(`CREATE TABLE IF NOT EXISTS ip_tracking (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ip_address TEXT,
+        telegram_id INTEGER,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (telegram_id) REFERENCES users (id)
     )`);
 });
 
-// Функция генерации реферального кода
-function generateReferralCode() {
-    return crypto.randomBytes(4).toString('hex').toUpperCase();
+// Функция генерации отпечатка устройства
+function generateDeviceFingerprint(req) {
+    const userAgent = req.headers['user-agent'] || '';
+    const acceptLanguage = req.headers['accept-language'] || '';
+    const acceptEncoding = req.headers['accept-encoding'] || '';
+    const connection = req.headers['connection'] || '';
+    
+    const fingerprint = crypto.createHash('sha256')
+        .update(userAgent + acceptLanguage + acceptEncoding + connection)
+        .digest('hex');
+    
+    return fingerprint;
+}
+
+// Функция проверки мультиаккаунтов
+function checkMultiAccount(telegramId, fingerprint, ipAddress, callback) {
+    // Проверяем отпечаток устройства
+    db.get('SELECT telegram_id FROM device_fingerprints WHERE fingerprint = ? AND telegram_id != ?', 
+        [fingerprint, telegramId], (err, deviceResult) => {
+            if (err) {
+                return callback(err, false);
+            }
+            
+            if (deviceResult) {
+                return callback(null, true); // Найден мультиаккаунт по отпечатку
+            }
+            
+            // Проверяем IP адрес
+            db.get('SELECT telegram_id FROM ip_tracking WHERE ip_address = ? AND telegram_id != ?', 
+                [ipAddress, telegramId], (err, ipResult) => {
+                    if (err) {
+                        return callback(err, false);
+                    }
+                    
+                    if (ipResult) {
+                        return callback(null, true); // Найден мультиаккаунт по IP
+                    }
+                    
+                    callback(null, false); // Мультиаккаунт не найден
+                });
+        });
+}
+
+// Функция сохранения отпечатка устройства и IP
+function saveDeviceInfo(telegramId, fingerprint, ipAddress) {
+    // Сохраняем отпечаток устройства
+    db.run(`INSERT OR REPLACE INTO device_fingerprints (fingerprint, telegram_id, last_seen) 
+            VALUES (?, ?, CURRENT_TIMESTAMP)`, [fingerprint, telegramId]);
+    
+    // Сохраняем IP адрес
+    db.run(`INSERT OR REPLACE INTO ip_tracking (ip_address, telegram_id, last_seen) 
+            VALUES (?, ?, CURRENT_TIMESTAMP)`, [ipAddress, telegramId]);
 }
 
 // Функция проверки Telegram Web App
@@ -232,7 +286,28 @@ function requireAuth(req, res, next) {
     }
     
     req.telegramUser = extractUserData(initData);
-    next();
+    
+    // Проверяем мультиаккаунты
+    const fingerprint = generateDeviceFingerprint(req);
+    const ipAddress = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'];
+    
+    checkMultiAccount(req.telegramUser.id, fingerprint, ipAddress, (err, isMultiAccount) => {
+        if (err) {
+            console.error('Ошибка проверки мультиаккаунта:', err);
+            return next();
+        }
+        
+        if (isMultiAccount) {
+            return res.status(403).json({ 
+                error: 'Обнаружена подозрительная активность. Доступ ограничен.',
+                code: 'MULTI_ACCOUNT_DETECTED'
+            });
+        }
+        
+        // Сохраняем информацию об устройстве
+        saveDeviceInfo(req.telegramUser.id, fingerprint, ipAddress);
+        next();
+    });
 }
 
 // Middleware для админ авторизации

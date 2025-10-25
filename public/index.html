@@ -369,49 +369,31 @@
             width: 200px;
             height: 200px;
             border: none;
-            border-radius: 20px;
-            background: linear-gradient(135deg, rgba(0, 212, 170, 0.8), rgba(108, 92, 231, 0.8));
-            color: white;
-            font-size: 4rem;
-            font-weight: 900;
+            border-radius: 25px;
+            background: linear-gradient(135deg, 
+                #f39c12 0%, 
+                #e67e22 25%, 
+                #d35400 50%, 
+                #e67e22 75%, 
+                #f39c12 100%);
+            background-size: 400% 400%;
+            animation: cryptoGradient 3s ease infinite;
             cursor: pointer;
-            transition: all 0.1s ease;
             position: relative;
             overflow: hidden;
             box-shadow: 
-                0 0 40px rgba(0, 212, 170, 0.4),
-                0 0 80px rgba(108, 92, 231, 0.3),
-                inset 0 0 30px rgba(255, 255, 255, 0.1);
-            animation: cryptoPulse 3s ease-in-out infinite;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+                0 0 50px rgba(243, 156, 18, 0.6),
+                0 0 100px rgba(243, 156, 18, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+            transition: all 0.1s ease;
+            transform-style: preserve-3d;
         }
 
-        @keyframes cryptoPulse {
-            0%, 100% { 
-                transform: scale(1);
-                box-shadow: 
-                    0 0 40px rgba(0, 212, 170, 0.4),
-                    0 0 80px rgba(108, 92, 231, 0.3),
-                    inset 0 0 30px rgba(255, 255, 255, 0.1);
-            }
-            50% { 
-                transform: scale(1.05);
-                box-shadow: 
-                    0 0 60px rgba(0, 212, 170, 0.6),
-                    0 0 120px rgba(108, 92, 231, 0.5),
-                    inset 0 0 40px rgba(255, 255, 255, 0.15);
-            }
-        }
-
-        .tap-button:hover {
-            transform: scale(1.1);
-            animation-play-state: paused;
-        }
-
-        .tap-button:active {
-            transform: scale(0.95);
-            animation-play-state: paused;
+        @keyframes cryptoGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .tap-button::before {
@@ -421,26 +403,70 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at center, transparent 30%, rgba(255, 255, 255, 0.1) 100%);
-            border-radius: 18px;
+            background: linear-gradient(45deg, 
+                transparent 30%, 
+                rgba(255, 255, 255, 0.1) 50%, 
+                transparent 70%);
+            animation: cryptoShine 2s linear infinite;
+            border-radius: 25px;
+        }
+
+        @keyframes cryptoShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .tap-button::after {
-            content: '';
+            content: '⚛️';
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: 50%;
             transform: translate(-50%, -50%);
-            transition: all 0.3s ease;
+            font-size: 4rem;
+            color: white;
+            text-shadow: 
+                0 0 20px rgba(255, 255, 255, 0.8),
+                0 0 40px rgba(255, 255, 255, 0.6),
+                0 0 60px rgba(255, 255, 255, 0.4);
+            animation: cryptoPulse 1.5s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes cryptoPulse {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1);
+                filter: brightness(1);
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.1);
+                filter: brightness(1.2);
+            }
+        }
+
+        .tap-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 
+                0 0 80px rgba(243, 156, 18, 0.8),
+                0 0 120px rgba(243, 156, 18, 0.5),
+                0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .tap-button:active {
+            transform: translateY(-2px) scale(0.98);
+            box-shadow: 
+                0 0 100px rgba(243, 156, 18, 1),
+                0 0 150px rgba(243, 156, 18, 0.7),
+                inset 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .tap-button:active::after {
-            width: 100%;
-            height: 100%;
+            animation: cryptoTap 0.2s ease-out;
+        }
+
+        @keyframes cryptoTap {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(0.9); }
+            100% { transform: translate(-50%, -50%) scale(1); }
         }
 
         .tap-power {
@@ -1074,135 +1100,302 @@
             line-height: 1.5;
         }
 
-        /* Withdrawal Section */
+        /* Enhanced Withdrawal Section */
         .withdrawal-section {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+            backdrop-filter: blur(25px);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 25px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 0 0 1px rgba(243, 156, 18, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .withdrawal-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(243, 156, 18, 0.1) 0%, 
+                rgba(16, 185, 129, 0.1) 50%, 
+                rgba(99, 102, 241, 0.1) 100%);
+            border-radius: 25px;
+            z-index: -1;
+            animation: withdrawalGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes withdrawalGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .withdrawal-section h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f39c12, #10b981, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 30px rgba(243, 156, 18, 0.3);
         }
 
         .withdrawal-info {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
+            gap: 25px;
+            margin-bottom: 30px;
         }
 
         .withdrawal-rate {
-            background: var(--glass-hover);
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(243, 156, 18, 0.1), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(243, 156, 18, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .withdrawal-rate::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(243, 156, 18, 0.1), transparent);
+            animation: rotate 4s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .withdrawal-rate h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f39c12;
+            margin-bottom: 15px;
+            text-align: center;
         }
 
         .rate-info {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin: 15px 0;
-            font-size: 1.2rem;
+            margin: 20px 0;
+            font-size: 1.3rem;
             font-weight: 700;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            border: 1px solid rgba(243, 156, 18, 0.2);
         }
 
         .rate-amount {
-            color: var(--crypto-gold);
+            color: #f39c12;
             font-family: 'JetBrains Mono', monospace;
+            text-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
         }
 
         .rate-arrow {
-            color: var(--primary);
-            font-size: 1.5rem;
+            color: #10b981;
+            font-size: 1.8rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
         }
 
         .rate-usdt {
-            color: var(--success);
+            color: #10b981;
             font-family: 'JetBrains Mono', monospace;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
         }
 
         .rate-note {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             color: var(--gray-light);
             text-align: center;
+            font-style: italic;
         }
 
         .withdrawal-balance {
-            background: var(--glass-hover);
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(99, 102, 241, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            padding: 25px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .withdrawal-balance::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        .withdrawal-balance h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 15px;
         }
 
         .balance-amount {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--crypto-gold);
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #f39c12, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             font-family: 'JetBrains Mono', monospace;
-            margin: 10px 0;
+            margin: 15px 0;
+            text-shadow: 0 0 20px rgba(243, 156, 18, 0.3);
         }
 
         .balance-usdt {
-            font-size: 1rem;
-            color: var(--success);
-            font-weight: 600;
+            font-size: 1.2rem;
+            color: #10b981;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .withdrawal-form {
-            background: var(--glass-hover);
-            border-radius: 16px;
-            padding: 20px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .withdrawal-form h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #6366f1;
             margin-bottom: 20px;
-            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--white);
+            font-size: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
         }
 
         .withdrawal-summary {
-            background: var(--glass);
-            border-radius: 12px;
-            padding: 15px;
-            margin: 15px 0;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(30, 41, 59, 0.4));
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .summary-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .summary-item:last-child {
             margin-bottom: 0;
+            border-bottom: none;
         }
 
         .summary-item span:first-child {
             color: var(--gray-light);
+            font-weight: 500;
         }
 
         .summary-item span:last-child {
             color: var(--white);
-            font-weight: 600;
+            font-weight: 700;
             font-family: 'JetBrains Mono', monospace;
         }
 
         .withdrawal-button {
             width: 100%;
-            padding: 15px;
+            padding: 18px;
             border: none;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--success), #059669);
+            border-radius: 15px;
+            background: linear-gradient(135deg, #10b981, #059669, #047857);
             color: white;
-            font-weight: 600;
-            font-size: 1.1rem;
+            font-weight: 700;
+            font-size: 1.2rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .withdrawal-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .withdrawal-button:hover::before {
+            left: 100%;
         }
 
         .withdrawal-button:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
         }
 
         .withdrawal-button:disabled {
@@ -1212,24 +1405,39 @@
         }
 
         .withdrawal-history {
-            background: var(--glass-hover);
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.1));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .withdrawal-history h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #8b5cf6;
+            margin-bottom: 20px;
+            text-align: center;
         }
 
         .history-list {
             display: grid;
-            gap: 10px;
+            gap: 12px;
         }
 
         .history-item {
-            background: var(--glass);
-            border-radius: 12px;
-            padding: 15px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(30, 41, 59, 0.3));
+            border-radius: 15px;
+            padding: 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
         .history-info {
@@ -1238,40 +1446,44 @@
         }
 
         .history-amount {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--crypto-gold);
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #f39c12;
             font-family: 'JetBrains Mono', monospace;
+            text-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
         }
 
         .history-date {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             color: var(--gray-light);
+            margin-top: 4px;
         }
 
         .history-status {
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-size: 0.8rem;
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .history-status.pending {
-            background: rgba(253, 203, 110, 0.2);
-            color: var(--warning);
-            border: 1px solid var(--warning);
+            background: linear-gradient(135deg, rgba(253, 203, 110, 0.2), rgba(245, 158, 11, 0.2));
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
         .history-status.completed {
-            background: rgba(0, 184, 148, 0.2);
-            color: var(--success);
-            border: 1px solid var(--success);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .history-status.failed {
-            background: rgba(225, 112, 85, 0.2);
-            color: var(--danger);
-            border: 1px solid var(--danger);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
         /* Daily Tasks Section */
@@ -1442,111 +1654,269 @@
             transform: none;
         }
 
-        /* Referral Section */
+        /* Enhanced Referral Section */
         .referral-section {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+            backdrop-filter: blur(25px);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 25px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 0 0 1px rgba(139, 92, 246, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .referral-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(139, 92, 246, 0.1) 0%, 
+                rgba(99, 102, 241, 0.1) 50%, 
+                rgba(16, 185, 129, 0.1) 100%);
+            border-radius: 25px;
+            z-index: -1;
+            animation: referralGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes referralGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .referral-section h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
         }
 
         .referral-info {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
+            gap: 25px;
+            margin-bottom: 30px;
         }
 
         .referral-code-section {
-            background: var(--glass-hover);
-            border-radius: 16px;
-            padding: 20px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.1));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            padding: 25px;
             text-align: center;
-            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .referral-code-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(139, 92, 246, 0.1), transparent);
+            animation: rotate 4s linear infinite;
+            z-index: -1;
+        }
+
+        .referral-code-section h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #8b5cf6;
+            margin-bottom: 15px;
         }
 
         .referral-code {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--crypto-gold);
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             font-family: 'JetBrains Mono', monospace;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            text-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .referral-code::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        .referral-link {
+            font-size: 1rem;
+            color: var(--gray-light);
             margin: 10px 0;
+            font-family: 'JetBrains Mono', monospace;
+            word-break: break-all;
             padding: 10px;
-            background: var(--glass);
+            background: rgba(0, 0, 0, 0.2);
             border-radius: 8px;
-            border: 1px solid var(--crypto-gold);
+            border: 1px solid rgba(139, 92, 246, 0.2);
         }
 
         .copy-button {
-            padding: 8px 16px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 8px;
-            background: var(--primary);
+            border-radius: 12px;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
             color: white;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .copy-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .copy-button:hover::before {
+            left: 100%;
         }
 
         .copy-button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.4);
         }
 
         .referral-stats {
-            background: var(--glass-hover);
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(99, 102, 241, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .referral-stats::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        .referral-stats h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 15px;
+            text-align: center;
         }
 
         .stat-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
         .stat-label {
             color: var(--gray-light);
+            font-weight: 500;
         }
 
         .stat-value {
             color: var(--white);
-            font-weight: 600;
+            font-weight: 700;
             font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
         }
 
         .referral-rewards {
-            background: var(--glass-hover);
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(243, 156, 18, 0.1), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(243, 156, 18, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+
+        .referral-rewards h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f39c12;
+            margin-bottom: 20px;
+            text-align: center;
         }
 
         .reward-list {
             display: grid;
-            gap: 10px;
+            gap: 15px;
         }
 
         .reward-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: var(--glass);
-            border-radius: 8px;
+            gap: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(30, 41, 59, 0.3));
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .reward-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
         .reward-icon {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
 
         .reward-text {
             color: var(--white);
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 1rem;
         }
 
         /* Auto Mining Section */
@@ -2049,7 +2419,7 @@
                 <div class="mining-tabs">
                     <div class="mining-tab active" onclick="switchMiningTab('machines')">Машины</div>
                     <div class="mining-tab" onclick="switchMiningTab('premium')">Премиум</div>
-                    <div class="mining-tab" onclick="switchMiningTab('manual')">Ручная добыча</div>
+                    <div class="mining-tab" onclick="switchMiningTab('auto')">Автодобыча</div>
                 </div>
                 
                 <div class="mining-stats">
@@ -2162,11 +2532,12 @@
                 <h2>👥 Реферальная система</h2>
                 
                 <div class="referral-info">
-                    <div class="referral-code-section">
-                        <h3>🔗 Ваш реферальный код</h3>
-                        <div class="referral-code" id="referralCode">QUANTUM123</div>
-                        <button class="copy-button" onclick="copyReferralCode()">Копировать</button>
-                    </div>
+                <div class="referral-code-section">
+                    <h3>🔗 Ваш реферальный код</h3>
+                    <div class="referral-code" id="referralCode">QUANTUM123</div>
+                    <div class="referral-link" id="referralLink">https://t.me/quantumnexus_bot?start=QUANTUM123</div>
+                    <button class="copy-button" onclick="copyReferralCode()">Копировать ссылку</button>
+                </div>
                     
                     <div class="referral-stats">
                         <div class="stat-item">
@@ -2665,8 +3036,8 @@
                         </button>
                     </div>
                 `).join('');
-            } else if (currentMiningTab === 'manual') {
-                if (gameState.level >= 50) {
+            } else if (currentMiningTab === 'auto') {
+                if (gameState.level >= 75) { // Повысил с 50 до 75
                     container.innerHTML = `
                         <div class="auto-mining-section">
                             <h3>🤖 Автоматическая добыча QuanHash</h3>
@@ -2677,11 +3048,11 @@
                                 </div>
                                 <div class="auto-mining-rate">
                                     <span class="rate-label">Скорость:</span>
-                                    <span class="rate-value" id="autoMiningRate">0.1 QuanHash/час</span>
+                                    <span class="rate-value" id="autoMiningRate">0.05 QuanHash/час</span>
                                 </div>
                                 <div class="auto-mining-level">
                                     <span class="level-label">Требуется уровень:</span>
-                                    <span class="level-value">50+</span>
+                                    <span class="level-value">75+</span>
                                 </div>
                             </div>
                             <div class="auto-mining-visualization">
@@ -2691,12 +3062,14 @@
                                         <div class="mining-particle" id="particle2"></div>
                                         <div class="mining-particle" id="particle3"></div>
                                         <div class="mining-particle" id="particle4"></div>
+                                        <div class="mining-particle" id="particle5"></div>
+                                        <div class="mining-particle" id="particle6"></div>
                                     </div>
-                                    <div class="mining-center">⛏️</div>
+                                    <div class="mining-center">⚛️</div>
                                 </div>
                                 <div class="mining-progress">
                                     <div class="progress-bar" id="autoMiningProgress"></div>
-                                    <div class="progress-text" id="autoMiningProgressText">Добыча активна...</div>
+                                    <div class="progress-text" id="autoMiningProgressText">Автодобыча активна...</div>
                                 </div>
                             </div>
                             <div class="auto-mining-note">
@@ -2714,16 +3087,16 @@
                             <div class="lock-info">
                                 <div class="lock-icon">🔐</div>
                                 <div class="lock-text">
-                                    <p>Для доступа к автоматической добыче QuanHash необходимо достичь <strong>50 уровня</strong></p>
+                                    <p>Для доступа к автоматической добыче QuanHash необходимо достичь <strong>75 уровня</strong></p>
                                     <p>Ваш текущий уровень: <strong>${gameState.level}</strong></p>
-                                    <p>Осталось: <strong>${50 - gameState.level} уровней</strong></p>
+                                    <p>Осталось: <strong>${75 - gameState.level} уровней</strong></p>
                                 </div>
                             </div>
                             <div class="lock-progress">
                                 <div class="progress-bar">
-                                    <div class="progress-fill" style="width: ${(gameState.level / 50) * 100}%"></div>
+                                    <div class="progress-fill" style="width: ${(gameState.level / 75) * 100}%"></div>
                                 </div>
-                                <div class="progress-text">${gameState.level}/50 уровней</div>
+                                <div class="progress-text">${gameState.level}/75 уровней</div>
                             </div>
                         </div>
                     `;
@@ -3202,11 +3575,11 @@
         }
 
         function copyReferralCode() {
-            const code = document.getElementById('referralCode').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                showNotification('Реферальный код скопирован!', 'success');
+            const referralLink = document.getElementById('referralLink').textContent;
+            navigator.clipboard.writeText(referralLink).then(() => {
+                showNotification('✅ Реферальная ссылка скопирована!', 'success');
             }).catch(() => {
-                showNotification('Ошибка копирования', 'error');
+                showNotification('❌ Ошибка копирования', 'error');
             });
         }
 
@@ -3426,25 +3799,25 @@
 
         // Auto mining functions
         function startAutoMiningVisualization() {
-            if (gameState.level < 50) return;
+            if (gameState.level < 75) return; // Обновлено с 50 до 75
             
             let progress = 0;
             const progressBar = document.getElementById('autoMiningProgress');
             const progressText = document.getElementById('autoMiningProgressText');
             
             const miningInterval = setInterval(() => {
-                progress += 0.1;
+                progress += 0.05; // Уменьшил скорость для большей сложности
                 if (progress >= 100) {
                     progress = 0;
                     // Simulate mining reward
-                    const reward = 0.1;
+                    const reward = 0.05; // Уменьшил награду
                     gameState.quanhash += reward;
                     updateUI();
                     showTapEffect(reward);
                 }
                 
                 progressBar.style.width = progress + '%';
-                progressText.textContent = `Добыча активна... ${progress.toFixed(1)}%`;
+                progressText.textContent = `Автодобыча активна... ${progress.toFixed(1)}%`;
             }, 1000);
             
             // Store interval for cleanup
