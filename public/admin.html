@@ -924,6 +924,8 @@
             <!-- Admin Tabs -->
             <div class="admin-tabs">
                 <div class="admin-tab active" onclick="switchAdminTab('users')">👥 Пользователи</div>
+                <div class="admin-tab" onclick="switchAdminTab('withdrawals')">💰 Выводы</div>
+                <div class="admin-tab" onclick="switchAdminTab('support')">🆘 Поддержка</div>
                 <div class="admin-tab" onclick="switchAdminTab('balance')">💰 Балансы</div>
                 <div class="admin-tab" onclick="switchAdminTab('moderation')">🔒 Модерация</div>
                 <div class="admin-tab" onclick="switchAdminTab('events')">🎉 События</div>
@@ -963,6 +965,105 @@
 
                     <div class="pagination" id="pagination">
                         <!-- Пагинация загружается динамически -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Withdrawals Tab -->
+            <div class="tab-content" id="withdrawalsTab">
+                <div class="controls-section">
+                    <h2>💰 Управление Выводами</h2>
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <h3>📋 Заявки на Вывод</h3>
+                            <div class="table-container">
+                                <table id="withdrawalsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Пользователь</th>
+                                            <th>Сумма</th>
+                                            <th>USDT Адрес</th>
+                                            <th>Статус</th>
+                                            <th>Дата</th>
+                                            <th>Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="withdrawalsTableBody">
+                                        <!-- Данные загружаются динамически -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <h3>✅ Обработка Вывода</h3>
+                            <div class="form-group">
+                                <label for="withdrawalId">ID Заявки:</label>
+                                <input type="number" id="withdrawalId" placeholder="Введите ID заявки">
+                            </div>
+                            <div class="form-group">
+                                <label for="withdrawalStatus">Статус:</label>
+                                <select id="withdrawalStatus">
+                                    <option value="pending">В обработке</option>
+                                    <option value="completed">Выполнено</option>
+                                    <option value="failed">Отклонено</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="txHash">TX Hash (для выполненных):</label>
+                                <input type="text" id="txHash" placeholder="0x...">
+                            </div>
+                            <button class="control-button" onclick="updateWithdrawalStatus()">Обновить Статус</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Tab -->
+            <div class="tab-content" id="supportTab">
+                <div class="controls-section">
+                    <h2>🆘 Управление Поддержкой</h2>
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <h3>📋 Заявки Поддержки</h3>
+                            <div class="table-container">
+                                <table id="supportTable">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Пользователь</th>
+                                            <th>Категория</th>
+                                            <th>Сообщение</th>
+                                            <th>Статус</th>
+                                            <th>Дата</th>
+                                            <th>Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="supportTableBody">
+                                        <!-- Данные загружаются динамически -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <h3>✅ Обработка Заявки</h3>
+                            <div class="form-group">
+                                <label for="supportTicketId">ID Заявки:</label>
+                                <input type="number" id="supportTicketId" placeholder="Введите ID заявки">
+                            </div>
+                            <div class="form-group">
+                                <label for="supportStatus">Статус:</label>
+                                <select id="supportStatus">
+                                    <option value="open">Открыта</option>
+                                    <option value="in_progress">В работе</option>
+                                    <option value="resolved">Решена</option>
+                                    <option value="closed">Закрыта</option>
+                                </select>
+                            </div>
+                            <button class="control-button" onclick="updateSupportStatus()">Обновить Статус</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1217,7 +1318,164 @@
             document.getElementById('adminPanel').classList.add('active');
         }
 
-        // Переключение вкладок админки
+        // Обновление статуса заявки на вывод
+        async function updateWithdrawalStatus() {
+            const withdrawalId = document.getElementById('withdrawalId').value;
+            const status = document.getElementById('withdrawalStatus').value;
+            const txHash = document.getElementById('txHash').value;
+            
+            if (!withdrawalId) {
+                showNotification('❌ Введите ID заявки!', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/admin/update-withdrawal', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify({ withdrawalId, status, txHash })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('✅ Статус заявки обновлен!', 'success');
+                    loadWithdrawals();
+                    document.getElementById('withdrawalId').value = '';
+                    document.getElementById('txHash').value = '';
+                } else {
+                    showNotification(data.error || '❌ Ошибка обновления!', 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка обновления статуса заявки:', error);
+                showNotification('❌ Ошибка подключения!', 'error');
+            }
+        }
+
+        // Загрузка заявок на вывод
+        async function loadWithdrawals() {
+            try {
+                const response = await fetch('/api/admin/withdrawals', {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const tbody = document.getElementById('withdrawalsTableBody');
+                    tbody.innerHTML = data.withdrawals.map(withdrawal => `
+                        <tr>
+                            <td>${withdrawal.id}</td>
+                            <td>${withdrawal.username || 'N/A'}</td>
+                            <td>${withdrawal.amount.toLocaleString()} QuanHash</td>
+                            <td class="address-cell">${withdrawal.usdt_address}</td>
+                            <td>
+                                <span class="status-badge ${withdrawal.status}">
+                                    ${withdrawal.status === 'pending' ? 'В обработке' : 
+                                      withdrawal.status === 'completed' ? 'Выполнено' : 'Отклонено'}
+                                </span>
+                            </td>
+                            <td>${new Date(withdrawal.created_at).toLocaleDateString()}</td>
+                            <td>
+                                <button class="action-button" onclick="selectWithdrawal(${withdrawal.id})">Выбрать</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки заявок на вывод:', error);
+            }
+        }
+
+        // Выбор заявки на вывод
+        function selectWithdrawal(id) {
+            document.getElementById('withdrawalId').value = id;
+        }
+
+        // Обновление статуса заявки поддержки
+        async function updateSupportStatus() {
+            const ticketId = document.getElementById('supportTicketId').value;
+            const status = document.getElementById('supportStatus').value;
+            
+            if (!ticketId) {
+                showNotification('❌ Введите ID заявки!', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/admin/update-support-ticket', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify({ ticketId, status })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('✅ Статус заявки обновлен!', 'success');
+                    loadSupportTickets();
+                    document.getElementById('supportTicketId').value = '';
+                } else {
+                    showNotification(data.error || '❌ Ошибка обновления!', 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка обновления статуса заявки:', error);
+                showNotification('❌ Ошибка подключения!', 'error');
+            }
+        }
+
+        // Загрузка заявок поддержки
+        async function loadSupportTickets() {
+            try {
+                const response = await fetch('/api/admin/support-tickets', {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const tbody = document.getElementById('supportTableBody');
+                    tbody.innerHTML = data.tickets.map(ticket => `
+                        <tr>
+                            <td>${ticket.id}</td>
+                            <td>${ticket.username || 'N/A'}</td>
+                            <td>${ticket.category}</td>
+                            <td class="message-cell">${ticket.message}</td>
+                            <td>
+                                <span class="status-badge ${ticket.status}">
+                                    ${ticket.status === 'open' ? 'Открыта' : 
+                                      ticket.status === 'in_progress' ? 'В работе' :
+                                      ticket.status === 'resolved' ? 'Решена' : 'Закрыта'}
+                                </span>
+                            </td>
+                            <td>${new Date(ticket.created_at).toLocaleDateString()}</td>
+                            <td>
+                                <button class="action-button" onclick="selectSupportTicket(${ticket.id})">Выбрать</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки заявок поддержки:', error);
+            }
+        }
+
+        // Выбор заявки поддержки
+        function selectSupportTicket(id) {
+            document.getElementById('supportTicketId').value = id;
+        }
+
+        // Обновленная функция переключения вкладок
         function switchAdminTab(tab) {
             // Обновляем активную вкладку
             document.querySelectorAll('.admin-tab').forEach(btn => btn.classList.remove('active'));
@@ -1228,6 +1486,13 @@
             document.getElementById(tab + 'Tab').classList.add('active');
             
             currentTab = tab;
+            
+            // Загружаем данные для новых вкладок
+            if (tab === 'withdrawals') {
+                loadWithdrawals();
+            } else if (tab === 'support') {
+                loadSupportTickets();
+            }
         }
 
         // Вход в систему

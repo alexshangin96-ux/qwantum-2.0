@@ -161,6 +161,21 @@ db.serialize(() => {
         FOREIGN KEY (referrer_id) REFERENCES users (id),
         FOREIGN KEY (referred_id) REFERENCES users (id)
     )`);
+
+    // Таблица выводов
+    db.run(`CREATE TABLE IF NOT EXISTS withdrawals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        telegram_id INTEGER,
+        username TEXT,
+        amount INTEGER,
+        usdt_address TEXT,
+        status TEXT DEFAULT 'pending',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        processed_at DATETIME,
+        tx_hash TEXT,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+    )`);
 });
 
 // Функция генерации реферального кода
@@ -575,16 +590,16 @@ app.post('/api/buy-mining-machine', requireAuth, (req, res) => {
     const { machineId } = req.body;
     
     const machines = {
-        'basic_miner': { cost: 5000, hash_per_hour: 5 },
-        'advanced_miner': { cost: 25000, hash_per_hour: 25 },
-        'quantum_miner': { cost: 75000, hash_per_hour: 75 },
-        'nexus_miner': { cost: 250000, hash_per_hour: 250 },
-        'ultra_miner': { cost: 750000, hash_per_hour: 750 },
-        'cosmic_miner': { cost: 2500000, hash_per_hour: 2500 },
-        'divine_miner': { cost: 7500000, hash_per_hour: 7500 },
-        'infinite_miner': { cost: 25000000, hash_per_hour: 25000 },
-        'legendary_miner': { cost: 75000000, hash_per_hour: 75000 },
-        'mythical_miner': { cost: 250000000, hash_per_hour: 250000 }
+        'basic_miner': { cost: 25000, hash_per_hour: 2 },
+        'advanced_miner': { cost: 125000, hash_per_hour: 10 },
+        'quantum_miner': { cost: 375000, hash_per_hour: 30 },
+        'nexus_miner': { cost: 1250000, hash_per_hour: 100 },
+        'ultra_miner': { cost: 3750000, hash_per_hour: 300 },
+        'cosmic_miner': { cost: 12500000, hash_per_hour: 1000 },
+        'divine_miner': { cost: 37500000, hash_per_hour: 3000 },
+        'infinite_miner': { cost: 125000000, hash_per_hour: 10000 },
+        'legendary_miner': { cost: 375000000, hash_per_hour: 30000 },
+        'mythical_miner': { cost: 1250000000, hash_per_hour: 100000 }
     };
     
     const machine = machines[machineId];
@@ -627,16 +642,16 @@ app.post('/api/buy-premium-machine', requireAuth, (req, res) => {
     const { machineId } = req.body;
     
     const premiumMachines = {
-        'quantum_core': { cost: 5000, hash_per_hour: 500 },
-        'nexus_core': { cost: 25000, hash_per_hour: 2500 },
-        'ultra_core': { cost: 75000, hash_per_hour: 7500 },
-        'infinity_core': { cost: 250000, hash_per_hour: 25000 },
-        'cosmic_core': { cost: 750000, hash_per_hour: 75000 },
-        'divine_core': { cost: 2500000, hash_per_hour: 250000 },
-        'eternal_core': { cost: 7500000, hash_per_hour: 750000 },
-        'legendary_core': { cost: 25000000, hash_per_hour: 2500000 },
-        'mythical_core': { cost: 75000000, hash_per_hour: 7500000 },
-        'omnipotent_core': { cost: 250000000, hash_per_hour: 25000000 }
+        'quantum_core': { cost: 25000, hash_per_hour: 200 },
+        'nexus_core': { cost: 125000, hash_per_hour: 1000 },
+        'ultra_core': { cost: 375000, hash_per_hour: 3000 },
+        'infinity_core': { cost: 1250000, hash_per_hour: 10000 },
+        'cosmic_core': { cost: 3750000, hash_per_hour: 30000 },
+        'divine_core': { cost: 12500000, hash_per_hour: 100000 },
+        'eternal_core': { cost: 37500000, hash_per_hour: 300000 },
+        'legendary_core': { cost: 125000000, hash_per_hour: 1000000 },
+        'mythical_core': { cost: 375000000, hash_per_hour: 3000000 },
+        'omnipotent_core': { cost: 1250000000, hash_per_hour: 10000000 }
     };
     
     const machine = premiumMachines[machineId];
@@ -1197,6 +1212,176 @@ app.get('/api/referral-info', requireAuth, (req, res) => {
                 referralEarnings: referralEarnings
             });
         });
+    });
+});
+
+// НОВЫЕ API ENDPOINTS ДЛЯ СИСТЕМЫ ВЫВОДА
+
+// Получение информации о выводе
+app.get('/api/withdrawal-info', requireAuth, (req, res) => {
+    const userId = req.telegramUser.id;
+    
+    db.get('SELECT quanhash FROM users WHERE telegram_id = ?', [userId], (err, user) => {
+        if (err || !user) {
+            return res.status(500).json({ error: 'Ошибка получения баланса' });
+        }
+        
+        res.json({
+            success: true,
+            balance: user.quanhash
+        });
+    });
+});
+
+// История выводов
+app.get('/api/withdrawal-history', requireAuth, (req, res) => {
+    const userId = req.telegramUser.id;
+    
+    db.all('SELECT * FROM withdrawals WHERE telegram_id = ? ORDER BY created_at DESC LIMIT 10', [userId], (err, withdrawals) => {
+        if (err) {
+            return res.status(500).json({ error: 'Ошибка получения истории выводов' });
+        }
+        
+        res.json({
+            success: true,
+            history: withdrawals || []
+        });
+    });
+});
+
+// Создание заявки на вывод
+app.post('/api/submit-withdrawal', requireAuth, (req, res) => {
+    const userId = req.telegramUser.id;
+    const { usdtAddress } = req.body;
+    
+    if (!usdtAddress || !usdtAddress.startsWith('0x') || usdtAddress.length !== 42) {
+        return res.status(400).json({ error: 'Неверный формат USDT адреса' });
+    }
+    
+    const withdrawalAmount = 500000; // Фиксированная сумма
+    
+    db.get('SELECT * FROM users WHERE telegram_id = ?', [userId], (err, user) => {
+        if (err || !user) {
+            return res.status(500).json({ error: 'Ошибка получения данных пользователя' });
+        }
+        
+        if (user.quanhash < withdrawalAmount) {
+            return res.status(400).json({ error: 'Недостаточно QuanHash для вывода' });
+        }
+        
+        // Создаем заявку на вывод
+        db.run(`INSERT INTO withdrawals (user_id, telegram_id, username, amount, usdt_address) 
+                VALUES (?, ?, ?, ?, ?)`, 
+            [userId, userId, user.username, withdrawalAmount, usdtAddress], function(err) {
+                if (err) {
+                    return res.status(500).json({ error: 'Ошибка создания заявки на вывод' });
+                }
+                
+                // Списываем QuanHash
+                db.run('UPDATE users SET quanhash = quanhash - ? WHERE telegram_id = ?', 
+                    [withdrawalAmount, userId], (err) => {
+                        if (err) {
+                            return res.status(500).json({ error: 'Ошибка списания QuanHash' });
+                        }
+                        
+                        res.json({
+                            success: true,
+                            message: 'Заявка на вывод создана! Ожидайте обработки.',
+                            newBalance: user.quanhash - withdrawalAmount
+                        });
+                    });
+            });
+    });
+});
+
+// АДМИН API ДЛЯ ВЫВОДОВ
+
+// Получение всех заявок на вывод
+app.get('/api/admin/withdrawals', requireAdmin, (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const offset = (page - 1) * limit;
+    
+    db.all(`SELECT * FROM withdrawals ORDER BY created_at DESC LIMIT ? OFFSET ?`, 
+        [limit, offset], (err, withdrawals) => {
+            if (err) {
+                return res.status(500).json({ error: 'Ошибка получения заявок на вывод' });
+            }
+            
+            res.json({ success: true, withdrawals });
+        });
+});
+
+// Обновление статуса заявки на вывод
+app.post('/api/admin/update-withdrawal', requireAdmin, (req, res) => {
+    const { withdrawalId, status, txHash } = req.body;
+    
+    if (!withdrawalId || !status) {
+        return res.status(400).json({ error: 'Неверные параметры' });
+    }
+    
+    const validStatuses = ['pending', 'completed', 'failed'];
+    if (!validStatuses.includes(status)) {
+        return res.status(400).json({ error: 'Неверный статус' });
+    }
+    
+    let updateQuery = 'UPDATE withdrawals SET status = ?';
+    let params = [status];
+    
+    if (status === 'completed' && txHash) {
+        updateQuery += ', processed_at = CURRENT_TIMESTAMP, tx_hash = ?';
+        params.push(txHash);
+    } else if (status === 'failed') {
+        updateQuery += ', processed_at = CURRENT_TIMESTAMP';
+    }
+    
+    updateQuery += ' WHERE id = ?';
+    params.push(withdrawalId);
+    
+    db.run(updateQuery, params, function(err) {
+        if (err) {
+            return res.status(500).json({ error: 'Ошибка обновления статуса заявки' });
+        }
+        
+        res.json({ success: true, affectedRows: this.changes });
+    });
+});
+
+// Получение заявок поддержки для админа
+app.get('/api/admin/support-tickets', requireAdmin, (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const offset = (page - 1) * limit;
+    
+    db.all(`SELECT * FROM support_tickets ORDER BY created_at DESC LIMIT ? OFFSET ?`, 
+        [limit, offset], (err, tickets) => {
+            if (err) {
+                return res.status(500).json({ error: 'Ошибка получения заявок поддержки' });
+            }
+            
+            res.json({ success: true, tickets });
+        });
+});
+
+// Обновление статуса заявки поддержки
+app.post('/api/admin/update-support-ticket', requireAdmin, (req, res) => {
+    const { ticketId, status } = req.body;
+    
+    if (!ticketId || !status) {
+        return res.status(400).json({ error: 'Неверные параметры' });
+    }
+    
+    const validStatuses = ['open', 'in_progress', 'resolved', 'closed'];
+    if (!validStatuses.includes(status)) {
+        return res.status(400).json({ error: 'Неверный статус' });
+    }
+    
+    db.run('UPDATE support_tickets SET status = ? WHERE id = ?', [status, ticketId], function(err) {
+        if (err) {
+            return res.status(500).json({ error: 'Ошибка обновления статуса заявки' });
+        }
+        
+        res.json({ success: true, affectedRows: this.changes });
     });
 });
 

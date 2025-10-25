@@ -1074,6 +1074,206 @@
             line-height: 1.5;
         }
 
+        /* Withdrawal Section */
+        .withdrawal-section {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .withdrawal-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .withdrawal-rate {
+            background: var(--glass-hover);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .rate-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .rate-amount {
+            color: var(--crypto-gold);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .rate-arrow {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .rate-usdt {
+            color: var(--success);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .rate-note {
+            font-size: 0.8rem;
+            color: var(--gray-light);
+            text-align: center;
+        }
+
+        .withdrawal-balance {
+            background: var(--glass-hover);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .balance-amount {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--crypto-gold);
+            font-family: 'JetBrains Mono', monospace;
+            margin: 10px 0;
+        }
+
+        .balance-usdt {
+            font-size: 1rem;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .withdrawal-form {
+            background: var(--glass-hover);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .withdrawal-summary {
+            background: var(--glass);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .summary-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-item span:first-child {
+            color: var(--gray-light);
+        }
+
+        .summary-item span:last-child {
+            color: var(--white);
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .withdrawal-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .withdrawal-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .withdrawal-button:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .withdrawal-history {
+            background: var(--glass-hover);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .history-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .history-item {
+            background: var(--glass);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .history-amount {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--crypto-gold);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .history-date {
+            font-size: 0.8rem;
+            color: var(--gray-light);
+        }
+
+        .history-status {
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .history-status.pending {
+            background: rgba(253, 203, 110, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .history-status.completed {
+            background: rgba(0, 184, 148, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .history-status.failed {
+            background: rgba(225, 112, 85, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
         /* Daily Tasks Section */
         .daily-section {
             background: var(--glass);
@@ -1347,6 +1547,179 @@
         .reward-text {
             color: var(--white);
             font-weight: 500;
+        }
+
+        /* Auto Mining Section */
+        .auto-mining-section {
+            background: var(--glass-hover);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .auto-mining-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .auto-mining-status,
+        .auto-mining-rate,
+        .auto-mining-level {
+            background: var(--glass);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .status-label,
+        .rate-label,
+        .level-label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--gray-light);
+            margin-bottom: 5px;
+        }
+
+        .status-value,
+        .rate-value,
+        .level-value {
+            display: block;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .auto-mining-visualization {
+            margin-bottom: 20px;
+        }
+
+        .mining-animation-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+        }
+
+        .mining-circle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--crypto-gold);
+            border-radius: 50%;
+            animation: miningRotate 4s linear infinite;
+        }
+
+        .mining-particle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--crypto-gold);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--crypto-gold);
+        }
+
+        .mining-particle:nth-child(1) { top: -6px; left: 50%; transform: translateX(-50%); }
+        .mining-particle:nth-child(2) { bottom: -6px; left: 50%; transform: translateX(-50%); }
+        .mining-particle:nth-child(3) { top: 50%; right: -6px; transform: translateY(-50%); }
+        .mining-particle:nth-child(4) { top: 50%; left: -6px; transform: translateY(-50%); }
+
+        .mining-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            animation: miningPulse 2s ease-in-out infinite;
+        }
+
+        .mining-progress {
+            background: var(--glass);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .progress-bar {
+            background: var(--glass-hover);
+            border-radius: 8px;
+            height: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--crypto-gold), var(--primary));
+            border-radius: 8px;
+            animation: miningProgress 3s ease-in-out infinite;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--gray-light);
+        }
+
+        .auto-mining-note {
+            background: var(--glass);
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.8rem;
+            color: var(--gray-light);
+            text-align: center;
+        }
+
+        .manual-mining-locked {
+            background: var(--glass-hover);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .lock-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .lock-icon {
+            font-size: 3rem;
+        }
+
+        .lock-text p {
+            margin-bottom: 10px;
+            color: var(--gray-light);
+        }
+
+        .lock-text strong {
+            color: var(--white);
+        }
+
+        .lock-progress {
+            background: var(--glass);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        @keyframes miningRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes miningPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        @keyframes miningProgress {
+            0%, 100% { width: 0%; }
+            50% { width: 100%; }
         }
 
         /* Support Section */
@@ -1643,6 +2016,7 @@
         <div class="nav-tabs">
             <div class="nav-tab active" onclick="switchTab('shop')">🛒 Магазин</div>
             <div class="nav-tab" onclick="switchTab('mining')">⛏️ Майнинг</div>
+            <div class="nav-tab" onclick="switchTab('withdraw')">💰 Вывод</div>
             <div class="nav-tab" onclick="switchTab('daily')">📅 Задания</div>
             <div class="nav-tab" onclick="switchTab('referral')">👥 Рефералы</div>
             <div class="nav-tab" onclick="switchTab('cards')">🃏 Карты</div>
@@ -1691,6 +2065,65 @@
                 
                 <div class="mining-content" id="miningContent">
                     <!-- Mining content will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Withdrawal Tab -->
+        <div class="tab-content" id="withdrawTab">
+            <div class="withdrawal-section">
+                <h2>💰 Вывод USDT</h2>
+                
+                <div class="withdrawal-info">
+                    <div class="withdrawal-rate">
+                        <h3>💱 Курс обмена</h3>
+                        <div class="rate-info">
+                            <span class="rate-amount">500,000 QuanHash</span>
+                            <span class="rate-arrow">→</span>
+                            <span class="rate-usdt">1 USDT</span>
+                        </div>
+                        <div class="rate-note">Вывод в сети BEP20 (Binance Smart Chain)</div>
+                    </div>
+                    
+                    <div class="withdrawal-balance">
+                        <h3>💎 Ваш баланс QuanHash</h3>
+                        <div class="balance-amount" id="withdrawalBalance">0</div>
+                        <div class="balance-usdt">≈ 0 USDT</div>
+                    </div>
+                </div>
+                
+                <div class="withdrawal-form">
+                    <h3>📝 Заявка на вывод</h3>
+                    <div class="form-group">
+                        <label for="usdtAddress">USDT адрес кошелька (BEP20):</label>
+                        <input type="text" id="usdtAddress" placeholder="0x..." maxlength="42">
+                    </div>
+                    <div class="form-group">
+                        <label for="withdrawalAmount">Количество QuanHash для вывода:</label>
+                        <input type="number" id="withdrawalAmount" value="500000" min="500000" max="500000" readonly>
+                    </div>
+                    <div class="withdrawal-summary">
+                        <div class="summary-item">
+                            <span>К выводу:</span>
+                            <span>500,000 QuanHash</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Получите:</span>
+                            <span>1 USDT</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Комиссия:</span>
+                            <span>0%</span>
+                        </div>
+                    </div>
+                    <button class="withdrawal-button" id="withdrawButton" onclick="submitWithdrawal()">Вывести USDT</button>
+                </div>
+                
+                <div class="withdrawal-history">
+                    <h3>📋 История выводов</h3>
+                    <div class="history-list" id="withdrawalHistory">
+                        <!-- History will be loaded dynamically -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -1917,6 +2350,7 @@
                     
                     loadShopItems();
                     loadMiningContent();
+                    loadWithdrawalInfo();
                     loadDailyTasks();
                     loadReferralInfo();
                     loadCards();
@@ -2175,16 +2609,16 @@
             
             if (currentMiningTab === 'machines') {
                 const machines = [
-                    { id: 'basic_miner', name: 'Базовый Майнер', price: 5000, hashPerHour: 5, description: 'Простая майнинг машина' },
-                    { id: 'advanced_miner', name: 'Продвинутый Майнер', price: 25000, hashPerHour: 25, description: 'Улучшенная майнинг машина' },
-                    { id: 'quantum_miner', name: 'Квантовый Майнер', price: 75000, hashPerHour: 75, description: 'Высокотехнологичный майнер' },
-                    { id: 'nexus_miner', name: 'Nexus Майнер', price: 250000, hashPerHour: 250, description: 'Элитная майнинг машина' },
-                    { id: 'ultra_miner', name: 'Ультра Майнер', price: 750000, hashPerHour: 750, description: 'Легендарная майнинг машина' },
-                    { id: 'cosmic_miner', name: 'Космический Майнер', price: 2500000, hashPerHour: 2500, description: 'Космическая майнинг машина' },
-                    { id: 'divine_miner', name: 'Божественный Майнер', price: 7500000, hashPerHour: 7500, description: 'Божественная майнинг машина' },
-                    { id: 'infinite_miner', name: 'Бесконечный Майнер', price: 25000000, hashPerHour: 25000, description: 'Бесконечная майнинг машина' },
-                    { id: 'legendary_miner', name: 'Легендарный Майнер', price: 75000000, hashPerHour: 75000, description: 'Легендарная майнинг машина' },
-                    { id: 'mythical_miner', name: 'Мифический Майнер', price: 250000000, hashPerHour: 250000, description: 'Мифическая майнинг машина' }
+                    { id: 'basic_miner', name: 'Базовый Майнер', price: 25000, hashPerHour: 2, description: 'Простая майнинг машина' },
+                    { id: 'advanced_miner', name: 'Продвинутый Майнер', price: 125000, hashPerHour: 10, description: 'Улучшенная майнинг машина' },
+                    { id: 'quantum_miner', name: 'Квантовый Майнер', price: 375000, hashPerHour: 30, description: 'Высокотехнологичный майнер' },
+                    { id: 'nexus_miner', name: 'Nexus Майнер', price: 1250000, hashPerHour: 100, description: 'Элитная майнинг машина' },
+                    { id: 'ultra_miner', name: 'Ультра Майнер', price: 3750000, hashPerHour: 300, description: 'Легендарная майнинг машина' },
+                    { id: 'cosmic_miner', name: 'Космический Майнер', price: 12500000, hashPerHour: 1000, description: 'Космическая майнинг машина' },
+                    { id: 'divine_miner', name: 'Божественный Майнер', price: 37500000, hashPerHour: 3000, description: 'Божественная майнинг машина' },
+                    { id: 'infinite_miner', name: 'Бесконечный Майнер', price: 125000000, hashPerHour: 10000, description: 'Бесконечная майнинг машина' },
+                    { id: 'legendary_miner', name: 'Легендарный Майнер', price: 375000000, hashPerHour: 30000, description: 'Легендарная майнинг машина' },
+                    { id: 'mythical_miner', name: 'Мифический Майнер', price: 1250000000, hashPerHour: 100000, description: 'Мифическая майнинг машина' }
                 ];
                 
                 container.innerHTML = machines.map(machine => `
@@ -2204,16 +2638,16 @@
                 `).join('');
             } else if (currentMiningTab === 'premium') {
                 const premiumMachines = [
-                    { id: 'quantum_core', name: 'Квантовое Ядро', price: 5000, hashPerHour: 500, description: 'Премиум майнинг ядро' },
-                    { id: 'nexus_core', name: 'Nexus Ядро', price: 25000, hashPerHour: 2500, description: 'Элитное майнинг ядро' },
-                    { id: 'ultra_core', name: 'Ультра Ядро', price: 75000, hashPerHour: 7500, description: 'Легендарное майнинг ядро' },
-                    { id: 'infinity_core', name: 'Бесконечное Ядро', price: 250000, hashPerHour: 25000, description: 'Мифическое майнинг ядро' },
-                    { id: 'cosmic_core', name: 'Космическое Ядро', price: 750000, hashPerHour: 75000, description: 'Божественное майнинг ядро' },
-                    { id: 'divine_core', name: 'Божественное Ядро', price: 2500000, hashPerHour: 250000, description: 'Божественное майнинг ядро' },
-                    { id: 'eternal_core', name: 'Вечное Ядро', price: 7500000, hashPerHour: 750000, description: 'Вечное майнинг ядро' },
-                    { id: 'legendary_core', name: 'Легендарное Ядро', price: 25000000, hashPerHour: 2500000, description: 'Легендарное майнинг ядро' },
-                    { id: 'mythical_core', name: 'Мифическое Ядро', price: 75000000, hashPerHour: 7500000, description: 'Мифическое майнинг ядро' },
-                    { id: 'omnipotent_core', name: 'Всемогущее Ядро', price: 250000000, hashPerHour: 25000000, description: 'Всемогущее майнинг ядро' }
+                    { id: 'quantum_core', name: 'Квантовое Ядро', price: 25000, hashPerHour: 200, description: 'Премиум майнинг ядро' },
+                    { id: 'nexus_core', name: 'Nexus Ядро', price: 125000, hashPerHour: 1000, description: 'Элитное майнинг ядро' },
+                    { id: 'ultra_core', name: 'Ультра Ядро', price: 375000, hashPerHour: 3000, description: 'Легендарное майнинг ядро' },
+                    { id: 'infinity_core', name: 'Бесконечное Ядро', price: 1250000, hashPerHour: 10000, description: 'Мифическое майнинг ядро' },
+                    { id: 'cosmic_core', name: 'Космическое Ядро', price: 3750000, hashPerHour: 30000, description: 'Божественное майнинг ядро' },
+                    { id: 'divine_core', name: 'Божественное Ядро', price: 12500000, hashPerHour: 100000, description: 'Божественное майнинг ядро' },
+                    { id: 'eternal_core', name: 'Вечное Ядро', price: 37500000, hashPerHour: 300000, description: 'Вечное майнинг ядро' },
+                    { id: 'legendary_core', name: 'Легендарное Ядро', price: 125000000, hashPerHour: 1000000, description: 'Легендарное майнинг ядро' },
+                    { id: 'mythical_core', name: 'Мифическое Ядро', price: 375000000, hashPerHour: 3000000, description: 'Мифическое майнинг ядро' },
+                    { id: 'omnipotent_core', name: 'Всемогущее Ядро', price: 1250000000, hashPerHour: 10000000, description: 'Всемогущее майнинг ядро' }
                 ];
                 
                 container.innerHTML = premiumMachines.map(machine => `
@@ -2232,18 +2666,68 @@
                     </div>
                 `).join('');
             } else if (currentMiningTab === 'manual') {
-                container.innerHTML = `
-                    <div class="quanhash-mining">
-                        <h3>Ручная добыча QuanHash</h3>
-                        <div class="energy-input-group">
-                            <input type="number" class="energy-input" id="energyAmount" placeholder="Энергия" min="10" max="100" value="10">
-                            <button class="mine-button" onclick="mineQuanHash()">Добыть</button>
+                if (gameState.level >= 50) {
+                    container.innerHTML = `
+                        <div class="auto-mining-section">
+                            <h3>🤖 Автоматическая добыча QuanHash</h3>
+                            <div class="auto-mining-info">
+                                <div class="auto-mining-status">
+                                    <span class="status-label">Статус:</span>
+                                    <span class="status-value" id="autoMiningStatus">Активна</span>
+                                </div>
+                                <div class="auto-mining-rate">
+                                    <span class="rate-label">Скорость:</span>
+                                    <span class="rate-value" id="autoMiningRate">0.1 QuanHash/час</span>
+                                </div>
+                                <div class="auto-mining-level">
+                                    <span class="level-label">Требуется уровень:</span>
+                                    <span class="level-value">50+</span>
+                                </div>
+                            </div>
+                            <div class="auto-mining-visualization">
+                                <div class="mining-animation-container">
+                                    <div class="mining-circle" id="miningCircle">
+                                        <div class="mining-particle" id="particle1"></div>
+                                        <div class="mining-particle" id="particle2"></div>
+                                        <div class="mining-particle" id="particle3"></div>
+                                        <div class="mining-particle" id="particle4"></div>
+                                    </div>
+                                    <div class="mining-center">⛏️</div>
+                                </div>
+                                <div class="mining-progress">
+                                    <div class="progress-bar" id="autoMiningProgress"></div>
+                                    <div class="progress-text" id="autoMiningProgressText">Добыча активна...</div>
+                                </div>
+                            </div>
+                            <div class="auto-mining-note">
+                                💡 Автоматическая добыча работает в фоне и продолжается 3 часа оффлайн
+                            </div>
                         </div>
-                        <div class="mining-info">
-                            💡 Дорого и медленно, но можно добывать QuanHash вручную за энергию
+                    `;
+                    
+                    // Start auto mining visualization
+                    startAutoMiningVisualization();
+                } else {
+                    container.innerHTML = `
+                        <div class="manual-mining-locked">
+                            <h3>🔒 Автоматическая добыча заблокирована</h3>
+                            <div class="lock-info">
+                                <div class="lock-icon">🔐</div>
+                                <div class="lock-text">
+                                    <p>Для доступа к автоматической добыче QuanHash необходимо достичь <strong>50 уровня</strong></p>
+                                    <p>Ваш текущий уровень: <strong>${gameState.level}</strong></p>
+                                    <p>Осталось: <strong>${50 - gameState.level} уровней</strong></p>
+                                </div>
+                            </div>
+                            <div class="lock-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${(gameState.level / 50) * 100}%"></div>
+                                </div>
+                                <div class="progress-text">${gameState.level}/50 уровней</div>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
             }
         }
 
@@ -2840,6 +3324,214 @@
                     showNotification('❌ Ошибка подключения!', 'error');
                 }, 2000);
             }
+        }
+
+        // Withdrawal functions
+        async function loadWithdrawalInfo() {
+            try {
+                const response = await fetch('/api/withdrawal-info', {
+                    headers: {
+                        'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('withdrawalBalance').textContent = data.balance.toLocaleString();
+                    document.querySelector('.balance-usdt').textContent = `≈ ${(data.balance / 500000).toFixed(4)} USDT`;
+                    loadWithdrawalHistory();
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки информации о выводе:', error);
+            }
+        }
+
+        async function loadWithdrawalHistory() {
+            try {
+                const response = await fetch('/api/withdrawal-history', {
+                    headers: {
+                        'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    const container = document.getElementById('withdrawalHistory');
+                    if (data.history.length === 0) {
+                        container.innerHTML = '<div class="no-history">История выводов пуста</div>';
+                    } else {
+                        container.innerHTML = data.history.map(withdrawal => `
+                            <div class="history-item">
+                                <div class="history-info">
+                                    <div class="history-amount">${withdrawal.amount.toLocaleString()} QuanHash</div>
+                                    <div class="history-date">${new Date(withdrawal.created_at).toLocaleDateString()}</div>
+                                </div>
+                                <div class="history-status ${withdrawal.status}">
+                                    ${withdrawal.status === 'pending' ? 'В обработке' : 
+                                      withdrawal.status === 'completed' ? 'Выполнено' : 'Отклонено'}
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки истории выводов:', error);
+            }
+        }
+
+        async function submitWithdrawal() {
+            const usdtAddress = document.getElementById('usdtAddress').value.trim();
+            
+            if (!usdtAddress) {
+                showNotification('❌ Введите USDT адрес!', 'error');
+                return;
+            }
+            
+            if (!usdtAddress.startsWith('0x') || usdtAddress.length !== 42) {
+                showNotification('❌ Неверный формат USDT адреса!', 'error');
+                return;
+            }
+            
+            if (gameState.quanhash < 500000) {
+                showNotification('❌ Недостаточно QuanHash для вывода!', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/submit-withdrawal', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+                    },
+                    body: JSON.stringify({ usdtAddress })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    gameState.quanhash = data.newBalance;
+                    updateUI();
+                    loadWithdrawalInfo();
+                    document.getElementById('usdtAddress').value = '';
+                } else {
+                    showNotification(data.error || '❌ Ошибка создания заявки!', 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка создания заявки на вывод:', error);
+                showNotification('❌ Ошибка подключения!', 'error');
+            }
+        }
+
+        // Auto mining functions
+        function startAutoMiningVisualization() {
+            if (gameState.level < 50) return;
+            
+            let progress = 0;
+            const progressBar = document.getElementById('autoMiningProgress');
+            const progressText = document.getElementById('autoMiningProgressText');
+            
+            const miningInterval = setInterval(() => {
+                progress += 0.1;
+                if (progress >= 100) {
+                    progress = 0;
+                    // Simulate mining reward
+                    const reward = 0.1;
+                    gameState.quanhash += reward;
+                    updateUI();
+                    showTapEffect(reward);
+                }
+                
+                progressBar.style.width = progress + '%';
+                progressText.textContent = `Добыча активна... ${progress.toFixed(1)}%`;
+            }, 1000);
+            
+            // Store interval for cleanup
+            window.autoMiningInterval = miningInterval;
+        }
+
+        function stopAutoMiningVisualization() {
+            if (window.autoMiningInterval) {
+                clearInterval(window.autoMiningInterval);
+                window.autoMiningInterval = null;
+            }
+        }
+
+        // Enhanced tap effects
+        function showTapEffect(amount) {
+            const effect = document.createElement('div');
+            effect.className = 'tap-effect';
+            effect.textContent = `+${amount}`;
+            effect.style.left = Math.random() * 200 + 140 + 'px';
+            effect.style.top = Math.random() * 100 + 300 + 'px';
+            
+            // Add enhanced styling
+            effect.style.fontSize = '1.8rem';
+            effect.style.fontWeight = '900';
+            effect.style.color = '#f39c12';
+            effect.style.textShadow = '0 0 20px #f39c12, 0 0 40px #f39c12';
+            effect.style.animation = 'tapEffectAnimation 1.5s ease-out forwards';
+            
+            document.body.appendChild(effect);
+            
+            setTimeout(() => {
+                effect.remove();
+            }, 1500);
+        }
+
+        // Enhanced mining effects
+        function showMiningEffect(amount) {
+            const effect = document.createElement('div');
+            effect.className = 'mining-effect';
+            effect.innerHTML = `
+                <div class="mining-effect-content">
+                    <div class="mining-icon">⛏️</div>
+                    <div class="mining-amount">+${amount} QuanHash</div>
+                </div>
+            `;
+            
+            // Add mining effect CSS
+            const miningStyle = document.createElement('style');
+            miningStyle.textContent = `
+                .mining-effect {
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    z-index: 10000;
+                    animation: miningEffectAnimation 2s ease-out forwards;
+                }
+                .mining-effect-content {
+                    background: linear-gradient(135deg, var(--crypto-gold), var(--warning));
+                    border-radius: 20px;
+                    padding: 20px;
+                    text-align: center;
+                    box-shadow: 0 10px 30px rgba(243, 156, 18, 0.5);
+                }
+                .mining-icon {
+                    font-size: 2rem;
+                    margin-bottom: 10px;
+                }
+                .mining-amount {
+                    font-size: 1.5rem;
+                    font-weight: 800;
+                    color: white;
+                    font-family: 'JetBrains Mono', monospace;
+                }
+                @keyframes miningEffectAnimation {
+                    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+                    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+                    100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+                }
+            `;
+            document.head.appendChild(miningStyle);
+            document.body.appendChild(effect);
+            
+            setTimeout(() => {
+                effect.remove();
+                miningStyle.remove();
+            }, 2000);
         }
 
         // Initialize
