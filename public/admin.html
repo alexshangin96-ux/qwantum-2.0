@@ -64,7 +64,7 @@
         }
 
         .container {
-            max-width: 1600px;
+            max-width: 1800px;
             margin: 0 auto;
             padding: 20px;
             position: relative;
@@ -371,6 +371,54 @@
 
         .stat-card-change.positive { color: var(--success); }
         .stat-card-change.negative { color: var(--danger); }
+
+        /* Admin Tabs */
+        .admin-tabs {
+            display: flex;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 6px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+            overflow-x: auto;
+        }
+
+        .admin-tab {
+            flex: 1;
+            padding: 12px 20px;
+            text-align: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray-light);
+            white-space: nowrap;
+            min-width: 120px;
+        }
+
+        .admin-tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .admin-tab:hover:not(.active) {
+            background: var(--glass-hover);
+            color: var(--white);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
 
         /* Controls Section */
         .controls-section {
@@ -779,6 +827,10 @@
             .action-buttons {
                 flex-direction: column;
             }
+            
+            .admin-tabs {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -789,7 +841,7 @@
             <div class="header-content">
                 <div class="header-left">
                     <h1>⚛️ Quantum Nexus</h1>
-                    <p>Ultra Admin Panel - Управление Вселенной</p>
+                    <p>Ultra Admin Panel - Полное управление Вселенной</p>
                 </div>
                 <div class="header-right">
                     <button class="logout-btn" onclick="logout()">
@@ -804,7 +856,7 @@
         <div class="login-container" id="loginContainer">
             <div class="login-header">
                 <h2>🔐 Ultra Admin Access</h2>
-                <p>Войдите в систему для управления Quantum Nexus</p>
+                <p>Войдите в систему для полного управления Quantum Nexus</p>
             </div>
             <form id="loginForm">
                 <div class="form-group">
@@ -869,55 +921,244 @@
                 </div>
             </div>
 
-            <!-- Quick Actions -->
-            <div class="controls-section">
-                <h2>⚡ Быстрые Действия</h2>
-                <div class="controls-grid">
-                    <div class="control-group">
-                        <h3>💰 Управление Балансом</h3>
-                        <div class="form-row">
-                            <input type="text" id="balanceUserId" placeholder="ID пользователя">
-                            <input type="number" id="balanceAmount" placeholder="Сумма">
-                            <button class="btn-small btn-success" onclick="updateBalance()">Добавить</button>
-                        </div>
-                        <div class="form-row">
-                            <input type="text" id="balanceUserId2" placeholder="ID пользователя">
-                            <input type="number" id="balanceAmount2" placeholder="Сумма">
-                            <button class="btn-small btn-danger" onclick="subtractBalance()">Отнять</button>
-                        </div>
+            <!-- Admin Tabs -->
+            <div class="admin-tabs">
+                <div class="admin-tab active" onclick="switchAdminTab('users')">👥 Пользователи</div>
+                <div class="admin-tab" onclick="switchAdminTab('balance')">💰 Балансы</div>
+                <div class="admin-tab" onclick="switchAdminTab('moderation')">🔒 Модерация</div>
+                <div class="admin-tab" onclick="switchAdminTab('events')">🎉 События</div>
+                <div class="admin-tab" onclick="switchAdminTab('analytics')">📊 Аналитика</div>
+                <div class="admin-tab" onclick="switchAdminTab('system')">⚙️ Система</div>
+            </div>
+
+            <!-- Users Tab -->
+            <div class="tab-content active" id="usersTab">
+                <div class="users-section">
+                    <h2>👥 Управление Пользователями</h2>
+                    <div class="search-container">
+                        <input type="text" class="search-box" id="searchBox" placeholder="🔍 Поиск по имени, ID или Telegram...">
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
+                                    <th>ID</th>
+                                    <th>Имя</th>
+                                    <th>Telegram</th>
+                                    <th>Баланс</th>
+                                    <th>QuanHash</th>
+                                    <th>Уровень</th>
+                                    <th>Статус</th>
+                                    <th>Последний вход</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- Данные загружаются динамически -->
+                            </tbody>
+                        </table>
                     </div>
 
-                    <div class="control-group">
-                        <h3>🔒 Управление Доступом</h3>
-                        <div class="form-row">
-                            <input type="text" id="banUserId" placeholder="ID пользователя">
-                            <button class="btn-small btn-danger" onclick="toggleBan()">Заблокировать</button>
+                    <div class="pagination" id="pagination">
+                        <!-- Пагинация загружается динамически -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Balance Tab -->
+            <div class="tab-content" id="balanceTab">
+                <div class="controls-section">
+                    <h2>💰 Управление Балансами</h2>
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <h3>💎 Добавить Монеты</h3>
+                            <div class="form-row">
+                                <input type="text" id="addCoinsUserId" placeholder="ID пользователя">
+                                <input type="number" id="addCoinsAmount" placeholder="Сумма">
+                                <button class="btn-small btn-success" onclick="addCoins()">Добавить</button>
+                            </div>
                         </div>
-                        <div class="form-row">
-                            <input type="text" id="freezeUserId" placeholder="ID пользователя">
-                            <button class="btn-small btn-warning" onclick="toggleFreeze()">Заморозить</button>
+
+                        <div class="control-group">
+                            <h3>⛏️ Добавить QuanHash</h3>
+                            <div class="form-row">
+                                <input type="text" id="addHashUserId" placeholder="ID пользователя">
+                                <input type="number" id="addHashAmount" placeholder="Сумма">
+                                <button class="btn-small btn-info" onclick="addQuanHash()">Добавить</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3>📉 Отнять Монеты</h3>
+                            <div class="form-row">
+                                <input type="text" id="subtractCoinsUserId" placeholder="ID пользователя">
+                                <input type="number" id="subtractCoinsAmount" placeholder="Сумма">
+                                <button class="btn-small btn-danger" onclick="subtractCoins()">Отнять</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3>🎁 Массовые Бонусы</h3>
+                            <div class="form-row">
+                                <input type="number" id="massBonusAmount" placeholder="Сумма бонуса">
+                                <button class="btn-small btn-warning" onclick="giveMassBonus()">Всем Игрокам</button>
+                            </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="control-group">
-                        <h3>🎁 Системные Бонусы</h3>
-                        <div class="form-row">
-                            <input type="number" id="bonusAmount" placeholder="Сумма бонуса">
-                            <button class="btn-small btn-info" onclick="giveBonusToAll()">Всем Игрокам</button>
+            <!-- Moderation Tab -->
+            <div class="tab-content" id="moderationTab">
+                <div class="controls-section">
+                    <h2>🔒 Модерация и Безопасность</h2>
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <h3>🚫 Блокировка</h3>
+                            <div class="form-row">
+                                <input type="text" id="banUserId" placeholder="ID пользователя">
+                                <button class="btn-small btn-danger" onclick="toggleBan()">Заблокировать</button>
+                            </div>
                         </div>
-                        <div class="form-row">
-                            <input type="text" id="eventMessage" placeholder="Сообщение события">
-                            <button class="btn-small btn-success" onclick="sendEvent()">Отправить</button>
+
+                        <div class="control-group">
+                            <h3>❄️ Заморозка</h3>
+                            <div class="form-row">
+                                <input type="text" id="freezeUserId" placeholder="ID пользователя">
+                                <button class="btn-small btn-warning" onclick="toggleFreeze()">Заморозить</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3>🔓 Разблокировка</h3>
+                            <div class="form-row">
+                                <input type="text" id="unbanUserId" placeholder="ID пользователя">
+                                <button class="btn-small btn-success" onclick="unbanUser()">Разблокировать</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3>🔥 Разморозка</h3>
+                            <div class="form-row">
+                                <input type="text" id="unfreezeUserId" placeholder="ID пользователя">
+                                <button class="btn-small btn-info" onclick="unfreezeUser()">Разморозить</button>
+                            </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="control-group">
-                        <h3>🔧 Системные Настройки</h3>
-                        <div class="form-row">
-                            <button class="btn-small btn-warning" onclick="resetAllData()">Сбросить Все Данные</button>
+            <!-- Events Tab -->
+            <div class="tab-content" id="eventsTab">
+                <div class="controls-section">
+                    <h2>🎉 События и Уведомления</h2>
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <h3>📢 Глобальное Сообщение</h3>
+                            <div class="form-row">
+                                <input type="text" id="globalMessage" placeholder="Сообщение для всех">
+                                <button class="btn-small btn-primary" onclick="sendGlobalMessage()">Отправить</button>
+                            </div>
                         </div>
-                        <div class="form-row">
-                            <button class="btn-small btn-info" onclick="exportData()">Экспорт Данных</button>
+
+                        <div class="control-group">
+                            <h3>🎊 Специальное Событие</h3>
+                            <div class="form-row">
+                                <input type="text" id="eventTitle" placeholder="Название события">
+                                <input type="text" id="eventDescription" placeholder="Описание">
+                                <button class="btn-small btn-warning" onclick="createEvent()">Создать</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3>🎁 Праздничный Бонус</h3>
+                            <div class="form-row">
+                                <input type="number" id="holidayBonus" placeholder="Размер бонуса">
+                                <button class="btn-small btn-success" onclick="giveHolidayBonus()">Выдать</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3>⚡ Экстренное Уведомление</h3>
+                            <div class="form-row">
+                                <input type="text" id="emergencyMessage" placeholder="Экстренное сообщение">
+                                <button class="btn-small btn-danger" onclick="sendEmergencyMessage()">Отправить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div class="tab-content" id="analyticsTab">
+                <div class="controls-section">
+                    <h2>📊 Аналитика и Статистика</h2>
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <h3>📈 Статистика Игры</h3>
+                            <div class="form-row">
+                                <button class="btn-small btn-info" onclick="generateGameStats()">Сгенерировать</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3>👥 Топ Игроки</h3>
+                            <div class="form-row">
+                                <button class="btn-small btn-primary" onclick="getTopPlayers()">Показать</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3>📊 Экспорт Данных</h3>
+                            <div class="form-row">
+                                <button class="btn-small btn-success" onclick="exportAnalytics()">Экспорт</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3>🔍 Детальный Анализ</h3>
+                            <div class="form-row">
+                                <input type="text" id="analyzeUserId" placeholder="ID для анализа">
+                                <button class="btn-small btn-warning" onclick="analyzeUser()">Анализ</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Tab -->
+            <div class="tab-content" id="systemTab">
+                <div class="controls-section">
+                    <h2>⚙️ Системные Настройки</h2>
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <h3>🔄 Перезапуск Сервера</h3>
+                            <div class="form-row">
+                                <button class="btn-small btn-warning" onclick="restartServer()">Перезапустить</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3>🗑️ Очистка Данных</h3>
+                            <div class="form-row">
+                                <button class="btn-small btn-danger" onclick="clearOldData()">Очистить</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3>💾 Резервное Копирование</h3>
+                            <div class="form-row">
+                                <button class="btn-small btn-info" onclick="createBackup()">Создать Бэкап</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3>⚠️ Сброс Всего</h3>
+                            <div class="form-row">
+                                <button class="btn-small btn-danger" onclick="resetAllData()">СБРОСИТЬ ВСЕ</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -932,46 +1173,14 @@
                         <option value="unban">Разблокировать</option>
                         <option value="freeze">Заморозить</option>
                         <option value="unfreeze">Разморозить</option>
-                        <option value="bonus">Дать бонус</option>
+                        <option value="bonus_coins">Дать монеты</option>
+                        <option value="bonus_hash">Дать QuanHash</option>
                         <option value="reset">Сбросить прогресс</option>
+                        <option value="level_up">Повысить уровень</option>
                     </select>
-                    <input type="number" id="bulkAmount" placeholder="Сумма (для бонуса)">
+                    <input type="number" id="bulkAmount" placeholder="Сумма/Значение">
                     <button class="btn-small btn-warning" onclick="applyBulkAction()">Применить к Выбранным</button>
                     <button class="btn-small btn-info" onclick="selectAll()">Выбрать Все</button>
-                </div>
-            </div>
-
-            <!-- Users Table -->
-            <div class="users-section">
-                <h2>👥 Управление Игроками</h2>
-                <div class="search-container">
-                    <input type="text" class="search-box" id="searchBox" placeholder="🔍 Поиск по имени, ID или Telegram...">
-                </div>
-                
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
-                                <th>ID</th>
-                                <th>Имя</th>
-                                <th>Telegram</th>
-                                <th>Баланс</th>
-                                <th>QuanHash</th>
-                                <th>Уровень</th>
-                                <th>Статус</th>
-                                <th>Последний вход</th>
-                                <th>Действия</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usersTableBody">
-                            <!-- Данные загружаются динамически -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="pagination" id="pagination">
-                    <!-- Пагинация загружается динамически -->
                 </div>
             </div>
         </div>
@@ -982,6 +1191,7 @@
         let totalPages = 1;
         let allUsers = [];
         let filteredUsers = [];
+        let currentTab = 'users';
 
         // Проверка авторизации
         function checkAuth() {
@@ -1005,6 +1215,19 @@
         function showAdminPanel() {
             document.getElementById('loginContainer').classList.remove('active');
             document.getElementById('adminPanel').classList.add('active');
+        }
+
+        // Переключение вкладок админки
+        function switchAdminTab(tab) {
+            // Обновляем активную вкладку
+            document.querySelectorAll('.admin-tab').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Обновляем контент
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tab + 'Tab').classList.add('active');
+            
+            currentTab = tab;
         }
 
         // Вход в систему
@@ -1197,10 +1420,10 @@
             return Array.from(checkboxes).map(cb => parseInt(cb.value));
         }
 
-        // Обновление баланса
-        async function updateBalance() {
-            const userId = document.getElementById('balanceUserId').value;
-            const amount = document.getElementById('balanceAmount').value;
+        // Функции управления балансом
+        async function addCoins() {
+            const userId = document.getElementById('addCoinsUserId').value;
+            const amount = document.getElementById('addCoinsAmount').value;
 
             if (!userId || !amount) {
                 showNotification('❌ Заполните все поля!', 'error');
@@ -1218,21 +1441,51 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    showNotification('✅ Баланс обновлен!', 'success');
+                    showNotification('✅ Монеты добавлены!', 'success');
                     loadUsers();
                     loadStats();
                 } else {
-                    showNotification('❌ Ошибка обновления баланса!', 'error');
+                    showNotification('❌ Ошибка добавления монет!', 'error');
                 }
             } catch (error) {
                 showNotification('❌ Ошибка подключения!', 'error');
             }
         }
 
-        // Отнять баланс
-        async function subtractBalance() {
-            const userId = document.getElementById('balanceUserId2').value;
-            const amount = document.getElementById('balanceAmount2').value;
+        async function addQuanHash() {
+            const userId = document.getElementById('addHashUserId').value;
+            const amount = document.getElementById('addHashAmount').value;
+
+            if (!userId || !amount) {
+                showNotification('❌ Заполните все поля!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/add-quanhash', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId: parseInt(userId), amount: parseInt(amount) })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('✅ QuanHash добавлен!', 'success');
+                    loadUsers();
+                    loadStats();
+                } else {
+                    showNotification('❌ Ошибка добавления QuanHash!', 'error');
+                }
+            } catch (error) {
+                showNotification('❌ Ошибка подключения!', 'error');
+            }
+        }
+
+        async function subtractCoins() {
+            const userId = document.getElementById('subtractCoinsUserId').value;
+            const amount = document.getElementById('subtractCoinsAmount').value;
 
             if (!userId || !amount) {
                 showNotification('❌ Заполните все поля!', 'error');
@@ -1250,80 +1503,19 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    showNotification('✅ Баланс обновлен!', 'success');
+                    showNotification('✅ Монеты отняты!', 'success');
                     loadUsers();
                     loadStats();
                 } else {
-                    showNotification('❌ Ошибка обновления баланса!', 'error');
+                    showNotification('❌ Ошибка отнятия монет!', 'error');
                 }
             } catch (error) {
                 showNotification('❌ Ошибка подключения!', 'error');
             }
         }
 
-        // Переключение блокировки
-        async function toggleBan() {
-            const userId = document.getElementById('banUserId').value;
-
-            if (!userId) {
-                showNotification('❌ Введите ID пользователя!', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/admin/toggle-ban', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ userId: parseInt(userId) })
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    showNotification(`✅ Пользователь ${data.banned ? 'заблокирован' : 'разблокирован'}!`, 'success');
-                    loadUsers();
-                } else {
-                    showNotification('❌ Ошибка изменения статуса!', 'error');
-                }
-            } catch (error) {
-                showNotification('❌ Ошибка подключения!', 'error');
-            }
-        }
-
-        // Переключение заморозки
-        async function toggleFreeze() {
-            const userId = document.getElementById('freezeUserId').value;
-
-            if (!userId) {
-                showNotification('❌ Введите ID пользователя!', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/admin/freeze', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ userId: parseInt(userId) })
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    showNotification(`✅ Пользователь ${data.frozen ? 'заморожен' : 'разморожен'}!`, 'success');
-                    loadUsers();
-                } else {
-                    showNotification('❌ Ошибка изменения статуса!', 'error');
-                }
-            } catch (error) {
-                showNotification('❌ Ошибка подключения!', 'error');
-            }
-        }
-
-        // Дать бонус всем
-        async function giveBonusToAll() {
-            const amount = document.getElementById('bonusAmount').value;
+        async function giveMassBonus() {
+            const amount = document.getElementById('massBonusAmount').value;
 
             if (!amount) {
                 showNotification('❌ Введите сумму бонуса!', 'error');
@@ -1356,12 +1548,71 @@
             }
         }
 
-        // Отправить событие
-        async function sendEvent() {
-            const message = document.getElementById('eventMessage').value;
+        // Функции модерации
+        async function toggleBan() {
+            const userId = document.getElementById('banUserId').value;
+
+            if (!userId) {
+                showNotification('❌ Введите ID пользователя!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/toggle-ban', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId: parseInt(userId) })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showNotification(`✅ Пользователь ${data.banned ? 'заблокирован' : 'разблокирован'}!`, 'success');
+                    loadUsers();
+                } else {
+                    showNotification('❌ Ошибка изменения статуса!', 'error');
+                }
+            } catch (error) {
+                showNotification('❌ Ошибка подключения!', 'error');
+            }
+        }
+
+        async function toggleFreeze() {
+            const userId = document.getElementById('freezeUserId').value;
+
+            if (!userId) {
+                showNotification('❌ Введите ID пользователя!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/freeze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId: parseInt(userId) })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showNotification(`✅ Пользователь ${data.frozen ? 'заморожен' : 'разморожен'}!`, 'success');
+                    loadUsers();
+                } else {
+                    showNotification('❌ Ошибка изменения статуса!', 'error');
+                }
+            } catch (error) {
+                showNotification('❌ Ошибка подключения!', 'error');
+            }
+        }
+
+        // Функции событий
+        async function sendGlobalMessage() {
+            const message = document.getElementById('globalMessage').value;
 
             if (!message) {
-                showNotification('❌ Введите сообщение события!', 'error');
+                showNotification('❌ Введите сообщение!', 'error');
                 return;
             }
 
@@ -1376,9 +1627,9 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    showNotification('✅ Событие отправлено всем игрокам!', 'success');
+                    showNotification('✅ Сообщение отправлено всем игрокам!', 'success');
                 } else {
-                    showNotification('❌ Ошибка отправки события!', 'error');
+                    showNotification('❌ Ошибка отправки сообщения!', 'error');
                 }
             } catch (error) {
                 showNotification('❌ Ошибка подключения!', 'error');
@@ -1510,27 +1761,6 @@ QuanHash: ${user.quanhash.toLocaleString()}
                 }
             } catch (error) {
                 showNotification('❌ Ошибка подключения!', 'error');
-            }
-        }
-
-        // Экспорт данных
-        async function exportData() {
-            try {
-                const response = await fetch('/api/admin/export-data');
-                const blob = await response.blob();
-                
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `quantum-nexus-backup-${new Date().toISOString().split('T')[0]}.json`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-                
-                showNotification('✅ Данные экспортированы!', 'success');
-            } catch (error) {
-                showNotification('❌ Ошибка экспорта!', 'error');
             }
         }
 

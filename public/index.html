@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Nexus - Ultra Tap Game</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>⚛️ Quantum Nexus - Ultra Quantum Tapper</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
             --primary: #6366f1;
@@ -26,10 +26,6 @@
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            --gradient-primary: linear-gradient(135deg, #6366f1, #8b5cf6);
-            --gradient-success: linear-gradient(135deg, #10b981, #059669);
-            --gradient-warning: linear-gradient(135deg, #f59e0b, #d97706);
-            --gradient-danger: linear-gradient(135deg, #ef4444, #dc2626);
         }
 
         * {
@@ -44,7 +40,10 @@
             min-height: 100vh;
             color: var(--white);
             overflow-x: hidden;
-            position: relative;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
 
         /* Анимированный фон */
@@ -66,12 +65,12 @@
 
         @keyframes backgroundFloat {
             0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            25% { transform: translate(-20px, -30px) scale(1.1) rotate(1deg); }
-            50% { transform: translate(30px, -20px) scale(0.9) rotate(-1deg); }
-            75% { transform: translate(-10px, 30px) scale(1.05) rotate(0.5deg); }
+            25% { transform: translate(-20px, -30px) scale(1.05) rotate(1deg); }
+            50% { transform: translate(30px, -20px) scale(0.95) rotate(-1deg); }
+            75% { transform: translate(-10px, 20px) scale(1.02) rotate(0.5deg); }
         }
 
-        /* Плавающие частицы */
+        /* Частицы */
         .particles {
             position: fixed;
             top: 0;
@@ -79,21 +78,21 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 1;
+            z-index: -1;
         }
 
         .particle {
             position: absolute;
-            width: 4px;
-            height: 4px;
+            width: 2px;
+            height: 2px;
             background: var(--primary);
             border-radius: 50%;
-            animation: float 20s linear infinite;
+            animation: particleFloat 15s linear infinite;
         }
 
-        @keyframes float {
+        @keyframes particleFloat {
             0% {
-                transform: translateY(100vh) translateX(0) rotate(0deg);
+                transform: translateY(100vh) translateX(0);
                 opacity: 0;
             }
             10% {
@@ -103,29 +102,27 @@
                 opacity: 1;
             }
             100% {
-                transform: translateY(-100px) translateX(100px) rotate(360deg);
+                transform: translateY(-100px) translateX(100px);
                 opacity: 0;
             }
         }
 
         .container {
-            max-width: 420px;
+            max-width: 480px;
             margin: 0 auto;
             padding: 20px;
-            min-height: 100vh;
             position: relative;
-            z-index: 2;
+            z-index: 1;
         }
 
         /* Header */
         .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 30px;
             background: var(--glass);
             backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 24px;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
             box-shadow: var(--shadow-xl);
             position: relative;
             overflow: hidden;
@@ -139,7 +136,7 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            animation: shimmer 4s infinite;
+            animation: shimmer 3s infinite;
         }
 
         @keyframes shimmer {
@@ -147,26 +144,42 @@
             100% { left: 100%; }
         }
 
-        .header h1 {
-            font-size: 2.8rem;
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-left h1 {
+            font-size: 1.8rem;
             font-weight: 900;
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            text-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
-            animation: titleGlow 3s ease-in-out infinite alternate;
+            margin-bottom: 5px;
         }
 
-        @keyframes titleGlow {
-            0% { filter: brightness(1); }
-            100% { filter: brightness(1.2); }
-        }
-
-        .header p {
-            font-size: 1.2rem;
+        .header-left p {
             color: var(--gray-light);
-            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .level-info {
+            background: var(--glass-hover);
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--success);
         }
 
         /* Stats Grid */
@@ -174,24 +187,23 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .stat-card {
             background: var(--glass);
             backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 20px;
+            border-radius: 16px;
             padding: 20px;
             box-shadow: var(--shadow-lg);
-            text-align: center;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            transition: all 0.3s ease;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-2px);
             box-shadow: var(--shadow-xl);
             border-color: var(--primary);
         }
@@ -203,300 +215,63 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: var(--gradient-primary);
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
         }
 
-        .stat-card h3 {
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-            color: var(--gray-light);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-card .value {
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 5px;
-            color: var(--white);
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .stat-card .change {
-            font-size: 0.8rem;
-            color: var(--success);
-            font-weight: 500;
-        }
-
-        /* Level System */
-        .level-section {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .level-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--gradient-warning);
-        }
-
-        .level-header {
+        .stat-card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
-        .level-info h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
+        .stat-card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray-light);
+        }
+
+        .stat-card-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .stat-card-icon.coins { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .stat-card-icon.hash { background: rgba(6, 182, 212, 0.2); color: var(--info); }
+
+        .stat-card-value {
+            font-size: 1.8rem;
+            font-weight: 800;
             color: var(--white);
-        }
-
-        .level-info .level-number {
-            font-size: 2rem;
-            font-weight: 900;
-            background: var(--gradient-warning);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
             font-family: 'JetBrains Mono', monospace;
         }
 
-        .level-progress {
-            width: 100%;
-            height: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .level-progress-fill {
-            height: 100%;
-            background: var(--gradient-warning);
-            border-radius: 6px;
-            transition: width 0.5s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .level-progress-fill::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: progressShine 2s infinite;
-        }
-
-        @keyframes progressShine {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        .level-stats {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
+        .stat-card-change {
             font-size: 0.8rem;
             color: var(--gray-light);
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        /* Tap Section */
-        .tap-section {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        .tap-button {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            border: none;
-            background: var(--gradient-primary);
-            color: white;
-            font-size: 1.3rem;
-            font-weight: 700;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 
-                0 25px 50px rgba(99, 102, 241, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            animation: tapPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes tapPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        .tap-button:hover {
-            transform: scale(1.05);
-            box-shadow: 
-                0 30px 60px rgba(99, 102, 241, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        }
-
-        .tap-button:active {
-            transform: scale(0.95);
-        }
-
-        .tap-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .tap-button:hover::before {
-            opacity: 1;
-        }
-
-        .tap-button::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-            transform: translate(-50%, -50%);
-            transition: all 0.3s ease;
-        }
-
-        .tap-button:active::after {
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-        }
-
-        /* Улучшенные эффекты тапа */
-        .tapButtonSpring {
-            animation: springEffect 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        @keyframes springEffect {
-            0% { transform: scale(1); }
-            20% { transform: scale(0.9); }
-            40% { transform: scale(1.15); }
-            60% { transform: scale(0.95); }
-            80% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .tapButtonPulse {
-            animation: pulseEffect 1s ease-in-out;
-        }
-
-        @keyframes pulseEffect {
-            0% { box-shadow: 0 25px 50px rgba(99, 102, 241, 0.3); }
-            50% { box-shadow: 0 25px 50px rgba(99, 102, 241, 0.6), 0 0 0 30px rgba(99, 102, 241, 0.1); }
-            100% { box-shadow: 0 25px 50px rgba(99, 102, 241, 0.3); }
-        }
-
-        .tapButtonShimmer {
-            animation: shimmerEffect 1.2s ease-in-out;
-        }
-
-        @keyframes shimmerEffect {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-
-        .tapButtonRotate {
-            animation: rotateBorder 1s linear;
-        }
-
-        @keyframes rotateBorder {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .criticalTap {
-            animation: criticalEffect 1.2s ease-in-out;
-        }
-
-        @keyframes criticalEffect {
-            0% { transform: scale(1); filter: hue-rotate(0deg); }
-            25% { transform: scale(1.3); filter: hue-rotate(90deg); }
-            50% { transform: scale(0.9); filter: hue-rotate(180deg); }
-            75% { transform: scale(1.2); filter: hue-rotate(270deg); }
-            100% { transform: scale(1); filter: hue-rotate(360deg); }
-        }
-
-        .successTap {
-            animation: successEffect 0.8s ease-in-out;
-        }
-
-        @keyframes successEffect {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        .tap-info {
-            margin-top: 20px;
-            font-size: 1.2rem;
-            color: var(--gray-light);
-            font-weight: 500;
-        }
-
-        .tap-power {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin-top: 10px;
-            font-family: 'JetBrains Mono', monospace;
-        }
+        .stat-card-change.positive { color: var(--success); }
+        .stat-card-change.negative { color: var(--danger); }
 
         /* Energy Bar */
         .energy-section {
             background: var(--glass);
             backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 20px;
+            border-radius: 16px;
             padding: 20px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             box-shadow: var(--shadow-lg);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .energy-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--gradient-success);
         }
 
         .energy-header {
@@ -506,38 +281,39 @@
             margin-bottom: 15px;
         }
 
-        .energy-header h3 {
+        .energy-title {
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .energy-value {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--success);
+        .energy-regen {
+            font-size: 0.8rem;
+            color: var(--gray-light);
             font-family: 'JetBrains Mono', monospace;
         }
 
-        .energy-bar {
-            width: 100%;
+        .energy-bar-container {
+            position: relative;
+            background: var(--glass-hover);
+            border-radius: 12px;
             height: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
             overflow: hidden;
-            position: relative;
         }
 
-        .energy-fill {
+        .energy-bar {
             height: 100%;
-            background: var(--gradient-success);
-            border-radius: 10px;
-            transition: width 0.5s ease;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            transition: width 0.3s ease;
             position: relative;
             overflow: hidden;
         }
 
-        .energy-fill::before {
+        .energy-bar::after {
             content: '';
             position: absolute;
             top: 0;
@@ -545,15 +321,116 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: energyFlow 3s infinite;
+            animation: energyShimmer 2s infinite;
         }
 
-        @keyframes energyFlow {
+        @keyframes energyShimmer {
             0% { left: -100%; }
             100% { left: 100%; }
         }
 
-        /* Navigation */
+        .energy-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--white);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Tap Button */
+        .tap-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .tap-button {
+            width: 200px;
+            height: 200px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 3rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 0 30px rgba(99, 102, 241, 0.3),
+                0 0 60px rgba(139, 92, 246, 0.2),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+            animation: tapPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes tapPulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 
+                    0 0 30px rgba(99, 102, 241, 0.3),
+                    0 0 60px rgba(139, 92, 246, 0.2),
+                    inset 0 0 20px rgba(255, 255, 255, 0.1);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 
+                    0 0 40px rgba(99, 102, 241, 0.4),
+                    0 0 80px rgba(139, 92, 246, 0.3),
+                    inset 0 0 25px rgba(255, 255, 255, 0.15);
+            }
+        }
+
+        .tap-button:hover {
+            transform: scale(1.1);
+            animation-play-state: paused;
+        }
+
+        .tap-button:active {
+            transform: scale(0.95);
+            animation-play-state: paused;
+        }
+
+        .tap-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(255, 255, 255, 0.1) 100%);
+            border-radius: 50%;
+        }
+
+        .tap-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+        }
+
+        .tap-button:active::after {
+            width: 100%;
+            height: 100%;
+        }
+
+        .tap-power {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Navigation Tabs */
         .nav-tabs {
             display: flex;
             background: var(--glass);
@@ -561,8 +438,9 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 6px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             box-shadow: var(--shadow-lg);
+            overflow-x: auto;
         }
 
         .nav-tab {
@@ -575,10 +453,12 @@
             font-size: 0.9rem;
             font-weight: 600;
             color: var(--gray-light);
+            white-space: nowrap;
+            min-width: 80px;
         }
 
         .nav-tab.active {
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             box-shadow: var(--shadow);
         }
@@ -588,249 +468,381 @@
             color: var(--white);
         }
 
-        /* Content Sections */
-        .content-section {
+        /* Tab Content */
+        .tab-content {
             display: none;
-            animation: fadeIn 0.5s ease-out;
+            animation: fadeIn 0.3s ease-out;
         }
 
-        .content-section.active {
+        .tab-content.active {
             display: block;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         /* Shop Section */
+        .shop-section {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .shop-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .shop-section h2::before {
+            content: '';
+            width: 4px;
+            height: 25px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
         .shop-categories {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            overflow-x: auto;
         }
 
-        .category-btn {
-            padding: 12px 16px;
+        .shop-category {
+            padding: 8px 16px;
             border: 1px solid var(--border);
-            border-radius: 12px;
-            background: var(--glass);
-            color: var(--white);
+            border-radius: 20px;
+            background: var(--glass-hover);
+            color: var(--gray-light);
+            font-size: 0.8rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-align: center;
+            white-space: nowrap;
         }
 
-        .category-btn.active {
-            background: var(--gradient-primary);
+        .shop-category.active {
+            background: var(--primary);
+            color: white;
             border-color: var(--primary);
         }
 
-        .category-btn:hover:not(.active) {
-            background: var(--glass-hover);
-            border-color: var(--primary);
+        .shop-category:hover:not(.active) {
+            background: var(--glass);
+            color: var(--white);
         }
 
-        .shop-grid {
+        .shop-items {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 15px;
         }
 
         .shop-item {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
+            background: var(--glass-hover);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 20px;
-            text-align: center;
             transition: all 0.3s ease;
-            cursor: pointer;
             position: relative;
             overflow: hidden;
         }
 
         .shop-item:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-xl);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
             border-color: var(--primary);
         }
 
-        .shop-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
+        .shop-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
         }
 
-        .shop-item:hover::before {
-            left: 100%;
-        }
-
-        .shop-item-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        .shop-item h3 {
-            font-size: 1rem;
-            margin-bottom: 8px;
-            color: var(--white);
-            font-weight: 600;
-        }
-
-        .shop-item .price {
+        .shop-item-title {
             font-size: 1.1rem;
-            color: var(--primary);
             font-weight: 700;
-            margin-bottom: 8px;
+            color: var(--white);
+            margin-bottom: 5px;
+        }
+
+        .shop-item-price {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--success);
             font-family: 'JetBrains Mono', monospace;
         }
 
-        .shop-item .description {
-            font-size: 0.8rem;
+        .shop-item-description {
+            font-size: 0.9rem;
             color: var(--gray-light);
+            margin-bottom: 15px;
             line-height: 1.4;
         }
 
-        .shop-item .level-req {
-            font-size: 0.7rem;
-            color: var(--warning);
-            margin-top: 5px;
+        .shop-item-effect {
+            background: var(--glass);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+            color: var(--info);
             font-weight: 600;
         }
 
+        .shop-item-button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .shop-item-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .shop-item-button:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
         /* Mining Section */
-        .mining-categories {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        .mining-section {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .mining-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mining-section h2::before {
+            content: '';
+            width: 4px;
+            height: 25px;
+            background: linear-gradient(135deg, var(--info), var(--success));
+            border-radius: 2px;
+        }
+
+        .mining-tabs {
+            display: flex;
             gap: 10px;
             margin-bottom: 20px;
         }
 
-        .mining-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .mining-stat {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
+        .mining-tab {
+            flex: 1;
+            padding: 12px;
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .mining-stat h3 {
-            font-size: 0.9rem;
-            margin-bottom: 8px;
+            border-radius: 12px;
+            background: var(--glass-hover);
             color: var(--gray-light);
+            font-size: 0.9rem;
             font-weight: 600;
-        }
-
-        .mining-stat .value {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--white);
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .mining-machines {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-        }
-
-        .mining-machine {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            transition: all 0.3s ease;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
+            transition: all 0.3s ease;
+            text-align: center;
         }
 
-        .mining-machine:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-xl);
+        .mining-tab.active {
+            background: var(--info);
+            color: white;
             border-color: var(--info);
         }
 
-        .mining-machine-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        .mining-machine h3 {
-            font-size: 1rem;
-            margin-bottom: 8px;
+        .mining-tab:hover:not(.active) {
+            background: var(--glass);
             color: var(--white);
-            font-weight: 600;
         }
 
-        .mining-machine .price {
-            font-size: 1.1rem;
+        .mining-stats {
+            background: var(--glass-hover);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .mining-stat {
+            text-align: center;
+        }
+
+        .mining-stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
             color: var(--info);
-            font-weight: 700;
-            margin-bottom: 8px;
             font-family: 'JetBrains Mono', monospace;
         }
 
-        .mining-machine .production {
+        .mining-stat-label {
             font-size: 0.8rem;
             color: var(--gray-light);
-            margin-bottom: 5px;
+            margin-top: 5px;
         }
 
-        .mining-machine .level-req {
-            font-size: 0.7rem;
-            color: var(--warning);
+        /* QuanHash Mining */
+        .quanhash-mining {
+            background: var(--glass-hover);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .quanhash-mining h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quanhash-mining h3::before {
+            content: '⛏️';
+            font-size: 1.5rem;
+        }
+
+        .energy-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .energy-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--glass);
+            color: var(--white);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .energy-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .mine-button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--info), var(--primary));
+            color: white;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mine-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .mine-button:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .mining-info {
+            background: var(--glass);
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.8rem;
+            color: var(--gray-light);
+            text-align: center;
         }
 
         /* Cards Section */
+        .cards-section {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .cards-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cards-section h2::before {
+            content: '';
+            width: 4px;
+            height: 25px;
+            background: linear-gradient(135deg, var(--warning), var(--danger));
+            border-radius: 2px;
+        }
+
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
         }
 
         .card-item {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
+            background: var(--glass-hover);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 20px;
             text-align: center;
             transition: all 0.3s ease;
-            cursor: pointer;
             position: relative;
             overflow: hidden;
         }
 
         .card-item:hover {
-            transform: translateY(-5px) rotate(2deg);
-            box-shadow: var(--shadow-xl);
-            border-color: var(--secondary);
-        }
-
-        .card-item.owned {
-            border-color: var(--success);
-            background: rgba(16, 185, 129, 0.1);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--warning);
         }
 
         .card-icon {
@@ -838,135 +850,365 @@
             margin-bottom: 10px;
         }
 
-        .card-item h3 {
+        .card-name {
             font-size: 1rem;
-            margin-bottom: 8px;
+            font-weight: 700;
             color: var(--white);
-            font-weight: 600;
+            margin-bottom: 5px;
         }
 
-        .card-item .price {
-            font-size: 1.1rem;
-            color: var(--secondary);
-            font-weight: 700;
-            margin-bottom: 8px;
+        .card-income {
+            font-size: 0.9rem;
+            color: var(--success);
+            font-weight: 600;
             font-family: 'JetBrains Mono', monospace;
         }
 
-        .card-item .effect {
-            font-size: 0.8rem;
-            color: var(--gray-light);
-            line-height: 1.4;
-        }
-
-        .card-item .level-req {
-            font-size: 0.7rem;
+        .card-price {
+            font-size: 1.1rem;
             color: var(--warning);
-            margin-top: 5px;
-            font-weight: 600;
+            font-weight: 800;
+            margin-top: 10px;
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        /* News Section */
-        .news-item {
+        /* Leaderboard */
+        .leaderboard-section {
             background: var(--glass);
             backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 16px;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .leaderboard-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .leaderboard-section h2::before {
+            content: '';
+            width: 4px;
+            height: 25px;
+            background: linear-gradient(135deg, var(--success), var(--warning));
+            border-radius: 2px;
+        }
+
+        .leaderboard-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .leaderboard-tab {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--glass-hover);
+            color: var(--gray-light);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .leaderboard-tab.active {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .leaderboard-tab:hover:not(.active) {
+            background: var(--glass);
+            color: var(--white);
+        }
+
+        .leaderboard-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .leaderboard-item {
+            background: var(--glass-hover);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .leaderboard-rank {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .leaderboard-rank.top-1 { background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; }
+        .leaderboard-rank.top-2 { background: linear-gradient(135deg, #c0c0c0, #e5e5e5); color: #000; }
+        .leaderboard-rank.top-3 { background: linear-gradient(135deg, #cd7f32, #daa520); color: #fff; }
+
+        .leaderboard-info {
+            flex: 1;
+        }
+
+        .leaderboard-name {
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 2px;
+        }
+
+        .leaderboard-value {
+            font-size: 0.9rem;
+            color: var(--gray-light);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* News Section */
+        .news-section {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .news-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .news-section h2::before {
+            content: '';
+            width: 4px;
+            height: 25px;
+            background: linear-gradient(135deg, var(--info), var(--primary));
+            border-radius: 2px;
+        }
+
+        .news-item {
+            background: var(--glass-hover);
+            border-radius: 12px;
             padding: 20px;
             margin-bottom: 15px;
+            border: 1px solid var(--border);
             transition: all 0.3s ease;
         }
 
         .news-item:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
             border-color: var(--info);
         }
 
-        .news-item h3 {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            color: var(--white);
-            font-weight: 600;
+        .news-item:last-child {
+            margin-bottom: 0;
         }
 
-        .news-item .date {
+        .news-date {
             font-size: 0.8rem;
             color: var(--gray-light);
             margin-bottom: 10px;
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        .news-item .content {
+        .news-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 10px;
+        }
+
+        .news-content {
             font-size: 0.9rem;
             color: var(--gray-light);
             line-height: 1.5;
+        }
+
+        /* Support Section */
+        .support-section {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .support-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .support-section h2::before {
+            content: '';
+            width: 4px;
+            height: 25px;
+            background: linear-gradient(135deg, var(--warning), var(--danger));
+            border-radius: 2px;
+        }
+
+        .support-form {
+            display: grid;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: grid;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--glass);
+            color: var(--white);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .support-button {
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--warning), var(--danger));
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .support-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
         /* Notifications */
         .notification {
             position: fixed;
             top: 20px;
-            right: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             padding: 16px 24px;
             border-radius: 12px;
             color: white;
             font-weight: 600;
             z-index: 1000;
-            animation: slideInRight 0.3s ease-out;
+            animation: slideInDown 0.3s ease-out;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: var(--shadow-lg);
-            max-width: 300px;
+            max-width: 90%;
         }
 
         .notification.success {
-            background: var(--gradient-success);
+            background: linear-gradient(135deg, var(--success), #059669);
         }
 
         .notification.error {
-            background: var(--gradient-danger);
+            background: linear-gradient(135deg, var(--danger), #dc2626);
         }
 
         .notification.info {
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--info), #0891b2);
         }
 
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(100%); }
-            to { opacity: 1; transform: translateX(0); }
+        @keyframes slideInDown {
+            from { opacity: 0; transform: translateX(-50%) translateY(-100%); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
-        /* Particles */
-        .tap-particle {
-            position: absolute;
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        .tap-particle.coin {
+        /* Loading */
+        .loading {
+            display: inline-block;
             width: 20px;
             height: 20px;
-            background: radial-gradient(circle, #fbbf24, #f59e0b);
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            animation: coinFloat 1.5s ease-out forwards;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
         }
 
-        .tap-particle.hash {
-            width: 15px;
-            height: 15px;
-            background: radial-gradient(circle, #06b6d4, #0891b2);
-            border-radius: 50%;
-            animation: hashFloat 1.2s ease-out forwards;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        @keyframes coinFloat {
-            0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-120px) scale(0.3) rotate(360deg); opacity: 0; }
+        /* Tap Effects */
+        .tap-effect {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--success);
+            animation: tapEffectAnimation 1s ease-out forwards;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
         }
 
-        @keyframes hashFloat {
-            0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-100px) scale(0.2) rotate(180deg); opacity: 0; }
+        @keyframes tapEffectAnimation {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.5);
+            }
         }
 
         /* Responsive */
@@ -976,539 +1218,399 @@
             }
             
             .tap-button {
-                width: 250px;
-                height: 250px;
-            }
-            
-            .header h1 {
-                font-size: 2.2rem;
+                width: 160px;
+                height: 160px;
+                font-size: 2.5rem;
             }
             
             .stats-grid {
                 grid-template-columns: 1fr;
-                gap: 10px;
             }
             
-            .shop-grid,
-            .mining-machines,
+            .shop-categories {
+                flex-wrap: wrap;
+            }
+            
             .cards-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             }
-            
-            .shop-categories,
-            .mining-categories {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        }
+
+        /* Telegram Web App specific styles */
+        .tg-viewport {
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .tg-main-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
         }
     </style>
 </head>
 <body>
-    <!-- Плавающие частицы -->
     <div class="particles" id="particles"></div>
-
+    
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>⚛️ Quantum Nexus</h1>
-            <p>Ultra Tap Game - Квантовая Вселенная</p>
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>⚛️ Quantum Nexus</h1>
+                    <p>Ultra Quantum Tapper</p>
+                </div>
+                <div class="header-right">
+                    <div class="level-info" id="levelInfo">
+                        Уровень <span id="userLevel">1</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-card">
-                <h3>💰 Монеты</h3>
-                <div class="value" id="coins">0</div>
-                <div class="change">+0 за клик</div>
+                <div class="stat-card-header">
+                    <div class="stat-card-title">💰 Монеты</div>
+                    <div class="stat-card-icon coins">💎</div>
+                </div>
+                <div class="stat-card-value" id="coinsValue">0</div>
+                <div class="stat-card-change positive" id="coinsPerHour">
+                    <span>↗</span>
+                    <span>+0/час</span>
+                </div>
             </div>
             <div class="stat-card">
-                <h3>⛏️ QuanHash</h3>
-                <div class="value" id="quanhash">0</div>
-                <div class="change">+0 в час</div>
-            </div>
-        </div>
-
-        <!-- Level System -->
-        <div class="level-section">
-            <div class="level-header">
-                <div class="level-info">
-                    <h3>Уровень</h3>
-                    <div class="level-number" id="level">1</div>
+                <div class="stat-card-header">
+                    <div class="stat-card-title">⛏️ QuanHash</div>
+                    <div class="stat-card-icon hash">🔗</div>
                 </div>
-                <div class="level-info">
-                    <h3>Опыт</h3>
-                    <div class="level-number" id="experience">0</div>
+                <div class="stat-card-value" id="hashValue">0</div>
+                <div class="stat-card-change positive" id="hashPerHour">
+                    <span>↗</span>
+                    <span>+0/час</span>
                 </div>
             </div>
-            <div class="level-progress">
-                <div class="level-progress-fill" id="levelProgress" style="width: 0%"></div>
-            </div>
-            <div class="level-stats">
-                <span id="currentExp">0</span>
-                <span id="requiredExp">100</span>
-            </div>
         </div>
 
-        <!-- Tap Section -->
-        <div class="tap-section">
-            <button class="tap-button" id="tapButton" onclick="tap()">
-                <div class="tap-info">Нажми для добычи</div>
-                <div class="tap-power" id="tapPower">+1</div>
-            </button>
-        </div>
-
-        <!-- Energy Section -->
+        <!-- Energy Bar -->
         <div class="energy-section">
             <div class="energy-header">
-                <h3>⚡ Энергия</h3>
-                <div class="energy-value" id="energy">100/100</div>
+                <div class="energy-title">
+                    <span>⚡</span>
+                    <span>Энергия</span>
+                </div>
+                <div class="energy-regen" id="energyRegen">+0.1/сек</div>
             </div>
-            <div class="energy-bar">
-                <div class="energy-fill" id="energyFill" style="width: 100%"></div>
+            <div class="energy-bar-container">
+                <div class="energy-bar" id="energyBar" style="width: 100%"></div>
+                <div class="energy-text" id="energyText">1000/1000</div>
             </div>
         </div>
 
-        <!-- Navigation -->
+        <!-- Tap Button -->
+        <div class="tap-section">
+            <button class="tap-button" id="tapButton" onclick="tap()">
+                ⚛️
+            </button>
+            <div class="tap-power" id="tapPower">+1 за клик</div>
+        </div>
+
+        <!-- Navigation Tabs -->
         <div class="nav-tabs">
             <div class="nav-tab active" onclick="switchTab('shop')">🛒 Магазин</div>
             <div class="nav-tab" onclick="switchTab('mining')">⛏️ Майнинг</div>
             <div class="nav-tab" onclick="switchTab('cards')">🃏 Карты</div>
+            <div class="nav-tab" onclick="switchTab('leaderboard')">🏆 Топ</div>
             <div class="nav-tab" onclick="switchTab('news')">📰 Новости</div>
+            <div class="nav-tab" onclick="switchTab('support')">🆘 Поддержка</div>
         </div>
 
-        <!-- Shop Section -->
-        <div class="content-section active" id="shopSection">
-            <div class="shop-categories">
-                <div class="category-btn active" onclick="switchShopCategory('all')">Все</div>
-                <div class="category-btn" onclick="switchShopCategory('tap')">Тап</div>
-                <div class="category-btn" onclick="switchShopCategory('energy')">Энергия</div>
-                <div class="category-btn" onclick="switchShopCategory('auto')">Авто</div>
-                <div class="category-btn" onclick="switchShopCategory('special')">Особые</div>
-            </div>
-            <div class="shop-grid" id="shopGrid">
-                <!-- Shop items loaded dynamically -->
-            </div>
-        </div>
-
-        <!-- Mining Section -->
-        <div class="content-section" id="miningSection">
-            <div class="mining-categories">
-                <div class="category-btn active" onclick="switchMiningCategory('all')">Все</div>
-                <div class="category-btn" onclick="switchMiningCategory('basic')">Базовые</div>
-                <div class="category-btn" onclick="switchMiningCategory('advanced')">Продвинутые</div>
-                <div class="category-btn" onclick="switchMiningCategory('quantum')">Квантовые</div>
-                <div class="category-btn" onclick="switchMiningCategory('legendary')">Легендарные</div>
-            </div>
-            <div class="mining-stats">
-                <div class="mining-stat">
-                    <h3>Производство</h3>
-                    <div class="value" id="miningRate">0</div>
+        <!-- Shop Tab -->
+        <div class="tab-content active" id="shopTab">
+            <div class="shop-section">
+                <h2>🛒 Магазин Бустов</h2>
+                <div class="shop-categories">
+                    <div class="shop-category active" onclick="switchShopCategory('tap')">Тап</div>
+                    <div class="shop-category" onclick="switchShopCategory('energy')">Энергия</div>
+                    <div class="shop-category" onclick="switchShopCategory('passive')">Пассивный доход</div>
+                    <div class="shop-category" onclick="switchShopCategory('auto')">Автотап</div>
                 </div>
-                <div class="mining-stat">
-                    <h3>Машины</h3>
-                    <div class="value" id="miningMachines">0</div>
+                
+                <div class="shop-items" id="shopItems">
+                    <!-- Shop items will be loaded dynamically -->
                 </div>
             </div>
-            <div class="mining-machines" id="miningGrid">
-                <!-- Mining machines loaded dynamically -->
+        </div>
+
+        <!-- Mining Tab -->
+        <div class="tab-content" id="miningTab">
+            <div class="mining-section">
+                <h2>⛏️ Майнинг QuanHash</h2>
+                <div class="mining-tabs">
+                    <div class="mining-tab active" onclick="switchMiningTab('machines')">Машины</div>
+                    <div class="mining-tab" onclick="switchMiningTab('premium')">Премиум</div>
+                    <div class="mining-tab" onclick="switchMiningTab('manual')">Ручная добыча</div>
+                </div>
+                
+                <div class="mining-stats">
+                    <div class="mining-stat">
+                        <div class="mining-stat-value" id="totalHashPerHour">0</div>
+                        <div class="mining-stat-label">QuanHash/час</div>
+                    </div>
+                    <div class="mining-stat">
+                        <div class="mining-stat-value" id="totalMachines">0</div>
+                        <div class="mining-stat-label">Машин</div>
+                    </div>
+                </div>
+                
+                <div class="mining-content" id="miningContent">
+                    <!-- Mining content will be loaded dynamically -->
+                </div>
             </div>
         </div>
 
-        <!-- Cards Section -->
-        <div class="content-section" id="cardsSection">
-            <div class="cards-grid" id="cardsGrid">
-                <!-- Cards loaded dynamically -->
+        <!-- Cards Tab -->
+        <div class="tab-content" id="cardsTab">
+            <div class="cards-section">
+                <h2>🃏 Коллекция Карт</h2>
+                <div class="cards-grid" id="cardsGrid">
+                    <!-- Cards will be loaded dynamically -->
+                </div>
             </div>
         </div>
 
-        <!-- News Section -->
-        <div class="content-section" id="newsSection">
-            <div id="newsList">
-                <!-- News loaded dynamically -->
+        <!-- Leaderboard Tab -->
+        <div class="tab-content" id="leaderboardTab">
+            <div class="leaderboard-section">
+                <h2>🏆 Лидерборд</h2>
+                <div class="leaderboard-tabs">
+                    <div class="leaderboard-tab active" onclick="switchLeaderboardTab('coins')">Монеты</div>
+                    <div class="leaderboard-tab" onclick="switchLeaderboardTab('hash')">QuanHash</div>
+                </div>
+                <div class="leaderboard-list" id="leaderboardList">
+                    <!-- Leaderboard will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- News Tab -->
+        <div class="tab-content" id="newsTab">
+            <div class="news-section">
+                <h2>📰 Новости Quantum Nexus</h2>
+                <div id="newsContent">
+                    <!-- News will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Support Tab -->
+        <div class="tab-content" id="supportTab">
+            <div class="support-section">
+                <h2>🆘 Поддержка</h2>
+                <form class="support-form" id="supportForm">
+                    <div class="form-group">
+                        <label for="supportCategory">Категория проблемы:</label>
+                        <select id="supportCategory" required>
+                            <option value="">Выберите категорию</option>
+                            <option value="technical">Технические проблемы</option>
+                            <option value="gameplay">Игровой процесс</option>
+                            <option value="balance">Проблемы с балансом</option>
+                            <option value="bug">Ошибки и баги</option>
+                            <option value="suggestion">Предложения</option>
+                            <option value="other">Другое</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="supportMessage">Опишите проблему:</label>
+                        <textarea id="supportMessage" placeholder="Подробно опишите вашу проблему или предложение..." required></textarea>
+                    </div>
+                    <button type="submit" class="support-button">Отправить сообщение</button>
+                </form>
             </div>
         </div>
     </div>
 
     <script>
-        // Game Data
-        let gameData = {
+        // Game state
+        let gameState = {
+            user: null,
             coins: 0,
             quanhash: 0,
-            tapPower: 1,
-            energy: 100,
-            maxEnergy: 100,
             level: 1,
             experience: 0,
-            miningRate: 0,
-            miningMachines: 0,
-            ownedCards: [],
-            lastLogin: Date.now(),
-            offlineIncome: 0
+            energy: 1000,
+            maxEnergy: 1000,
+            energyRegenRate: 0.1,
+            coinsPerHour: 0,
+            hashPerHour: 0,
+            tapPower: 1,
+            autoTapHours: 0,
+            autoTapEndTime: 0,
+            isBanned: false,
+            isFrozen: false,
+            freezeEndTime: 0,
+            offlineCoins: 0,
+            offlineHash: 0,
+            hoursOffline: 0
         };
 
-        // Shop Items (40+ items)
-        const shopItems = {
-            all: [
-                // Tap Power Items
-                { id: 'tap_power_1', name: 'Усилитель Тапа', icon: '⚡', price: 100, category: 'tap', effect: '+1 к силе тапа', levelReq: 1 },
-                { id: 'tap_power_2', name: 'Мега Усилитель', icon: '⚡⚡', price: 500, category: 'tap', effect: '+2 к силе тапа', levelReq: 5 },
-                { id: 'tap_power_3', name: 'Супер Усилитель', icon: '⚡⚡⚡', price: 2000, category: 'tap', effect: '+5 к силе тапа', levelReq: 10 },
-                { id: 'tap_power_4', name: 'Квантовый Усилитель', icon: '⚛️', price: 10000, category: 'tap', effect: '+10 к силе тапа', levelReq: 20 },
-                { id: 'tap_power_5', name: 'Легендарный Усилитель', icon: '👑', price: 50000, category: 'tap', effect: '+25 к силе тапа', levelReq: 50 },
-                
-                // Energy Items
-                { id: 'energy_boost_1', name: 'Энергетик', icon: '🔋', price: 50, category: 'energy', effect: '+20 энергии', levelReq: 1 },
-                { id: 'energy_boost_2', name: 'Мега Энергетик', icon: '🔋🔋', price: 200, category: 'energy', effect: '+50 энергии', levelReq: 3 },
-                { id: 'energy_boost_3', name: 'Супер Энергетик', icon: '🔋🔋🔋', price: 800, category: 'energy', effect: '+100 энергии', levelReq: 8 },
-                { id: 'energy_boost_4', name: 'Квантовый Энергетик', icon: '⚡', price: 3000, category: 'energy', effect: '+200 энергии', levelReq: 15 },
-                { id: 'energy_boost_5', name: 'Легендарный Энергетик', icon: '🌟', price: 15000, category: 'energy', effect: '+500 энергии', levelReq: 30 },
-                
-                // Auto Items
-                { id: 'auto_tap_1', name: 'Авто-Тап', icon: '🤖', price: 500, category: 'auto', effect: 'Автоматический тап каждые 3 сек', levelReq: 2 },
-                { id: 'auto_tap_2', name: 'Быстрый Авто-Тап', icon: '🤖⚡', price: 2000, category: 'auto', effect: 'Автоматический тап каждые 2 сек', levelReq: 8 },
-                { id: 'auto_tap_3', name: 'Молниеносный Авто-Тап', icon: '🤖⚡⚡', price: 8000, category: 'auto', effect: 'Автоматический тап каждую секунду', levelReq: 20 },
-                { id: 'auto_tap_4', name: 'Квантовый Авто-Тап', icon: '🤖⚛️', price: 30000, category: 'auto', effect: 'Автоматический тап каждые 0.5 сек', levelReq: 40 },
-                
-                // Special Items
-                { id: 'critical_chance', name: 'Критический Удар', icon: '💥', price: 300, category: 'special', effect: '+5% шанс критического урона', levelReq: 3 },
-                { id: 'critical_damage', name: 'Критический Урон', icon: '💥💥', price: 1200, category: 'special', effect: '+50% критического урона', levelReq: 12 },
-                { id: 'lucky_strike', name: 'Удачный Удар', icon: '🍀', price: 600, category: 'special', effect: '+10% шанс двойного дохода', levelReq: 6 },
-                { id: 'golden_touch', name: 'Золотое Прикосновение', icon: '✨', price: 2500, category: 'special', effect: '+25% к доходу от тапа', levelReq: 15 },
-                { id: 'quantum_resonance', name: 'Квантовый Резонанс', icon: '🌊', price: 10000, category: 'special', effect: '+100% к доходу от тапа', levelReq: 25 },
-                { id: 'cosmic_power', name: 'Космическая Сила', icon: '🌌', price: 50000, category: 'special', effect: '+500% к доходу от тапа', levelReq: 60 },
-                
-                // More items...
-                { id: 'energy_efficiency', name: 'Энергоэффективность', icon: '⚡', price: 400, category: 'energy', effect: '-50% расход энергии', levelReq: 4 },
-                { id: 'energy_regen', name: 'Регенерация', icon: '🔄', price: 800, category: 'energy', effect: '+2 энергии в секунду', levelReq: 7 },
-                { id: 'energy_capacity', name: 'Емкость', icon: '📦', price: 1500, category: 'energy', effect: '+50 максимальной энергии', levelReq: 10 },
-                { id: 'energy_mastery', name: 'Мастерство Энергии', icon: '🎯', price: 5000, category: 'energy', effect: '+100 максимальной энергии', levelReq: 18 },
-                { id: 'energy_transcendence', name: 'Трансценденция', icon: '🌟', price: 20000, category: 'energy', effect: '+500 максимальной энергии', levelReq: 35 },
-                
-                { id: 'tap_mastery', name: 'Мастерство Тапа', icon: '👆', price: 300, category: 'tap', effect: '+3 к силе тапа', levelReq: 2 },
-                { id: 'tap_expertise', name: 'Экспертиза Тапа', icon: '👆👆', price: 1200, category: 'tap', effect: '+7 к силе тапа', levelReq: 7 },
-                { id: 'tap_perfection', name: 'Совершенство Тапа', icon: '👆👆👆', price: 4000, category: 'tap', effect: '+15 к силе тапа', levelReq: 14 },
-                { id: 'tap_transcendence', name: 'Трансценденция Тапа', icon: '👆⚛️', price: 15000, category: 'tap', effect: '+30 к силе тапа', levelReq: 28 },
-                
-                { id: 'auto_efficiency', name: 'Авто Эффективность', icon: '🤖⚡', price: 1000, category: 'auto', effect: 'Авто-тап не тратит энергию', levelReq: 5 },
-                { id: 'auto_speed', name: 'Авто Скорость', icon: '🤖🚀', price: 3000, category: 'auto', effect: 'Авто-тап каждые 0.8 сек', levelReq: 12 },
-                { id: 'auto_power', name: 'Авто Сила', icon: '🤖💪', price: 8000, category: 'auto', effect: '+50% к силе авто-тапа', levelReq: 22 },
-                { id: 'auto_transcendence', name: 'Авто Трансценденция', icon: '🤖🌟', price: 25000, category: 'auto', effect: '+200% к силе авто-тапа', levelReq: 45 },
-                
-                { id: 'luck_boost', name: 'Удача', icon: '🍀', price: 200, category: 'special', effect: '+2% шанс бонуса', levelReq: 1 },
-                { id: 'fortune', name: 'Фортуна', icon: '🍀🍀', price: 800, category: 'special', effect: '+5% шанс бонуса', levelReq: 5 },
-                { id: 'destiny', name: 'Судьба', icon: '🍀🍀🍀', price: 3000, category: 'special', effect: '+10% шанс бонуса', levelReq: 12 },
-                { id: 'divine_blessing', name: 'Божественное Благословение', icon: '🙏', price: 12000, category: 'special', effect: '+20% шанс бонуса', levelReq: 25 },
-                { id: 'cosmic_fortune', name: 'Космическая Удача', icon: '🌌🍀', price: 40000, category: 'special', effect: '+50% шанс бонуса', levelReq: 50 },
-                
-                { id: 'quantum_leap', name: 'Квантовый Скачок', icon: '⚛️🚀', price: 15000, category: 'special', effect: 'Случайный бонус каждые 10 тапов', levelReq: 20 },
-                { id: 'dimensional_rift', name: 'Разлом Измерений', icon: '🌀', price: 35000, category: 'special', effect: 'Случайный бонус каждые 5 тапов', levelReq: 40 },
-                { id: 'reality_bend', name: 'Искривление Реальности', icon: '🌊', price: 75000, category: 'special', effect: 'Случайный бонус каждые 3 тапа', levelReq: 70 },
-                { id: 'universe_control', name: 'Контроль Вселенной', icon: '🌌👑', price: 150000, category: 'special', effect: 'Случайный бонус каждый тап', levelReq: 100 }
-            ],
-            tap: [],
-            energy: [],
-            auto: [],
-            special: []
-        };
+        let currentTab = 'shop';
+        let currentShopCategory = 'tap';
+        let currentMiningTab = 'machines';
+        let currentLeaderboardTab = 'coins';
 
-        // Mining Machines (40+ machines)
-        const miningMachines = {
-            all: [
-                // Basic Machines
-                { id: 'basic_miner_1', name: 'Базовый Майнер', icon: '🔧', price: 100, category: 'basic', production: 0.1, levelReq: 1 },
-                { id: 'basic_miner_2', name: 'Улучшенный Майнер', icon: '🔧⚡', price: 300, category: 'basic', production: 0.3, levelReq: 3 },
-                { id: 'basic_miner_3', name: 'Продвинутый Майнер', icon: '🔧🔧', price: 800, category: 'basic', production: 0.8, levelReq: 6 },
-                { id: 'basic_miner_4', name: 'Экспертный Майнер', icon: '🔧🔧⚡', price: 2000, category: 'basic', production: 2.0, levelReq: 10 },
-                { id: 'basic_miner_5', name: 'Мастер Майнер', icon: '🔧🔧🔧', price: 5000, category: 'basic', production: 5.0, levelReq: 15 },
-                
-                // Advanced Machines
-                { id: 'advanced_miner_1', name: 'Промышленный Майнер', icon: '⚙️', price: 1000, category: 'advanced', production: 1.5, levelReq: 5 },
-                { id: 'advanced_miner_2', name: 'Автоматический Майнер', icon: '⚙️🤖', price: 2500, category: 'advanced', production: 3.5, levelReq: 8 },
-                { id: 'advanced_miner_3', name: 'Роботизированный Майнер', icon: '⚙️🤖⚡', price: 6000, category: 'advanced', production: 8.0, levelReq: 12 },
-                { id: 'advanced_miner_4', name: 'ИИ Майнер', icon: '⚙️🧠', price: 15000, category: 'advanced', production: 20.0, levelReq: 18 },
-                { id: 'advanced_miner_5', name: 'Квантовый ИИ Майнер', icon: '⚙️🧠⚛️', price: 40000, category: 'advanced', production: 50.0, levelReq: 25 },
-                
-                // Quantum Machines
-                { id: 'quantum_miner_1', name: 'Квантовый Майнер', icon: '⚛️', price: 5000, category: 'quantum', production: 10.0, levelReq: 10 },
-                { id: 'quantum_miner_2', name: 'Квантовый Ускоритель', icon: '⚛️⚡', price: 12000, category: 'quantum', production: 25.0, levelReq: 15 },
-                { id: 'quantum_miner_3', name: 'Квантовый Реактор', icon: '⚛️⚛️', price: 30000, category: 'quantum', production: 60.0, levelReq: 22 },
-                { id: 'quantum_miner_4', name: 'Квантовый Коллайдер', icon: '⚛️⚛️⚡', price: 75000, category: 'quantum', production: 150.0, levelReq: 30 },
-                { id: 'quantum_miner_5', name: 'Квантовый Портал', icon: '⚛️🌀', price: 200000, category: 'quantum', production: 400.0, levelReq: 40 },
-                
-                // Legendary Machines
-                { id: 'legendary_miner_1', name: 'Легендарный Майнер', icon: '👑', price: 25000, category: 'legendary', production: 100.0, levelReq: 20 },
-                { id: 'legendary_miner_2', name: 'Мифический Майнер', icon: '👑🌟', price: 60000, category: 'legendary', production: 250.0, levelReq: 28 },
-                { id: 'legendary_miner_3', name: 'Божественный Майнер', icon: '👑🌟⚡', price: 150000, category: 'legendary', production: 600.0, levelReq: 35 },
-                { id: 'legendary_miner_4', name: 'Космический Майнер', icon: '👑🌌', price: 400000, category: 'legendary', production: 1500.0, levelReq: 45 },
-                { id: 'legendary_miner_5', name: 'Вселенский Майнер', icon: '👑🌌⚛️', price: 1000000, category: 'legendary', production: 4000.0, levelReq: 60 },
-                
-                // More machines...
-                { id: 'crystal_miner', name: 'Кристальный Майнер', icon: '💎', price: 800, category: 'basic', production: 1.2, levelReq: 4 },
-                { id: 'plasma_miner', name: 'Плазменный Майнер', icon: '🔥', price: 2000, category: 'basic', production: 3.0, levelReq: 7 },
-                { id: 'laser_miner', name: 'Лазерный Майнер', icon: '🔴', price: 5000, category: 'basic', production: 7.5, levelReq: 11 },
-                { id: 'sonic_miner', name: 'Звуковой Майнер', icon: '🔊', price: 12000, category: 'basic', production: 18.0, levelReq: 16 },
-                { id: 'gravity_miner', name: 'Гравитационный Майнер', icon: '🌍', price: 30000, category: 'basic', production: 45.0, levelReq: 24 },
-                
-                { id: 'fusion_miner', name: 'Термоядерный Майнер', icon: '☀️', price: 3000, category: 'advanced', production: 6.0, levelReq: 6 },
-                { id: 'antimatter_miner', name: 'Антиматериальный Майнер', icon: '💥', price: 8000, category: 'advanced', production: 15.0, levelReq: 10 },
-                { id: 'dark_matter_miner', name: 'Темный Майнер', icon: '🌑', price: 20000, category: 'advanced', production: 35.0, levelReq: 15 },
-                { id: 'neutron_miner', name: 'Нейтронный Майнер', icon: '⚛️', price: 50000, category: 'advanced', production: 80.0, levelReq: 22 },
-                { id: 'black_hole_miner', name: 'Черная Дыра Майнер', icon: '🕳️', price: 125000, category: 'advanced', production: 200.0, levelReq: 32 },
-                
-                { id: 'dimension_miner', name: 'Измеренческий Майнер', icon: '🌀', price: 10000, category: 'quantum', production: 20.0, levelReq: 12 },
-                { id: 'time_miner', name: 'Временной Майнер', icon: '⏰', price: 25000, category: 'quantum', production: 50.0, levelReq: 18 },
-                { id: 'space_miner', name: 'Пространственный Майнер', icon: '🌌', price: 60000, category: 'quantum', production: 120.0, levelReq: 26 },
-                { id: 'reality_miner', name: 'Реальностный Майнер', icon: '🌊', price: 150000, category: 'quantum', production: 300.0, levelReq: 35 },
-                { id: 'void_miner', name: 'Пустотный Майнер', icon: '🌫️', price: 400000, category: 'quantum', production: 800.0, levelReq: 50 },
-                
-                { id: 'phoenix_miner', name: 'Феникс Майнер', icon: '🔥', price: 50000, category: 'legendary', production: 200.0, levelReq: 25 },
-                { id: 'dragon_miner', name: 'Дракон Майнер', icon: '🐉', price: 120000, category: 'legendary', production: 500.0, levelReq: 32 },
-                { id: 'titan_miner', name: 'Титан Майнер', icon: '🗿', price: 300000, category: 'legendary', production: 1200.0, levelReq: 42 },
-                { id: 'god_miner', name: 'Бог Майнер', icon: '👑', price: 800000, category: 'legendary', production: 3000.0, levelReq: 55 },
-                { id: 'omnipotent_miner', name: 'Всемогущий Майнер', icon: '🌟', price: 2000000, category: 'legendary', production: 8000.0, levelReq: 80 }
-            ],
-            basic: [],
-            advanced: [],
-            quantum: [],
-            legendary: []
-        };
+        // Initialize Telegram Web App
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
+            window.Telegram.WebApp.MainButton.hide();
+        }
 
-        // Cards
-        const cards = [
-            { id: 'lucky_card', name: 'Удачная Карта', icon: '🍀', price: 500, effect: '+10% к доходу', levelReq: 3 },
-            { id: 'golden_card', name: 'Золотая Карта', icon: '✨', price: 1500, effect: '+25% к доходу', levelReq: 8 },
-            { id: 'diamond_card', name: 'Алмазная Карта', icon: '💎', price: 4000, effect: '+50% к доходу', levelReq: 15 },
-            { id: 'quantum_card', name: 'Квантовая Карта', icon: '⚛️', price: 10000, effect: '+100% к доходу', levelReq: 25 },
-            { id: 'cosmic_card', name: 'Космическая Карта', icon: '🌌', price: 25000, effect: '+250% к доходу', levelReq: 40 },
-            { id: 'legendary_card', name: 'Легендарная Карта', icon: '👑', price: 60000, effect: '+500% к доходу', levelReq: 60 },
-            { id: 'mythical_card', name: 'Мифическая Карта', icon: '🌟', price: 150000, effect: '+1000% к доходу', levelReq: 80 },
-            { id: 'divine_card', name: 'Божественная Карта', icon: '🙏', price: 400000, effect: '+2500% к доходу', levelReq: 100 }
-        ];
-
-        // News
-        const news = [
-            {
-                title: '🚀 QuanHash готовится к листингу!',
-                date: '2024-01-15',
-                content: 'Мы рады сообщить, что наша криптовалюта QuanHash готовится к официальному листингу на крупных биржах. Следите за обновлениями!'
-            },
-            {
-                title: '📈 Рост стоимости QuanHash',
-                date: '2024-01-10',
-                content: 'За последнюю неделю стоимость QuanHash выросла на 25%! Инвесторы проявляют большой интерес к нашей технологии.'
-            },
-            {
-                title: '🎯 Новые партнерства',
-                date: '2024-01-05',
-                content: 'Quantum Nexus заключил стратегические партнерства с ведущими технологическими компаниями для развития экосистемы.'
-            },
-            {
-                title: '⚛️ Квантовые технологии',
-                date: '2024-01-01',
-                content: 'Наша команда работает над революционными квантовыми технологиями, которые изменят будущее майнинга.'
+        // Create particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particlesContainer.appendChild(particle);
             }
-        ];
+        }
 
         // Initialize game
-        function initGame() {
-            loadGameData();
-            updateUI();
-            startGameLoop();
-            loadShopItems();
-            loadMiningMachines();
-            loadCards();
-            loadNews();
-            createParticles();
-            
-            // Update every 5 seconds
-            setInterval(saveGameData, 5000);
-            
-            // Update mining every second
-            setInterval(updateMining, 1000);
-            
-            // Update energy every 2 seconds
-            setInterval(updateEnergy, 2000);
-        }
+        async function initGame() {
+            try {
+                // Get Telegram init data
+                const initData = window.Telegram?.WebApp?.initData || '';
+                
+                const response = await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Telegram-Init-Data': initData
+                    },
+                    body: JSON.stringify({ initData })
+                });
 
-        // Load game data
-        function loadGameData() {
-            const saved = localStorage.getItem('quantumNexusData');
-            if (saved) {
-                const savedData = JSON.parse(saved);
-                gameData = { ...gameData, ...savedData };
+                const data = await response.json();
+                
+                if (data.success) {
+                    gameState = { ...gameState, ...data.user };
+                    updateUI();
+                    
+                    // Show offline earnings notification
+                    if (gameState.offlineCoins > 0 || gameState.offlineHash > 0) {
+                        showNotification(
+                            `💰 Оффлайн доход: ${gameState.offlineCoins.toLocaleString()} монет, ${gameState.offlineHash.toLocaleString()} QuanHash за ${gameState.hoursOffline}ч`,
+                            'success'
+                        );
+                    }
+                    
+                    loadShopItems();
+                    loadMiningContent();
+                    loadCards();
+                    loadLeaderboard();
+                    loadNews();
+                } else {
+                    showNotification('❌ Ошибка авторизации!', 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка инициализации:', error);
+                showNotification('❌ Ошибка подключения к серверу!', 'error');
             }
-            
-            // Check offline income
-            const now = Date.now();
-            const timeDiff = now - gameData.lastLogin;
-            
-            if (timeDiff > 30000) { // More than 30 seconds
-                const offlineHours = Math.min(timeDiff / (1000 * 60 * 60), 3); // Max 3 hours
-                gameData.offlineIncome = Math.floor(gameData.miningRate * offlineHours * 3600);
-            }
-            
-            gameData.lastLogin = now;
-        }
-
-        // Save game data
-        function saveGameData() {
-            gameData.lastLogin = Date.now();
-            localStorage.setItem('quantumNexusData', JSON.stringify(gameData));
         }
 
         // Update UI
         function updateUI() {
-            document.getElementById('coins').textContent = gameData.coins.toLocaleString();
-            document.getElementById('quanhash').textContent = gameData.quanhash.toLocaleString();
-            document.getElementById('tapPower').textContent = `+${gameData.tapPower}`;
-            document.getElementById('level').textContent = gameData.level;
-            document.getElementById('experience').textContent = gameData.experience;
-            document.getElementById('energy').textContent = `${gameData.energy}/${gameData.maxEnergy}`;
-            document.getElementById('energyFill').style.width = `${(gameData.energy / gameData.maxEnergy) * 100}%`;
-            document.getElementById('miningRate').textContent = gameData.miningRate.toFixed(1);
-            document.getElementById('miningMachines').textContent = gameData.miningMachines;
+            document.getElementById('coinsValue').textContent = gameState.coins.toLocaleString();
+            document.getElementById('hashValue').textContent = gameState.quanhash.toLocaleString();
+            document.getElementById('userLevel').textContent = gameState.level;
+            document.getElementById('tapPower').textContent = `+${gameState.tapPower} за клик`;
+            document.getElementById('coinsPerHour').innerHTML = `<span>↗</span><span>+${gameState.coinsPerHour}/час</span>`;
+            document.getElementById('hashPerHour').innerHTML = `<span>↗</span><span>+${gameState.hashPerHour}/час</span>`;
             
-            // Update level progress
-            const requiredExp = gameData.level * 100;
-            const progress = (gameData.experience / requiredExp) * 100;
-            document.getElementById('levelProgress').style.width = `${Math.min(progress, 100)}%`;
-            document.getElementById('currentExp').textContent = gameData.experience;
-            document.getElementById('requiredExp').textContent = requiredExp;
+            // Update energy
+            const energyPercent = (gameState.energy / gameState.maxEnergy) * 100;
+            document.getElementById('energyBar').style.width = energyPercent + '%';
+            document.getElementById('energyText').textContent = `${gameState.energy}/${gameState.maxEnergy}`;
+            document.getElementById('energyRegen').textContent = `+${gameState.energyRegenRate}/сек`;
+            
+            // Update mining stats
+            document.getElementById('totalHashPerHour').textContent = gameState.hashPerHour.toLocaleString();
         }
 
-        // Main tap function
-        function tap() {
-            if (gameData.energy <= 0) {
+        // Tap function
+        async function tap() {
+            if (gameState.energy < 1) {
                 showNotification('❌ Недостаточно энергии!', 'error');
                 return;
             }
 
-            // Energy consumption
-            gameData.energy = Math.max(0, gameData.energy - 1);
-            
-            // Calculate income
-            let income = gameData.tapPower;
-            
-            // Critical hit (10% chance)
-            if (Math.random() < 0.1) {
-                income *= 3;
-                addTapEffect('criticalTap');
-                showNotification('💥 Критический удар!', 'success');
-            } else {
-                addTapEffect('successTap');
-            }
-            
-            // Add income
-            gameData.coins += income;
-            gameData.experience += income;
-            
-            // Check level up
-            checkLevelUp();
-            
-            // Create particles
-            createTapParticles(income);
-            
-            // Update UI
-            updateUI();
-            
-            // Button animation
-            addTapEffect();
-        }
+            try {
+                const response = await fetch('/api/tap', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+                    }
+                });
 
-        // Add tap effect
-        function addTapEffect(specificEffect = null) {
-            const button = document.getElementById('tapButton');
-            
-            // Remove previous effects
-            const effects = ['tapButtonSpring', 'tapButtonPulse', 'tapButtonShimmer', 'tapButtonRotate'];
-            effects.forEach(effect => button.classList.remove(effect));
-            
-            // Add random or specific effect
-            const effect = specificEffect || effects[Math.floor(Math.random() * effects.length)];
-            button.classList.add(effect);
-            
-            // Remove effect after animation
-            setTimeout(() => {
-                button.classList.remove(effect);
-            }, 1200);
-        }
-
-        // Create tap particles
-        function createTapParticles(amount) {
-            const button = document.getElementById('tapButton');
-            const rect = button.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            
-            // Create coin particles
-            for (let i = 0; i < Math.min(amount, 15); i++) {
-                setTimeout(() => {
-                    const particle = document.createElement('div');
-                    particle.className = 'tap-particle coin';
-                    particle.style.left = centerX + (Math.random() - 0.5) * 120 + 'px';
-                    particle.style.top = centerY + (Math.random() - 0.5) * 120 + 'px';
-                    document.body.appendChild(particle);
+                const data = await response.json();
+                
+                if (data.success) {
+                    gameState.coins += data.coinsEarned;
+                    gameState.experience += data.experienceEarned;
+                    gameState.energy = data.newEnergy;
                     
-                    setTimeout(() => {
-                        particle.remove();
-                    }, 1500);
-                }, i * 50);
-            }
-        }
-
-        // Create mining particles
-        function createMiningParticles() {
-            const miningSection = document.querySelector('#miningSection');
-            if (!miningSection) return;
-            
-            const rect = miningSection.getBoundingClientRect();
-            
-            for (let i = 0; i < 3; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'tap-particle hash';
-                particle.style.left = rect.left + Math.random() * rect.width + 'px';
-                particle.style.top = rect.top + Math.random() * rect.height + 'px';
-                document.body.appendChild(particle);
-                
-                setTimeout(() => {
-                    particle.remove();
-                }, 1200);
-            }
-        }
-
-        // Update mining
-        function updateMining() {
-            if (gameData.miningRate > 0) {
-                gameData.quanhash += gameData.miningRate / 3600; // Per second, converted to hourly display
-                updateUI();
-                
-                // Create mining particles
-                if (Math.random() < 0.3) {
-                    createMiningParticles();
+                    updateUI();
+                    
+                    // Show tap effect
+                    showTapEffect(data.coinsEarned);
+                    
+                    // Check for level up
+                    const newLevel = Math.floor(gameState.experience / 1000) + 1;
+                    if (newLevel > gameState.level) {
+                        gameState.level = newLevel;
+                        showNotification(`🎉 Уровень повышен до ${newLevel}!`, 'success');
+                        updateUI();
+                    }
+                } else {
+                    showNotification(data.error || '❌ Ошибка тапа!', 'error');
                 }
+            } catch (error) {
+                console.error('Ошибка тапа:', error);
+                showNotification('❌ Ошибка подключения!', 'error');
             }
         }
 
-        // Update energy
-        function updateEnergy() {
-            if (gameData.energy < gameData.maxEnergy) {
-                gameData.energy = Math.min(gameData.maxEnergy, gameData.energy + 1);
-                updateUI();
-            }
-        }
-
-        // Check level up
-        function checkLevelUp() {
-            const requiredExp = gameData.level * 100;
+        // Show tap effect
+        function showTapEffect(amount) {
+            const effect = document.createElement('div');
+            effect.className = 'tap-effect';
+            effect.textContent = `+${amount}`;
+            effect.style.left = Math.random() * 200 + 140 + 'px';
+            effect.style.top = Math.random() * 100 + 300 + 'px';
+            document.body.appendChild(effect);
             
-            if (gameData.experience >= requiredExp) {
-                gameData.level += 1;
-                gameData.experience -= requiredExp;
-                gameData.maxEnergy += 10;
-                gameData.energy = gameData.maxEnergy;
-                
-                showNotification(`🎉 Уровень ${gameData.level}!`, 'success');
-                updateUI();
-            }
+            setTimeout(() => {
+                effect.remove();
+            }, 1000);
         }
 
         // Switch tabs
@@ -1517,246 +1619,398 @@
             document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             
-            // Update content sections
-            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
-            document.getElementById(tab + 'Section').classList.add('active');
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tab + 'Tab').classList.add('active');
+            
+            currentTab = tab;
         }
 
-        // Switch shop categories
+        // Shop functions
         function switchShopCategory(category) {
-            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.shop-category').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            
-            const items = category === 'all' ? shopItems.all : shopItems[category];
-            renderShopItems(items);
+            currentShopCategory = category;
+            loadShopItems();
         }
 
-        // Switch mining categories
-        function switchMiningCategory(category) {
-            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            const machines = category === 'all' ? miningMachines.all : miningMachines[category];
-            renderMiningMachines(machines);
-        }
-
-        // Load shop items
         function loadShopItems() {
-            // Categorize items
-            shopItems.tap = shopItems.all.filter(item => item.category === 'tap');
-            shopItems.energy = shopItems.all.filter(item => item.category === 'energy');
-            shopItems.auto = shopItems.all.filter(item => item.category === 'auto');
-            shopItems.special = shopItems.all.filter(item => item.category === 'special');
-            
-            renderShopItems(shopItems.all);
-        }
+            const shopItems = {
+                tap: [
+                    { id: 'tap_power_1', name: 'Усилитель Тапа', price: 100, description: 'Увеличивает силу тапа', effect: '+1 к силе тапа', coinsPerHour: 0 },
+                    { id: 'tap_power_5', name: 'Мега Усилитель', price: 450, description: 'Значительно увеличивает силу тапа', effect: '+5 к силе тапа', coinsPerHour: 0 },
+                    { id: 'tap_power_10', name: 'Ультра Усилитель', price: 800, description: 'Максимально увеличивает силу тапа', effect: '+10 к силе тапа', coinsPerHour: 0 }
+                ],
+                energy: [
+                    { id: 'energy_capacity', name: 'Расширитель Энергии', price: 200, description: 'Увеличивает максимальную энергию', effect: '+100 к максимальной энергии', coinsPerHour: 0 },
+                    { id: 'energy_regen', name: 'Регенератор', price: 300, description: 'Ускоряет восстановление энергии', effect: '+0.1 к скорости восстановления', coinsPerHour: 0 }
+                ],
+                passive: [
+                    { id: 'coins_per_hour_50', name: 'Пассивный Доход', price: 500, description: 'Генерирует монеты каждый час', effect: '+50 монет/час', coinsPerHour: 50 },
+                    { id: 'coins_per_hour_100', name: 'Усиленный Доход', price: 900, description: 'Больше пассивного дохода', effect: '+100 монет/час', coinsPerHour: 100 },
+                    { id: 'coins_per_hour_200', name: 'Максимальный Доход', price: 1600, description: 'Максимальный пассивный доход', effect: '+200 монет/час', coinsPerHour: 200 }
+                ],
+                auto: [
+                    { id: 'auto_tap_1h', name: 'Автотап 1ч', price: 1000, description: 'Автоматический тап на 1 час', effect: 'Автотап на 1 час', coinsPerHour: 0 },
+                    { id: 'auto_tap_3h', name: 'Автотап 3ч', price: 2500, description: 'Автоматический тап на 3 часа', effect: 'Автотап на 3 часа', coinsPerHour: 0 },
+                    { id: 'auto_tap_12h', name: 'Автотап 12ч', price: 8000, description: 'Автоматический тап на 12 часов', effect: 'Автотап на 12 часов', coinsPerHour: 0 },
+                    { id: 'auto_tap_24h', name: 'Автотап 24ч', price: 15000, description: 'Автоматический тап на 24 часа', effect: 'Автотап на 24 часа', coinsPerHour: 0 }
+                ]
+            };
 
-        // Render shop items
-        function renderShopItems(items) {
-            const grid = document.getElementById('shopGrid');
-            grid.innerHTML = items.map(item => `
-                <div class="shop-item" onclick="buyShopItem('${item.id}')">
-                    <div class="shop-item-icon">${item.icon}</div>
-                    <h3>${item.name}</h3>
-                    <div class="price">${item.price.toLocaleString()} монет</div>
-                    <div class="description">${item.effect}</div>
-                    ${item.levelReq > gameData.level ? `<div class="level-req">Требуется уровень ${item.levelReq}</div>` : ''}
+            const items = shopItems[currentShopCategory] || [];
+            const container = document.getElementById('shopItems');
+            
+            container.innerHTML = items.map(item => `
+                <div class="shop-item">
+                    <div class="shop-item-header">
+                        <div>
+                            <div class="shop-item-title">${item.name}</div>
+                            <div class="shop-item-description">${item.description}</div>
+                        </div>
+                        <div class="shop-item-price">${item.price.toLocaleString()}</div>
+                    </div>
+                    <div class="shop-item-effect">${item.effect}</div>
+                    <button class="shop-item-button" onclick="buyBoost('${item.id}')" ${gameState.coins < item.price ? 'disabled' : ''}>
+                        ${gameState.coins < item.price ? 'Недостаточно монет' : 'Купить'}
+                    </button>
                 </div>
             `).join('');
         }
 
-        // Load mining machines
-        function loadMiningMachines() {
-            // Categorize machines
-            miningMachines.basic = miningMachines.all.filter(machine => machine.category === 'basic');
-            miningMachines.advanced = miningMachines.all.filter(machine => machine.category === 'advanced');
-            miningMachines.quantum = miningMachines.all.filter(machine => machine.category === 'quantum');
-            miningMachines.legendary = miningMachines.all.filter(machine => machine.category === 'legendary');
-            
-            renderMiningMachines(miningMachines.all);
-        }
+        async function buyBoost(boostId) {
+            try {
+                const response = await fetch('/api/buy-boost', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+                    },
+                    body: JSON.stringify({ boostId, boostType: 'boost' })
+                });
 
-        // Render mining machines
-        function renderMiningMachines(machines) {
-            const grid = document.getElementById('miningGrid');
-            grid.innerHTML = machines.map(machine => `
-                <div class="mining-machine" onclick="buyMiningMachine('${machine.id}')">
-                    <div class="mining-machine-icon">${machine.icon}</div>
-                    <h3>${machine.name}</h3>
-                    <div class="price">${machine.price.toLocaleString()} QuanHash</div>
-                    <div class="production">+${machine.production}/час</div>
-                    ${machine.levelReq > gameData.level ? `<div class="level-req">Требуется уровень ${machine.levelReq}</div>` : ''}
-                </div>
-            `).join('');
-        }
-
-        // Load cards
-        function loadCards() {
-            const grid = document.getElementById('cardsGrid');
-            grid.innerHTML = cards.map(card => `
-                <div class="card-item ${gameData.ownedCards.includes(card.id) ? 'owned' : ''}" onclick="buyCard('${card.id}')">
-                    <div class="card-icon">${card.icon}</div>
-                    <h3>${card.name}</h3>
-                    <div class="price">${card.price.toLocaleString()} монет</div>
-                    <div class="effect">${card.effect}</div>
-                    ${card.levelReq > gameData.level ? `<div class="level-req">Требуется уровень ${card.levelReq}</div>` : ''}
-                </div>
-            `).join('');
-        }
-
-        // Load news
-        function loadNews() {
-            const list = document.getElementById('newsList');
-            list.innerHTML = news.map(item => `
-                <div class="news-item">
-                    <h3>${item.title}</h3>
-                    <div class="date">${item.date}</div>
-                    <div class="content">${item.content}</div>
-                </div>
-            `).join('');
-        }
-
-        // Buy shop item
-        function buyShopItem(itemId) {
-            const item = shopItems.all.find(i => i.id === itemId);
-            if (!item) return;
-            
-            if (item.levelReq > gameData.level) {
-                showNotification(`❌ Требуется уровень ${item.levelReq}!`, 'error');
-                return;
-            }
-            
-            if (gameData.coins < item.price) {
-                showNotification('❌ Недостаточно монет!', 'error');
-                return;
-            }
-            
-            gameData.coins -= item.price;
-            
-            // Apply effect
-            switch (item.category) {
-                case 'tap':
-                    gameData.tapPower += parseInt(item.effect.match(/\d+/)[0]);
-                    break;
-                case 'energy':
-                    if (item.effect.includes('энергии')) {
-                        const amount = parseInt(item.effect.match(/\d+/)[0]);
-                        gameData.energy = Math.min(gameData.maxEnergy, gameData.energy + amount);
-                    } else if (item.effect.includes('максимальной')) {
-                        const amount = parseInt(item.effect.match(/\d+/)[0]);
-                        gameData.maxEnergy += amount;
-                    }
-                    break;
-                case 'auto':
-                    // Auto tap logic would go here
-                    break;
-                case 'special':
-                    // Special effects would go here
-                    break;
-            }
-            
-            showNotification(`✅ ${item.name} куплен!`, 'success');
-            updateUI();
-        }
-
-        // Buy mining machine
-        function buyMiningMachine(machineId) {
-            const machine = miningMachines.all.find(m => m.id === machineId);
-            if (!machine) return;
-            
-            if (machine.levelReq > gameData.level) {
-                showNotification(`❌ Требуется уровень ${machine.levelReq}!`, 'error');
-                return;
-            }
-            
-            if (gameData.quanhash < machine.price) {
-                showNotification('❌ Недостаточно QuanHash!', 'error');
-                return;
-            }
-            
-            gameData.quanhash -= machine.price;
-            gameData.miningRate += machine.production;
-            gameData.miningMachines += 1;
-            
-            showNotification(`⛏️ ${machine.name} куплен! +${machine.production}/час`, 'success');
-            updateUI();
-        }
-
-        // Buy card
-        function buyCard(cardId) {
-            const card = cards.find(c => c.id === cardId);
-            if (!card) return;
-            
-            if (card.levelReq > gameData.level) {
-                showNotification(`❌ Требуется уровень ${card.levelReq}!`, 'error');
-                return;
-            }
-            
-            if (gameData.coins < card.price) {
-                showNotification('❌ Недостаточно монет!', 'error');
-                return;
-            }
-            
-            if (gameData.ownedCards.includes(cardId)) {
-                showNotification('❌ Карта уже куплена!', 'error');
-                return;
-            }
-            
-            gameData.coins -= card.price;
-            gameData.ownedCards.push(cardId);
-            
-            showNotification(`🃏 ${card.name} куплена!`, 'success');
-            updateUI();
-            loadCards();
-        }
-
-        // Create floating particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            
-            setInterval(() => {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
-                particle.style.animationDelay = Math.random() * 5 + 's';
-                particlesContainer.appendChild(particle);
+                const data = await response.json();
                 
-                setTimeout(() => {
-                    particle.remove();
-                }, 30000);
-            }, 2000);
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    gameState.coins = data.newBalance;
+                    updateUI();
+                    loadShopItems();
+                } else {
+                    showNotification(data.error || '❌ Ошибка покупки!', 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка покупки:', error);
+                showNotification('❌ Ошибка подключения!', 'error');
+            }
         }
 
-        // Show notifications
+        // Mining functions
+        function switchMiningTab(tab) {
+            document.querySelectorAll('.mining-tab').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            currentMiningTab = tab;
+            loadMiningContent();
+        }
+
+        function loadMiningContent() {
+            const container = document.getElementById('miningContent');
+            
+            if (currentMiningTab === 'machines') {
+                const machines = [
+                    { id: 'basic_miner', name: 'Базовый Майнер', price: 1000, hashPerHour: 10, description: 'Простая майнинг машина' },
+                    { id: 'advanced_miner', name: 'Продвинутый Майнер', price: 5000, hashPerHour: 50, description: 'Улучшенная майнинг машина' },
+                    { id: 'quantum_miner', name: 'Квантовый Майнер', price: 15000, hashPerHour: 150, description: 'Высокотехнологичный майнер' },
+                    { id: 'nexus_miner', name: 'Nexus Майнер', price: 50000, hashPerHour: 500, description: 'Элитная майнинг машина' },
+                    { id: 'ultra_miner', name: 'Ультра Майнер', price: 150000, hashPerHour: 1500, description: 'Легендарная майнинг машина' }
+                ];
+                
+                container.innerHTML = machines.map(machine => `
+                    <div class="shop-item">
+                        <div class="shop-item-header">
+                            <div>
+                                <div class="shop-item-title">${machine.name}</div>
+                                <div class="shop-item-description">${machine.description}</div>
+                            </div>
+                            <div class="shop-item-price">${machine.price.toLocaleString()}</div>
+                        </div>
+                        <div class="shop-item-effect">+${machine.hashPerHour} QuanHash/час</div>
+                        <button class="shop-item-button" onclick="buyMiningMachine('${machine.id}')" ${gameState.coins < machine.price ? 'disabled' : ''}>
+                            ${gameState.coins < machine.price ? 'Недостаточно монет' : 'Купить за монеты'}
+                        </button>
+                    </div>
+                `).join('');
+            } else if (currentMiningTab === 'premium') {
+                const premiumMachines = [
+                    { id: 'quantum_core', name: 'Квантовое Ядро', price: 1000, hashPerHour: 1000, description: 'Премиум майнинг ядро' },
+                    { id: 'nexus_core', name: 'Nexus Ядро', price: 5000, hashPerHour: 5000, description: 'Элитное майнинг ядро' },
+                    { id: 'ultra_core', name: 'Ультра Ядро', price: 15000, hashPerHour: 15000, description: 'Легендарное майнинг ядро' },
+                    { id: 'infinity_core', name: 'Бесконечное Ядро', price: 50000, hashPerHour: 50000, description: 'Мифическое майнинг ядро' },
+                    { id: 'cosmic_core', name: 'Космическое Ядро', price: 150000, hashPerHour: 150000, description: 'Божественное майнинг ядро' }
+                ];
+                
+                container.innerHTML = premiumMachines.map(machine => `
+                    <div class="shop-item">
+                        <div class="shop-item-header">
+                            <div>
+                                <div class="shop-item-title">${machine.name}</div>
+                                <div class="shop-item-description">${machine.description}</div>
+                            </div>
+                            <div class="shop-item-price">${machine.price.toLocaleString()} QuanHash</div>
+                        </div>
+                        <div class="shop-item-effect">+${machine.hashPerHour} QuanHash/час</div>
+                        <button class="shop-item-button" onclick="buyPremiumMachine('${machine.id}')" ${gameState.quanhash < machine.price ? 'disabled' : ''}>
+                            ${gameState.quanhash < machine.price ? 'Недостаточно QuanHash' : 'Купить за QuanHash'}
+                        </button>
+                    </div>
+                `).join('');
+            } else if (currentMiningTab === 'manual') {
+                container.innerHTML = `
+                    <div class="quanhash-mining">
+                        <h3>Ручная добыча QuanHash</h3>
+                        <div class="energy-input-group">
+                            <input type="number" class="energy-input" id="energyAmount" placeholder="Энергия" min="10" max="100" value="10">
+                            <button class="mine-button" onclick="mineQuanHash()">Добыть</button>
+                        </div>
+                        <div class="mining-info">
+                            💡 Дорого и медленно, но можно добывать QuanHash вручную за энергию
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        async function buyMiningMachine(machineId) {
+            try {
+                const response = await fetch('/api/buy-mining-machine', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+                    },
+                    body: JSON.stringify({ machineId })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    gameState.coins = data.newBalance;
+                    gameState.hashPerHour = data.newHashPerHour;
+                    updateUI();
+                    loadMiningContent();
+                } else {
+                    showNotification(data.error || '❌ Ошибка покупки!', 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка покупки машины:', error);
+                showNotification('❌ Ошибка подключения!', 'error');
+            }
+        }
+
+        async function buyPremiumMachine(machineId) {
+            try {
+                const response = await fetch('/api/buy-premium-machine', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+                    },
+                    body: JSON.stringify({ machineId })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    gameState.quanhash = data.newQuanHash;
+                    gameState.hashPerHour = data.newHashPerHour;
+                    updateUI();
+                    loadMiningContent();
+                } else {
+                    showNotification(data.error || '❌ Ошибка покупки!', 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка покупки премиум машины:', error);
+                showNotification('❌ Ошибка подключения!', 'error');
+            }
+        }
+
+        async function mineQuanHash() {
+            const energyAmount = parseInt(document.getElementById('energyAmount').value);
+            
+            if (!energyAmount || energyAmount < 10 || energyAmount > 100) {
+                showNotification('❌ Введите количество энергии от 10 до 100!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/mine-quanhash', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+                    },
+                    body: JSON.stringify({ energyAmount })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    gameState.quanhash = data.newQuanHash;
+                    gameState.energy = data.newEnergy;
+                    updateUI();
+                } else {
+                    showNotification(data.error || '❌ Ошибка добычи!', 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка добычи QuanHash:', error);
+                showNotification('❌ Ошибка подключения!', 'error');
+            }
+        }
+
+        // Cards functions
+        function loadCards() {
+            const cards = [
+                { id: 'quantum_card', name: 'Квантовая Карта', icon: '⚛️', income: 25, price: 1000 },
+                { id: 'nexus_card', name: 'Nexus Карта', icon: '🔗', income: 50, price: 2500 },
+                { id: 'ultra_card', name: 'Ультра Карта', icon: '💎', income: 100, price: 5000 },
+                { id: 'infinity_card', name: 'Бесконечная Карта', icon: '♾️', income: 250, price: 10000 },
+                { id: 'cosmic_card', name: 'Космическая Карта', icon: '🌌', income: 500, price: 25000 }
+            ];
+            
+            const container = document.getElementById('cardsGrid');
+            container.innerHTML = cards.map(card => `
+                <div class="card-item">
+                    <div class="card-icon">${card.icon}</div>
+                    <div class="card-name">${card.name}</div>
+                    <div class="card-income">+${card.income}/час</div>
+                    <div class="card-price">${card.price.toLocaleString()} монет</div>
+                </div>
+            `).join('');
+        }
+
+        // Leaderboard functions
+        function switchLeaderboardTab(tab) {
+            document.querySelectorAll('.leaderboard-tab').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            currentLeaderboardTab = tab;
+            loadLeaderboard();
+        }
+
+        async function loadLeaderboard() {
+            try {
+                const response = await fetch(`/api/leaderboard?limit=10&type=${currentLeaderboardTab}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const container = document.getElementById('leaderboardList');
+                    container.innerHTML = data.leaderboard.map((player, index) => `
+                        <div class="leaderboard-item">
+                            <div class="leaderboard-rank ${index < 3 ? `top-${index + 1}` : ''}">${index + 1}</div>
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-name">${player.username || 'Игрок'}</div>
+                                <div class="leaderboard-value">
+                                    ${currentLeaderboardTab === 'coins' ? 
+                                        player.balance.toLocaleString() + ' монет' : 
+                                        player.quanhash.toLocaleString() + ' QuanHash'
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки лидерборда:', error);
+            }
+        }
+
+        // News functions
+        async function loadNews() {
+            const news = [
+                {
+                    date: '15 января 2025',
+                    title: '🚀 Запуск Quantum Nexus 2.0',
+                    content: 'Мы рады объявить о запуске новой версии Quantum Nexus! Добавлены новые механики, улучшенный дизайн и множество новых возможностей для игроков.'
+                },
+                {
+                    date: '10 января 2025',
+                    title: '📈 Планы на листинг QuanHash',
+                    content: 'Команда Quantum Nexus активно работает над подготовкой к листингу криптовалюты QuanHash на крупных биржах. Ожидаемая дата листинга - март 2025 года.'
+                },
+                {
+                    date: '5 января 2025',
+                    title: '🎉 Новогодние события',
+                    content: 'В честь Нового года все игроки получают бонусные монеты и ускоренную добычу QuanHash до конца января!'
+                }
+            ];
+            
+            const container = document.getElementById('newsContent');
+            container.innerHTML = news.map(item => `
+                <div class="news-item">
+                    <div class="news-date">${item.date}</div>
+                    <div class="news-title">${item.title}</div>
+                    <div class="news-content">${item.content}</div>
+                </div>
+            `).join('');
+        }
+
+        // Support functions
+        document.getElementById('supportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const category = document.getElementById('supportCategory').value;
+            const message = document.getElementById('supportMessage').value;
+            
+            try {
+                const response = await fetch('/api/support', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Telegram-Init-Data': window.Telegram?.WebApp?.initData || ''
+                    },
+                    body: JSON.stringify({ category, message })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    document.getElementById('supportForm').reset();
+                } else {
+                    showNotification(data.error || '❌ Ошибка отправки!', 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка отправки сообщения:', error);
+                showNotification('❌ Ошибка подключения!', 'error');
+            }
+        });
+
+        // Show notification
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.textContent = message;
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 notification.remove();
             }, 4000);
         }
 
-        // Main game loop
-        function startGameLoop() {
-            setInterval(() => {
+        // Energy regeneration
+        setInterval(() => {
+            if (gameState.energy < gameState.maxEnergy) {
+                gameState.energy = Math.min(gameState.energy + gameState.energyRegenRate, gameState.maxEnergy);
                 updateUI();
-                saveGameData();
-            }, 1000);
-        }
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            initGame();
-            
-            // Initialize Telegram Web App
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.ready();
-                window.Telegram.WebApp.expand();
             }
+        }, 1000);
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            initGame();
         });
     </script>
 </body>

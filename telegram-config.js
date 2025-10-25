@@ -1,53 +1,65 @@
-// Telegram Web App Configuration
-// Этот файл содержит настройки для интеграции с Telegram
-
 const TELEGRAM_CONFIG = {
-  BOT_TOKEN: '8426192106:AAGGlkfOYAhaQKPp-bcL-3oHXBE50tzAMog',
-  WEB_APP_URL: 'https://quantum-nexus.ru',
-  
-  // Настройки Web App
-  WEB_APP_SETTINGS: {
-    theme: 'dark',
-    backgroundColor: '#667eea',
-    textColor: '#ffffff',
-    buttonColor: '#4ecdc4',
-    buttonTextColor: '#ffffff'
-  },
-  
-  // Команды бота
-  BOT_COMMANDS: [
-    { command: 'start', description: 'Начать игру Quantum Nexus' },
-    { command: 'play', description: 'Открыть игру' },
-    { command: 'help', description: 'Помощь по игре' },
-    { command: 'referral', description: 'Получить реферальный код' }
-  ]
+    BOT_TOKEN: '8426192106:AAGGlkfOYAhaQKPp-bcL-3oHXBE50tzAMog',
+    WEB_APP_URL: 'https://quantum-nexus.ru',
+    
+    // Валидация Telegram Web App
+    validateWebApp: function(initData) {
+        try {
+            const urlParams = new URLSearchParams(initData);
+            const hash = urlParams.get('hash');
+            urlParams.delete('hash');
+            
+            const dataCheckString = Array.from(urlParams.entries())
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([key, value]) => `${key}=${value}`)
+                .join('\n');
+            
+            const crypto = require('crypto');
+            const secretKey = crypto.createHash('sha256').update(this.BOT_TOKEN).digest();
+            const calculatedHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
+            
+            return calculatedHash === hash;
+        } catch (error) {
+            return false;
+        }
+    },
+    
+    // Извлечение данных пользователя
+    extractUserData: function(initData) {
+        try {
+            const urlParams = new URLSearchParams(initData);
+            const userParam = urlParams.get('user');
+            if (!userParam) return null;
+            
+            const user = JSON.parse(decodeURIComponent(userParam));
+            return {
+                id: user.id,
+                username: user.username || user.first_name,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                language_code: user.language_code
+            };
+        } catch (error) {
+            return null;
+        }
+    },
+    
+    // Получение параметров запуска
+    getLaunchParams: function(initData) {
+        try {
+            const urlParams = new URLSearchParams(initData);
+            const startParam = urlParams.get('start_param');
+            return startParam ? decodeURIComponent(startParam) : null;
+        } catch (error) {
+            return null;
+        }
+    },
+    
+    // Проверка реферального кода
+    getReferralCode: function(initData) {
+        const startParam = this.getLaunchParams(initData);
+        return startParam || null;
+    }
 };
 
-// Функция для проверки подписи Telegram Web App
-function validateTelegramWebAppData(initData, botToken) {
-  const crypto = require('crypto');
-  
-  try {
-    const urlParams = new URLSearchParams(initData);
-    const hash = urlParams.get('hash');
-    urlParams.delete('hash');
-    
-    const dataCheckString = Array.from(urlParams.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([key, value]) => `${key}=${value}`)
-      .join('\n');
-    
-    const secretKey = crypto.createHmac('sha256', 'WebAppData').update(botToken).digest();
-    const calculatedHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
-    
-    return calculatedHash === hash;
-  } catch (error) {
-    console.error('Ошибка валидации Telegram данных:', error);
-    return false;
-  }
-}
-
-module.exports = {
-  TELEGRAM_CONFIG,
-  validateTelegramWebAppData
-};
+module.exports = TELEGRAM_CONFIG;
