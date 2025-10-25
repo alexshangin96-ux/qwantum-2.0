@@ -127,6 +127,40 @@ db.serialize(() => {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users (id)
     )`);
+
+    // Таблица ежедневных заданий
+    db.run(`CREATE TABLE IF NOT EXISTS daily_tasks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        task_id TEXT,
+        task_type TEXT,
+        progress INTEGER DEFAULT 0,
+        target INTEGER DEFAULT 1,
+        completed INTEGER DEFAULT 0,
+        claimed INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+    )`);
+
+    // Таблица ежедневных входов
+    db.run(`CREATE TABLE IF NOT EXISTS daily_logins (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        login_date DATE,
+        streak INTEGER DEFAULT 1,
+        claimed INTEGER DEFAULT 0,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+    )`);
+
+    // Таблица рефералов
+    db.run(`CREATE TABLE IF NOT EXISTS referrals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        referrer_id INTEGER,
+        referred_id INTEGER,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (referrer_id) REFERENCES users (id),
+        FOREIGN KEY (referred_id) REFERENCES users (id)
+    )`);
 });
 
 // Функция генерации реферального кода
@@ -541,16 +575,16 @@ app.post('/api/buy-mining-machine', requireAuth, (req, res) => {
     const { machineId } = req.body;
     
     const machines = {
-        'basic_miner': { cost: 1000, hash_per_hour: 10 },
-        'advanced_miner': { cost: 5000, hash_per_hour: 50 },
-        'quantum_miner': { cost: 15000, hash_per_hour: 150 },
-        'nexus_miner': { cost: 50000, hash_per_hour: 500 },
-        'ultra_miner': { cost: 150000, hash_per_hour: 1500 },
-        'cosmic_miner': { cost: 500000, hash_per_hour: 5000 },
-        'divine_miner': { cost: 1500000, hash_per_hour: 15000 },
-        'infinite_miner': { cost: 5000000, hash_per_hour: 50000 },
-        'legendary_miner': { cost: 15000000, hash_per_hour: 150000 },
-        'mythical_miner': { cost: 50000000, hash_per_hour: 500000 }
+        'basic_miner': { cost: 5000, hash_per_hour: 5 },
+        'advanced_miner': { cost: 25000, hash_per_hour: 25 },
+        'quantum_miner': { cost: 75000, hash_per_hour: 75 },
+        'nexus_miner': { cost: 250000, hash_per_hour: 250 },
+        'ultra_miner': { cost: 750000, hash_per_hour: 750 },
+        'cosmic_miner': { cost: 2500000, hash_per_hour: 2500 },
+        'divine_miner': { cost: 7500000, hash_per_hour: 7500 },
+        'infinite_miner': { cost: 25000000, hash_per_hour: 25000 },
+        'legendary_miner': { cost: 75000000, hash_per_hour: 75000 },
+        'mythical_miner': { cost: 250000000, hash_per_hour: 250000 }
     };
     
     const machine = machines[machineId];
@@ -593,16 +627,16 @@ app.post('/api/buy-premium-machine', requireAuth, (req, res) => {
     const { machineId } = req.body;
     
     const premiumMachines = {
-        'quantum_core': { cost: 1000, hash_per_hour: 1000 },
-        'nexus_core': { cost: 5000, hash_per_hour: 5000 },
-        'ultra_core': { cost: 15000, hash_per_hour: 15000 },
-        'infinity_core': { cost: 50000, hash_per_hour: 50000 },
-        'cosmic_core': { cost: 150000, hash_per_hour: 150000 },
-        'divine_core': { cost: 500000, hash_per_hour: 500000 },
-        'eternal_core': { cost: 1500000, hash_per_hour: 1500000 },
-        'legendary_core': { cost: 5000000, hash_per_hour: 5000000 },
-        'mythical_core': { cost: 15000000, hash_per_hour: 15000000 },
-        'omnipotent_core': { cost: 50000000, hash_per_hour: 50000000 }
+        'quantum_core': { cost: 5000, hash_per_hour: 500 },
+        'nexus_core': { cost: 25000, hash_per_hour: 2500 },
+        'ultra_core': { cost: 75000, hash_per_hour: 7500 },
+        'infinity_core': { cost: 250000, hash_per_hour: 25000 },
+        'cosmic_core': { cost: 750000, hash_per_hour: 75000 },
+        'divine_core': { cost: 2500000, hash_per_hour: 250000 },
+        'eternal_core': { cost: 7500000, hash_per_hour: 750000 },
+        'legendary_core': { cost: 25000000, hash_per_hour: 2500000 },
+        'mythical_core': { cost: 75000000, hash_per_hour: 7500000 },
+        'omnipotent_core': { cost: 250000000, hash_per_hour: 25000000 }
     };
     
     const machine = premiumMachines[machineId];
@@ -1003,6 +1037,166 @@ app.get('/api/admin/export-data', requireAdmin, (req, res) => {
         }
         
         res.json({ success: true, users });
+    });
+});
+
+// НОВЫЕ API ENDPOINTS
+
+// Получение ежедневных заданий
+app.get('/api/daily-tasks', requireAuth, (req, res) => {
+    const userId = req.telegramUser.id;
+    
+    // Генерируем случайные задания на сегодня
+    const taskTypes = [
+        { id: 'tap_100', title: 'Тап-мастер', description: 'Сделайте 100 тапов', target: 100, reward: '+500 монет' },
+        { id: 'tap_500', title: 'Тап-эксперт', description: 'Сделайте 500 тапов', target: 500, reward: '+1000 монет' },
+        { id: 'tap_1000', title: 'Тап-легенда', description: 'Сделайте 1000 тапов', target: 1000, reward: '+2000 монет' },
+        { id: 'mine_energy', title: 'Энергетик', description: 'Потратьте 50 энергии на добычу', target: 50, reward: '+100 QuanHash' },
+        { id: 'buy_boost', title: 'Покупатель', description: 'Купите любой буст', target: 1, reward: '+300 монет' },
+        { id: 'level_up', title: 'Развитие', description: 'Повысьте уровень', target: 1, reward: '+1000 монет' }
+    ];
+    
+    // Выбираем 3 случайных задания
+    const selectedTasks = taskTypes.sort(() => 0.5 - Math.random()).slice(0, 3);
+    
+    const tasks = selectedTasks.map(task => {
+        const progress = Math.floor(Math.random() * task.target);
+        const completed = progress >= task.target;
+        
+        return {
+            id: task.id,
+            title: task.title,
+            description: task.description,
+            target: task.target,
+            current: Math.min(progress, task.target),
+            progress: Math.min((progress / task.target) * 100, 100),
+            reward: task.reward,
+            completed: completed
+        };
+    });
+    
+    res.json({ success: true, tasks });
+});
+
+// Получение награды за задание
+app.post('/api/claim-task', requireAuth, (req, res) => {
+    const userId = req.telegramUser.id;
+    const { taskId } = req.body;
+    
+    const taskRewards = {
+        'tap_100': { coins: 500, hash: 0 },
+        'tap_500': { coins: 1000, hash: 0 },
+        'tap_1000': { coins: 2000, hash: 0 },
+        'mine_energy': { coins: 0, hash: 100 },
+        'buy_boost': { coins: 300, hash: 0 },
+        'level_up': { coins: 1000, hash: 0 }
+    };
+    
+    const reward = taskRewards[taskId];
+    if (!reward) {
+        return res.status(400).json({ error: 'Неверный ID задания' });
+    }
+    
+    db.get('SELECT * FROM users WHERE telegram_id = ?', [userId], (err, user) => {
+        if (err || !user) {
+            return res.status(500).json({ error: 'Ошибка получения данных пользователя' });
+        }
+        
+        db.run(`UPDATE users SET 
+                balance = balance + ?, 
+                quanhash = quanhash + ?
+                WHERE telegram_id = ?`, 
+            [reward.coins, reward.hash, userId], (err) => {
+                if (err) {
+                    return res.status(500).json({ error: 'Ошибка выдачи награды' });
+                }
+                
+                res.json({
+                    success: true,
+                    message: `Награда получена: ${reward.coins > 0 ? '+' + reward.coins + ' монет' : ''}${reward.hash > 0 ? '+' + reward.hash + ' QuanHash' : ''}`,
+                    newBalance: user.balance + reward.coins,
+                    newQuanHash: user.quanhash + reward.hash
+                });
+            });
+    });
+});
+
+// Получение ежедневного бонуса за вход
+app.post('/api/claim-login-bonus', requireAuth, (req, res) => {
+    const userId = req.telegramUser.id;
+    const today = new Date().toISOString().split('T')[0];
+    
+    db.get('SELECT * FROM daily_logins WHERE user_id = ? AND login_date = ?', [userId, today], (err, login) => {
+        if (err) {
+            return res.status(500).json({ error: 'Ошибка проверки входа' });
+        }
+        
+        if (login && login.claimed) {
+            return res.status(400).json({ error: 'Бонус уже получен сегодня' });
+        }
+        
+        // Рассчитываем стрик
+        db.get('SELECT MAX(streak) as max_streak FROM daily_logins WHERE user_id = ?', [userId], (err, result) => {
+            if (err) {
+                return res.status(500).json({ error: 'Ошибка расчета стрика' });
+            }
+            
+            const streak = (result.max_streak || 0) + 1;
+            const bonus = Math.min(100 + (streak * 50), 2000); // От 100 до 2000 монет
+            
+            db.get('SELECT * FROM users WHERE telegram_id = ?', [userId], (err, user) => {
+                if (err || !user) {
+                    return res.status(500).json({ error: 'Ошибка получения данных пользователя' });
+                }
+                
+                db.run(`UPDATE users SET balance = balance + ? WHERE telegram_id = ?`, [bonus, userId], (err) => {
+                    if (err) {
+                        return res.status(500).json({ error: 'Ошибка выдачи бонуса' });
+                    }
+                    
+                    // Сохраняем информацию о входе
+                    if (login) {
+                        db.run('UPDATE daily_logins SET claimed = 1 WHERE user_id = ? AND login_date = ?', [userId, today]);
+                    } else {
+                        db.run('INSERT INTO daily_logins (user_id, login_date, streak, claimed) VALUES (?, ?, ?, 1)', [userId, today, streak]);
+                    }
+                    
+                    res.json({
+                        success: true,
+                        message: `Ежедневный бонус получен: +${bonus} монет (стрик: ${streak} дней)`,
+                        newBalance: user.balance + bonus,
+                        newStreak: streak
+                    });
+                });
+            });
+        });
+    });
+});
+
+// Получение реферальной информации
+app.get('/api/referral-info', requireAuth, (req, res) => {
+    const userId = req.telegramUser.id;
+    
+    db.get('SELECT referral_code FROM users WHERE telegram_id = ?', [userId], (err, user) => {
+        if (err || !user) {
+            return res.status(500).json({ error: 'Ошибка получения реферального кода' });
+        }
+        
+        db.get('SELECT COUNT(*) as count FROM referrals WHERE referrer_id = ?', [userId], (err, result) => {
+            if (err) {
+                return res.status(500).json({ error: 'Ошибка подсчета рефералов' });
+            }
+            
+            const referralsCount = result.count || 0;
+            const referralEarnings = referralsCount * 1000; // 1000 монет за каждого реферала
+            
+            res.json({
+                success: true,
+                referralCode: user.referral_code,
+                referralsCount: referralsCount,
+                referralEarnings: referralEarnings
+            });
+        });
     });
 });
 
