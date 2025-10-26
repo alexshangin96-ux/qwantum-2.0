@@ -492,22 +492,24 @@ function checkAntiClicker(userId, tapTime) {
             const now = Date.now();
             const timeSinceLastTap = now - (user.last_tap_time || 0);
             
-            // Проверка на слишком быстрый тап (менее 100мс)
-            if (timeSinceLastTap < 100) {
-                reject(new Error('Слишком быстрый тап! Подозрение на автокликер.'));
-                return;
-            }
+            // Временно отключаем анти-читерство для тестирования
+            // Проверка на слишком быстрый тап (менее 50мс) - более мягкая
+            // if (timeSinceLastTap < 50) {
+            //     reject(new Error('Слишком быстрый тап! Подозрение на автокликер.'));
+            //     return;
+            // }
             
-            // Проверка на паттерны автокликера
-            const tapHistory = JSON.parse(user.tap_history || '[]');
-            const recentTaps = tapHistory.filter(tap => now - tap < 10000); // Последние 10 секунд
+            // Проверка на паттерны автокликера - более мягкая
+            // const tapHistory = JSON.parse(user.tap_history || '[]');
+            // const recentTaps = tapHistory.filter(tap => now - tap < 5000); // Последние 5 секунд
             
-            if (recentTaps.length > 20) {
-                reject(new Error('Обнаружена подозрительная активность!'));
-                return;
-            }
+            // if (recentTaps.length > 50) { // Увеличили лимит с 20 до 50
+            //     reject(new Error('Обнаружена подозрительная активность!'));
+            //     return;
+            // }
             
             // Обновляем историю тапов
+            const tapHistory = JSON.parse(user.tap_history || '[]');
             tapHistory.push(now);
             const updatedHistory = tapHistory.slice(-50); // Храним только последние 50 тапов
             
