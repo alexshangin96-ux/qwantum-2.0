@@ -606,8 +606,11 @@ app.post('/api/auth', (req, res) => {
                 [telegramUser.id, telegramUser.username, referralCode, referredBy?.id || null, Date.now()], 
                 function(err) {
                     if (err) {
+                        console.error('Ошибка создания пользователя:', err);
                         return res.status(500).json({ error: 'Ошибка создания пользователя' });
                     }
+                    
+                    console.log('Пользователь создан:', telegramUser.username, 'ID:', this.lastID);
                     
                     res.json({
                         success: true,
