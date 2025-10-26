@@ -546,44 +546,20 @@ app.get('/admin', (req, res) => {
 });
 
 // Регистрация/авторизация пользователя
-app.post('/api/auth', (req, res) => {
-    const { initData } = req.body;
+app.post('/api/user', requireAuth, (req, res) => {
+    const userId = req.telegramUser.id;
     
-    if (!initData || !validateTelegramWebApp(initData)) {
-        return res.status(401).json({ error: 'Неверные данные Telegram' });
-    }
-    
-    const telegramUser = extractUserData(initData);
-    if (!telegramUser) {
-        return res.status(400).json({ error: 'Не удалось извлечь данные пользователя' });
-    }
-    
-    db.get('SELECT * FROM users WHERE telegram_id = ?', [telegramUser.id], (err, user) => {
+    db.get('SELECT * FROM users WHERE telegram_id = ?', [userId], (err, user) => {
         if (err) {
             console.error('Ошибка поиска пользователя:', err);
             return res.status(500).json({ error: 'Ошибка базы данных' });
         }
         
-        console.log('Поиск пользователя:', telegramUser.id, 'Найден:', !!user);
-        
-        // ВСЕГДА создаем/обновляем пользователя
-        console.log('Создаем/обновляем пользователя:', telegramUser.username);
-        const referralCode = generateReferralCode();
-        
-        db.run(`INSERT OR REPLACE INTO users (telegram_id, username, referral_code, tap_start_time, balance, quanhash, level, experience, energy, max_energy, last_login) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`, 
-            [telegramUser.id, telegramUser.username, referralCode, Date.now(), 0, 0, 1, 0, 1000, 1000], 
-            function(err) {
-                if (err) {
-                    console.error('Ошибка создания/обновления пользователя:', err);
-                } else {
-                    console.log('Пользователь создан/обновлен:', telegramUser.username, 'ID:', this.lastID);
-                }
-            });
+        console.log('Поиск пользователя:', userId, 'Найден:', !!user);
         
         if (user) {
-            // Обновляем время последнего входа
-            db.run('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE telegram_id = ?', [telegramUser.id]);
+            // Пользователь существует - обновляем время входа
+            db.run('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE telegram_id = ?', [userId]);
             
             // Рассчитываем оффлайн доход
             const lastLogin = new Date(user.last_login);
@@ -599,7 +575,7 @@ app.post('/api/auth', (req, res) => {
                 
                 // Обновляем баланс
                 db.run('UPDATE users SET balance = balance + ?, quanhash = quanhash + ? WHERE telegram_id = ?', 
-                    [offlineCoins, offlineHash, telegramUser.id]);
+                    [offlineCoins, offlineHash, userId]);
             }
             
             res.json({
@@ -613,26 +589,31 @@ app.post('/api/auth', (req, res) => {
             });
         } else {
             // Создаем нового пользователя
-            console.log('Создаем нового пользователя:', telegramUser.username);
+            console.log('Создаем нового пользователя:', req.telegramUser.username);
             const referralCode = generateReferralCode();
             
-            db.run(`INSERT INTO users (telegram_id, username, referral_code, tap_start_time) 
-                    VALUES (?, ?, ?, ?)`, 
-                [telegramUser.id, telegramUser.username, referralCode, Date.now()], 
+            db.run(`INSERT INTO users (
+                telegram_id, username, referral_code, tap_start_time, balance, quanhash, 
+                level, experience, energy, max_energy, energy_regen_rate, coins_per_hour, 
+                hash_per_hour, tap_power, auto_tap_hours, auto_tap_end_time, 
+                is_banned, is_frozen, freeze_end_time, last_login, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`, 
+                [userId, req.telegramUser.username, referralCode, Date.now(), 
+                 0, 0, 1, 0, 1000, 1000, 0.1, 0, 0, 1, 0, 0, 0, 0, 0], 
                 function(err) {
                     if (err) {
                         console.error('Ошибка создания пользователя:', err);
                         return res.status(500).json({ error: 'Ошибка создания пользователя' });
                     }
                     
-                    console.log('Пользователь создан успешно:', telegramUser.username, 'ID:', this.lastID);
+                    console.log('Пользователь создан успешно:', req.telegramUser.username, 'ID:', this.lastID);
                     
                     res.json({
                         success: true,
                         user: {
                             id: this.lastID,
-                            telegram_id: telegramUser.id,
-                            username: telegramUser.username,
+                            telegram_id: userId,
+                            username: req.telegramUser.username,
                             balance: 0,
                             quanhash: 0,
                             level: 1,
@@ -677,9 +658,14 @@ app.post('/api/tap', requireAuth, async (req, res) => {
                 console.log('Пользователь не найден в тапе, создаем принудительно:', userId);
                 // Создаем пользователя с полными данными
                 const referralCode = generateReferralCode();
-                db.run(`INSERT OR REPLACE INTO users (telegram_id, username, referral_code, tap_start_time, balance, quanhash, level, experience, energy, max_energy) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
-                    [userId, req.telegramUser.username || 'Unknown', referralCode, Date.now(), 0, 0, 1, 0, 1000, 1000], 
+                db.run(`INSERT INTO users (
+                    telegram_id, username, referral_code, tap_start_time, balance, quanhash, 
+                    level, experience, energy, max_energy, energy_regen_rate, coins_per_hour, 
+                    hash_per_hour, tap_power, auto_tap_hours, auto_tap_end_time, 
+                    is_banned, is_frozen, freeze_end_time, last_login, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`, 
+                    [userId, req.telegramUser.username || 'Unknown', referralCode, Date.now(), 
+                     0, 0, 1, 0, 1000, 1000, 0.1, 0, 0, 1, 0, 0, 0, 0, 0], 
                     function(err) {
                         if (err) {
                             console.error('Ошибка принудительного создания пользователя в тапе:', err);
