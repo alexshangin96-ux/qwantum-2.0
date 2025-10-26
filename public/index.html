@@ -2,10 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="telegram-web-app" content="true">
-    <title>⚛️ Quantum Nexus</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Nexus</title>
     <style>
         * {
             margin: 0;
@@ -18,35 +16,46 @@
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             min-height: 100vh;
             color: white;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
         .container {
-            max-width: 100%;
-            padding: 10px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .currency {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 8px 12px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-        }
-
-        .tap-area {
             text-align: center;
-            margin: 20px 0;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+
+        .stat {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            min-width: 100px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00d4aa;
         }
 
         .tap-button {
@@ -56,294 +65,88 @@
             border: none;
             border-radius: 50%;
             color: white;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 10px 30px rgba(0, 212, 170, 0.3);
             transition: all 0.2s;
-            user-select: none;
-            touch-action: manipulation;
         }
 
         .tap-button:active {
             transform: scale(0.95);
-            box-shadow: 0 5px 15px rgba(0, 212, 170, 0.2);
         }
 
-        .shop {
+        .info {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .telegram-link {
+            display: inline-block;
             margin-top: 20px;
-        }
-
-        .shop-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 12px;
+            padding: 12px 24px;
+            background: #0088cc;
+            color: white;
+            text-decoration: none;
             border-radius: 8px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .btn {
-            background: #6c5ce7;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            color: white;
             font-weight: bold;
-            cursor: pointer;
-        }
-
-        .btn:active {
-            opacity: 0.8;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .tab {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 6px;
-            color: white;
-            cursor: pointer;
-        }
-
-        .tab.active {
-            background: #00d4aa;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
         }
     </style>
-    <script>
-        // Инициализация Telegram Web App
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-        
-        let user = null;
-        let authToken = null;
-        
-        // Функция показа об ошибке
-        function showError(message) {
-            if (tg.showAlert) {
-                tg.showAlert(message);
-            } else {
-                alert(message);
-            }
-        }
-        
-        // Функция показа успеха
-        function showSuccess(message) {
-            if (tg.showPopup) {
-                tg.showPopup({
-                    title: 'Успешно',
-                    message: message,
-                    buttons: [{ type: 'ok' }]
-                });
-            }
-        }
-        
-        // Загрузка пользователя
-        async function loadUser() {
-            try {
-                const response = await fetch('/api/user', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    user = data.user;
-                    updateUI();
-                } else {
-                    showError('Ошибка загрузки данных');
-                }
-            } catch (e) {
-                console.error('Error loading user:', e);
-                // Создаем тестового пользователя
-                user = {
-                    balance: 0,
-                    quanhash: 0,
-                    energy: 1000,
-                    tap_power: 1
-                };
-                updateUI();
-            }
-        }
-        
-        // Обновление UI
-        function updateUI() {
-            if (!user) return;
-            
-            document.getElementById('coins').textContent = user.balance;
-            document.getElementById('quanhash').textContent = user.quanhash;
-            document.getElementById('energy').textContent = user.energy;
-        }
-        
-        // Тап
-        async function handleTap() {
-            if (!user || user.energy < 1) {
-                showError('Недостаточно энергии');
-                return;
-            }
-            
-            try {
-                const response = await fetch('/api/tap', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    user.balance += data.coinsEarned;
-                    user.energy = data.newEnergy;
-                    updateUI();
-                    
-                    // Небольшая анимация
-                    document.querySelector('.tap-button').style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        document.querySelector('.tap-button').style.transform = '';
-                    }, 100);
-                } else {
-                    showError(data.error || 'Ошибка');
-                }
-            } catch (e) {
-                console.error('Error tapping:', e);
-            }
-        }
-        
-        // Покупка буста
-        async function buyBoost(boostId) {
-            try {
-                const response = await fetch('/api/buy-boost', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ boostId })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    loadUser();
-                    showSuccess(data.message || 'Буст куплен!');
-                } else {
-                    showError(data.error || 'Ошибка покупки');
-                }
-            } catch (e) {
-                console.error('Error buying boost:', e);
-                showError('Ошибка соединения');
-            }
-        }
-        
-        // Переключение вкладок
-        function showTab(tabName) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            
-            document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
-            document.getElementById(`${tabName}Content`).classList.add('active');
-        }
-        
-        // Инициализация
-        window.addEventListener('DOMContentLoaded', () => {
-            loadUser();
-            
-            // Автоматическое обновление каждые 30 секунд
-            setInterval(loadUser, 30000);
-        });
-    </script>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div class="currency">
-                💰 <span id="coins">0</span>
+        <h1>⚛️ Quantum Nexus</h1>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">💰 Баланс</div>
+                <div class="stat-value" id="balance">0</div>
             </div>
-            <div class="currency">
-                ⛏️ <span id="quanhash">0</span>
-            </div>
-            <div class="currency">
-                ⚡ <span id="energy">1000</span>
+            <div class="stat">
+                <div class="stat-label">⚡ Энергия</div>
+                <div class="stat-value" id="energy">100</div>
             </div>
         </div>
         
-        <div class="tap-area">
-            <button class="tap-button" onclick="handleTap()">
-                ⚛️ TAP
-            </button>
-        </div>
+        <button class="tap-button" onclick="handleTap()">⚛️<br>TAP</button>
         
-        <div class="tabs">
-            <button class="tab active" data-tab="shop" onclick="showTab('shop')">Магазин</button>
-            <button class="tab" data-tab="mining" onclick="showTab('mining')">Майнинг</button>
-            <button class="tab" data-tab="referral" onclick="showTab('referral')">Рефералы</button>
-        </div>
-        
-        <div id="shopContent" class="tab-content active">
-            <div class="shop">
-                <div class="shop-item">
-                    <div>
-                        <strong>Усилитель тапа +1</strong><br>
-                        <small>Стоимость: 100 💰</small>
-                    </div>
-                    <button class="btn" onclick="buyBoost('tap_power_1')">Купить</button>
-                </div>
-                <div class="shop-item">
-                    <div>
-                        <strong>Энергия +100</strong><br>
-                        <small>Стоимость: 200 💰</small>
-                    </div>
-                    <button class="btn" onclick="buyBoost('energy_capacity_100')">Купить</button>
-                </div>
-                <div class="shop-item">
-                    <div>
-                        <strong>Пассивный доход +50/час</strong><br>
-                        <small>Стоимость: 500 💰</small>
-                    </div>
-                    <button class="btn" onclick="buyBoost('coins_per_hour_50')">Купить</button>
-                </div>
-            </div>
-        </div>
-        
-        <div id="miningContent" class="tab-content">
-            <div class="shop">
-                <div class="shop-item">
-                    <div>
-                        <strong>Базовая майнинг машина</strong><br>
-                        <small>Стоимость: 25,000 💰</small>
-                    </div>
-                    <button class="btn" onclick="showError('В разработке')">Купить</button>
-                </div>
-            </div>
-        </div>
-        
-        <div id="referralContent" class="tab-content">
-            <div class="shop-item">
-                <div>
-                    <strong>Реферальная система</strong><br>
-                    <small>В разработке</small>
-                </div>
-            </div>
+        <div class="info">
+            <h2>🎮 Как играть?</h2>
+            <p>1. Нажми кнопку тапа для заработка</p>
+            <p>2. Каждый тап тратит 1 энергию</p>
+            <p>3. Используй бота в Telegram для удобства!</p>
+            
+            <a href="https://t.me/qanexus_bot" class="telegram-link">
+                🚀 Играть в боте
+            </a>
         </div>
     </div>
+    
+    <script>
+        let balance = 0;
+        let energy = 100;
+        
+        function handleTap() {
+            if (energy < 1) {
+                alert('Недостаточно энергии!');
+                return;
+            }
+            
+            balance += 10;
+            energy -= 1;
+            
+            document.getElementById('balance').textContent = balance;
+            document.getElementById('energy').textContent = energy;
+            
+            // Добавляем анимацию
+            const button = document.querySelector('.tap-button');
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = '';
+            }, 100);
+        }
+    </script>
 </body>
 </html>
