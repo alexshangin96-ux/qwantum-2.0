@@ -2,21 +2,51 @@ const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const TelegramBot = require('node-telegram-bot-api');
+const crypto = require('crypto');
 
 const app = express();
 app.use(express.json());
 app.use(express.static('public'));
 
 // База данных
-const db = new sqlite3.Database('game.db');
+const db = new sqlite3.Database('quantum_nexus.db');
 
 db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS users (
         telegram_id INTEGER PRIMARY KEY,
         username TEXT,
         balance INTEGER DEFAULT 0,
+        quanhash REAL DEFAULT 0,
         energy INTEGER DEFAULT 100,
-        last_tap INTEGER DEFAULT 0
+        MAX 100,
+        level INTEGER DEFAULT 1,
+        experience INTEGER DEFAULT 0,
+        referral_code TEXT UNIQUE,
+        referred_by INTEGER,
+        vip_level INTEGER DEFAULT 0,
+        last_daily_bonus INTEGER DEFAULT 0,
+        total_earned INTEGER DEFAULT 0,
+        created_at INTEGER DEFAULT (strftime('%s', 'now'))
+    )`);
+    
+    db.run(`CREATE TABLE IF NOT EXISTS withdrawals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        amount REAL,
+        wallet TEXT,
+        status TEXT DEFAULT 'pending',
+        created_at INTEGER DEFAULT (strftime('%s', 'now')),
+        FOREIGN KEY (user_id) REFERENCES users(telegram_id)
+    )`);
+    
+    db.run(`CREATE TABLE IF NOT EXISTS transactions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        type TEXT,
+        amount REAL,
+        description TEXT,
+        created_at INTEGER DEFAULT (strftime('%s', 'now')),
+        FOREIGN KEY (user_id) REFERENCES users(telegram_id)
     )`);
 });
 
@@ -144,9 +174,66 @@ bot.on('callback_query', (query) => {
     }
 });
 
+// Admin API
+const ADMIN_LOGIN = 'smartfixnsk';
+const ADMIN_PASSWORD = 'Maga1996';
+
+app.post('/api/admin/login', (req, res) => {
+    const { username, password } = req.body;
+    
+    if (username === ADMIN_LOGIN && password === ADMIN_PASSWORD) {
+        const token = crypto.randomBytes(32).toString('hex');
+        res.json({ success: true, token });
+    } else {
+        res.json({ success: false, error: 'Invalid credentials' });
+    }
+});
+
+app.get('/api/admin/stats', (req, res) => {
+    const { token } = req.query;
+    
+    db.all('SELECT COUNT(*) as total, SUM(balance) as totalBalance, SUM(quanhash) as totalQuanHash FROM users', [], (err, rows) => {
+        if (err) {
+            return res.json({ success: false, error: err.message });
+        }
+        
+        res.json({
+            success: true,
+            totalUsers: rows[0]?.total || 0,
+            totalBalance: rows[0]?.totalBalance || 0,
+            totalQuanHash: rows[0]?.totalQuanHash || 0
+        });
+    });
+});
+
+app.get('/api/admin/users', (req, res) => {
+    const { token } = req.query;
+    
+    db.all('SELECT telegram_id as id, username, balance, quanhash, level FROM users ORDER BY balance DESC LIMIT 100', [], (err, users) => {
+        if (err) {
+            return res.json({ success: false, error: err.message });
+        }
+        
+        res.json({
+            success: true,
+            users: users.map(u => ({
+                id: u.id,
+                username: u.username || 'Unknown',
+                balance: u.balance,
+                quanhash: u.quanhash,
+                level: u.level
+            }))
+        });
+    });
+});
+
 // Web App
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
 // Запуск сервера

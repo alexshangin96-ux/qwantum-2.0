@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚛️ Quantum Nexus Pro - Крипто-тапалка нового поколения</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d1b3d 100%);
+            min-height: 100vh;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Анимированный фон */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .bg-animation::before,
+        .bg-animation::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 212, 170, 0.3), transparent);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .bg-animation::before {
+            top: -150px;
+            left: -150px;
+            animation-delay: 0s;
+        }
+
+        .bg-animation::after {
+            bottom: -150px;
+            right: -150px;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(100px, 100px) scale(1.2); }
+        }
+
+        .container {
+            max-width: 450px;
+            width: 100%;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                        0 0 80px rgba(0, 212, 170, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        h1 {
+            font-size: 32px;
+            background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .version {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* Статистика */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(0, 212, 170, 0.1);
+            border: 1px solid rgba(0, 212, 170, 0.3);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            background: rgba(0, 212, 170, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00d4aa;
+            text-shadow: 0 0 20px rgba(0, 212, 170, 0.5);
+        }
+
+        .stat-sub {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        /* Кнопка тапа */
+        .tap-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .tap-button {
+            width: 220px;
+            height: 220px;
+            background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 20px 40px rgba(0, 212, 170, 0.4),
+                        0 0 60px rgba(0, 212, 170, 0.3),
+                        inset 0 0 30px rgba(255, 255, 255, 0.1);
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tap-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        .tap-button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .tap-button:active {
+            transform: scale(0.95);
+        }
+
+        .tap-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .tap-power {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        /* Прогресс уровень */
+        .level-bar {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50px;
+            height: 8px;
+            margin-top: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .level-progress {
+            background: linear-gradient(90deg, #00d4aa 0%, #00b894 100%);
+            height: 100%;
+            border-radius: 50px;
+            transition: width 0.5s;
+            box-shadow: 0 0 20px rgba(0, 212, 170, 0.6);
+        }
+
+        /* Навигация */
+        .nav-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            background: rgba(0, 212, 170, 0.2);
+            border: 1px solid rgba(0, 212, 170, 0.3);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .nav-btn:hover {
+            background: rgba(0, 212, 170, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* Попап уведомлений */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s;
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Анимация монет */
+        .coin-popup {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            color: #00d4aa;
+            pointer-events: none;
+            animation: coinFloat 1s ease-out forwards;
+        }
+
+        @keyframes coinFloat {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(0, -100px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 212, 170, 0.2);
+            border-top-color: #00d4aa;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <div class="container" id="container">
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 15px; color: #94a3b8;">Загрузка...</p>
+        </div>
+
+        <div id="gameContent" style="display: none;">
+            <div class="header">
+                <div class="logo">⚛️</div>
+                <h1>Quantum Nexus Pro</h1>
+                <div class="version">v3.0 • Next Gen Tapper</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-label">Монеты</div>
+                    <div class="stat-value" id="coins">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚡</div>
+                    <div class="stat-label">Энергия</div>
+                    <div class="stat-value" id="energy">100</div>
+                    <div class="stat-sub" id="energyMax">/100</div>
+                </div>
+            </div>
+
+            <div class="stats-grid" style="grid-template-columns: 1fr;">
+                <div class="stat-card">
+                    <div class="stat-label">🆙 Уровень <span id="level">1</span> • <span id="exp">0</span> EXP</div>
+                    <div class="level-bar">
+                        <div class="level-progress" id="levelProgress"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">⚛️</div>
+                    <div class="stat-label">QuanHash</div>
+                    <div class="stat-value" style="font-size: 20px;" id="quanhash">0.0000</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💪</div>
+                    <div class="stat-label">Сила тапа</div>
+                    <div class="stat-value" style="font-size: 24px;" id="tapPower">10</div>
+                </div>
+            </div>
+
+            <div class="tap-section">
+                <button class="tap-button" id="tapButton" onclick="handleTap()">
+                    ⚛️<br>ТАП
+                </button>
+                <div class="tap-power">
+                    +<span id="tapPowerValue">10</span> за тап
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="showShop()">🛒 Магазин</button>
+                <button class="nav-btn" onclick="showMining()">⛏️ Майнинг</button>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="showAchievements()">🏆 Достижения</button>
+                <button class="nav-btn" onclick="showProfile()">📊 Профиль</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Данные пользователя
+        let userData = {
+            userId: null,
+            coins: 0,
+            energy: 100,
+            maxEnergy: 100,
+            level: 1,
+            experience: 0,
+            quanhash: 0,
+            tapPower: 10,
+            miningLevel: 0,
+            autoMining: false,
+            totalTaps: 0
+        };
+
+        let ws = null;
+
+        // Инициализация
+        async function init() {
+            try {
+                // Получаем userId из Telegram WebApp или URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const userId = urlParams.get('user_id') || localStorage.getItem('userId') || '123456789'; // Временно для тестирования
+                userData.userId = userId;
+                localStorage.setItem('userId', userId);
+
+                // Загружаем данные пользователя
+                await loadUserData();
+
+                // Подключаем WebSocket
+                connectWebSocket();
+
+                // Скрываем loading и показываем игру
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('gameContent').style.display = 'block';
+            } catch (error) {
+                console.error('Init error:', error);
+                showNotification('❌ Ошибка инициализации: ' + error.message);
+            }
+        }
+
+        // Загрузка данных пользователя
+        async function loadUserData() {
+            try {
+                const response = await fetch(`/api/user/${userData.userId}`);
+                const data = await response.json();
+
+                if (data.success && data.user) {
+                    userData = {
+                        ...userData,
+                        coins: data.user.coins || 0,
+                        energy: data.user.energy || 100,
+                        maxEnergy: data.user.max_energy || 100,
+                        level: data.user.level || 1,
+                        experience: data.user.experience || 0,
+                        quanhash: data.user.quanhash || 0,
+                        tapPower: data.user.tap_power || 10,
+                        miningLevel: data.user.mining_level || 0,
+                        autoMining: data.user.auto_mining || false,
+                        totalTaps: data.user.total_taps || 0
+                    };
+                    updateUI();
+                }
+            } catch (error) {
+                console.error('Load user data error:', error);
+            }
+        }
+
+        // Обновление UI
+        function updateUI() {
+            document.getElementById('coins').textContent = formatNumber(userData.coins);
+            document.getElementById('energy').textContent = userData.energy;
+            document.getElementById('energyMax').textContent = '/' + userData.maxEnergy;
+            document.getElementById('level').textContent = userData.level;
+            document.getElementById('exp').textContent = userData.experience;
+            document.getElementById('quanhash').textContent = userData.quanhash.toFixed(4);
+            document.getElementById('tapPower').textContent = userData.tapPower;
+            document.getElementById('tapPowerValue').textContent = userData.tapPower;
+
+            // Обновление прогресс-бара
+            const expNeeded = userData.level * 100;
+            const progress = (userData.experience / expNeeded) * 100;
+            document.getElementById('levelProgress').style.width = progress + '%';
+        }
+
+        // Обработка тапа
+        async function handleTap() {
+            if (userData.energy < 1) {
+                showNotification('❌ Недостаточно энергии!');
+                return;
+            }
+
+            const button = document.getElementById('tapButton');
+            button.disabled = true;
+
+            try {
+                const response = await fetch('/api/tap', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userData.userId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    userData.coins = data.coins;
+                    userData.energy = data.energy;
+                    userData.level = data.level;
+                    userData.experience = data.experience;
+                    userData.totalTaps++;
+
+                    updateUI();
+                    showCoinPopup(data.earned);
+                } else {
+                    showNotification('❌ ' + data.error);
+                }
+            } catch (error) {
+                console.error('Tap error:', error);
+                showNotification('❌ Ошибка соединения');
+            }
+
+            button.disabled = false;
+        }
+
+        // Показ летящих монет
+        function showCoinPopup(amount) {
+            const button = document.getElementById('tapButton');
+            const popup = document.createElement('div');
+            popup.className = 'coin-popup';
+            popup.textContent = '+$' + amount;
+            popup.style.position = 'absolute';
+            popup.style.left = button.offsetLeft + 'px';
+            popup.style.top = button.offsetTop + 'px';
+            document.body.appendChild(popup);
+
+            setTimeout(() => popup.remove(), 1000);
+        }
+
+        // WebSocket подключение
+        function connectWebSocket() {
+            ws = new WebSocket('ws://localhost:3000');
+
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                ws.send(JSON.stringify({
+                    type: 'register',
+                    userId: userData.userId
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'tap') {
+                    userData.coins = data.coins;
+                    userData.energy = data.energy;
+                    userData.level = data.level;
+                    userData.experience = data.experience;
+                    updateUI();
+                }
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket disconnected, reconnecting...');
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
+
+        // Уведомления
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Вспомогательные функции
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function showShop() {
+            showNotification('🛒 Магазин скоро откроется!');
+        }
+
+        function showMining() {
+            showNotification('⛏️ Майнинг: ' + (userData.autoMining ? 'Включен' : 'Выключен'));
+        }
+
+        function showAchievements() {
+            showNotification('🏆 Достижения скоро появятся!');
+        }
+
+        function showProfile() {
+            showNotification(`📊 Профиль: Уровень ${userData.level}, ${userData.totalTaps} тапов`);
+        }
+
+        // Инициализация при загрузке
+        init();
+    </script>
+</body>
+</html>
+

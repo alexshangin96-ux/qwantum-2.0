@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Nexus</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00d4aa;
+        }
+
+        .tap-button-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .tap-button {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 20px 40px rgba(0, 212, 170, 0.4);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tap-button:active {
+            transform: scale(0.95);
+        }
+
+        .tap-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        .tap-button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .menu-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .menu-button {
+            background: linear-gradient(135deg, #6c5ce7 0%, #5a52d5 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+            transition: all 0.3s;
+        }
+
+        .menu-button:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(108, 92, 231, 0.3);
+        }
+
+        .shop-section {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .shop-section h2 {
+            margin-bottom: 15px;
+            color: #00d4aa;
+        }
+
+        .shop-item {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shop-item-info {
+            flex: 1;
+        }
+
+        .shop-item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .shop-item-desc {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .shop-item-price {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .buy-button {
+            background: #00d4aa;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #00d4aa;
+        }
+
+        .close-modal {
+            float: right;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #94a3b8;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            background: #00d4aa;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚛️ Quantum Nexus</h1>
+            <div id="loading" class="loading">Загрузка...</div>
+        </div>
+
+        <div id="main-content">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-label">💰 Баланс</div>
+                    <div class="stat-value" id="balance">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">⚡ Энергия</div>
+                    <div class="stat-value" id="energy">100/100</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">💎 QuanHash</div>
+                    <div class="stat-value" id="quanhash">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">⭐ Уровень</div>
+                    <div class="stat-value" id="level">1</div>
+                </div>
+            </div>
+
+            <div class="tap-button-container">
+                <button class="tap-button" id="tapBtn" onclick="handleTap()">
+                    ⚛️<br>TAP
+                </button>
+            </div>
+
+            <div class="menu-buttons">
+                <button class="menu-button" onclick="openShop()">🛒 Магазин</button>
+                <button class="menu-button" onclick="rechargeEnergy()">⚡ Пополнить энергию</button>
+                <button class="menu-button" onclick="claimDailyBonus()">🎁 Ежедневный бонус</button>
+                <button class="menu-button" onclick="openWithdraw()">💸 Вывод средств</button>
+            </div>
+
+            <div class="shop-section" id="shop-section" style="display: none;">
+                <h2>🛒 Магазин улучшений</h2>
+                <div class="shop-item">
+                    <div class="shop-item-info">
+                        <div class="shop-item-name">⚡ +50 Энергии</div>
+                        <div class="shop-item-desc">Восстанови энергию</div>
+                    </div>
+                    <div class="shop-item-price">100 💰</div>
+                    <button class="buy-button" onclick="buyEnergy()">Купить</button>
+                </div>
+                <div class="shop-item">
+                    <div class="shop-item-info">
+                        <div class="shop-item-name">💎 100 QuanHash</div>
+                        <div class="shop-item-desc">Пополни QuanHash</div>
+                    </div>
+                    <div class="shop-item-price">50 💰</div>
+                    <button class="buy-button" onclick="buyQuanHash()">Купить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для вывода -->
+    <div class="modal" id="withdraw-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close-modal" onclick="closeModal('withdraw-modal')">&times;</button>
+                <h2>💸 Вывод средств</h2>
+            </div>
+            <div class="input-group">
+                <label>Количество QuanHash (мин. 100)</label>
+                <input type="number" id="withdraw-amount" placeholder="100">
+            </div>
+            <div class="input-group">
+                <label>Адрес кошелька (BEP20)</label>
+                <input type="text" id="withdraw-wallet" placeholder="0x...">
+            </div>
+            <button class="submit-button" onclick="submitWithdraw()">Вывести</button>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        let userData = null;
+
+        // Загрузка данных пользователя
+        async function loadUserData() {
+            try {
+                const initData = new URLSearchParams();
+                tg.initDataUnsafe.query_id && initData.append('query_id', tg.initDataUnsafe.query_id);
+                tg.initDataUnsafe.user && initData.append('user', JSON.stringify(tg.initDataUnsafe.user));
+                tg.initDataUnsafe.auth_date && initData.append('auth_date', tg.initDataUnsafe.auth_date);
+                tg.initDataUnsafe.hash && initData.append('hash', tg.initDataUnsafe.hash);
+                
+                const response = await fetch('/api/user/data?tgWebAppData=' + initData.toString());
+                const data = await response.json();
+                
+                if (data.success) {
+                    userData = data.user;
+                    updateUI();
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // Обновление UI
+        function updateUI() {
+            document.getElementById('balance').textContent = userData.balance;
+            document.getElementById('energy').textContent = `${userData.energy}/100`;
+            document.getElementById('quanhash').textContent = userData.quanhash || 0;
+            document.getElementById('level').textContent = userData.level;
+        }
+
+        // Обработка тапа
+        async function handleTap() {
+            if (!userData || userData.energy < 1) {
+                tg.showAlert('Недостаточно энергии!');
+                return;
+            }
+
+            try {
+                const initData = new URLSearchParams();
+                tg.initDataUnsafe.query_id && initData.append('query_id', tg.initDataUnsafe.query_id);
+                tg.initDataUnsafe.user && initData.append('user', JSON.stringify(tg.initDataUnsafe.user));
+                tg.initDataUnsafe.auth_date && initData.append('auth_date', tg.initDataUnsafe.auth_date);
+                tg.initDataUnsafe.hash && initData.append('hash', tg.initDataUnsafe.hash);
+                
+                const response = await fetch('/api/user/tap?tgWebAppData=' + initData.toString(), {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    userData.balance = data.balance;
+                    userData.energy = data.energy;
+                    userData.level = data.level;
+                    userData.experience = data.experience;
+                    updateUI();
+                    tg.HapticFeedback.impactOccurred('medium');
+                    tg.showPopup({
+                        title: '💰 Заработано!',
+                        message: `+${data.earned} монет`,
+                        buttons: [{ type: 'ok' }]
+                    });
+                } else {
+                    tg.showAlert(data.error || 'Ошибка');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                tg.showAlert('Ошибка соединения');
+            }
+        }
+
+        // Пополнение энергии
+        async function rechargeEnergy() {
+            const amount = 50; // 50 энергии
+            try {
+                const initData = new URLSearchParams();
+                tg.initDataUnsafe.query_id && initData.append('query_id', tg.initDataUnsafe.query_id);
+                tg.initDataUnsafe.user && initData.append('user', JSON.stringify(tg.initDataUnsafe.user));
+                tg.initDataUnsafe.auth_date && initData.append('auth_date', tg.initDataUnsafe.auth_date);
+                tg.initDataUnsafe.hash && initData.append('hash', tg.initDataUnsafe.hash);
+                
+                const response = await fetch('/api/user/recharge-energy?tgWebAppData=' + initData.toString(), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    userData.balance = data.balance;
+                    userData.energy = data.energy;
+                    updateUI();
+                    tg.showAlert('Энергия пополнена!');
+                } else {
+                    tg.showAlert(data.error || 'Ошибка');
+                }
+            } catch (error) {
+                tg.showAlert('Ошибка');
+            }
+        }
+
+        // Ежедневный бонус
+        async function claimDailyBonus() {
+            try {
+                const initData = new URLSearchParams();
+                tg.initDataUnsafe.query_id && initData.append('query_id', tg.initDataUnsafe.query_id);
+                tg.initDataUnsafe.user && initData.append('user', JSON.stringify(tg.initDataUnsafe.user));
+                tg.initDataUnsafe.auth_date && initData.append('auth_date', tg.initDataUnsafe.auth_date);
+                tg.initDataUnsafe.hash && initData.append('hash', tg.initDataUnsafe.hash);
+                
+                const response = await fetch('/api/user/daily-bonus?tgWebAppData=' + initData.toString(), {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    userData.balance = data.balance;
+                    updateUI();
+                    tg.HapticFeedback.notificationOccurred('success');
+                    tg.showPopup({
+                        title: '🎁 Ежедневный бонус!',
+                        message: `+${data.bonus} монет`,
+                        buttons: [{ type: 'ok' }]
+                    });
+                } else {
+                    tg.showAlert(data.error || 'Ошибка');
+                }
+            } catch (error) {
+                tg.showAlert('Ошибка');
+            }
+        }
+
+        // Вывод средств
+        function openWithdraw() {
+            document.getElementById('withdraw-modal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        async function submitWithdraw() {
+            const amount = parseFloat(document.getElementById('withdraw-amount').value);
+            const wallet = document.getElementById('withdraw-wallet').value;
+
+            if (!amount || !wallet) {
+                tg.showAlert('Заполните все поля');
+                return;
+            }
+
+            try {
+                const initData = new URLSearchParams();
+                tg.initDataUnsafe.query_id && initData.append('query_id', tg.initDataUnsafe.query_id);
+                tg.initDataUnsafe.user && initData.append('user', JSON.stringify(tg.initDataUnsafe.user));
+                tg.initDataUnsafe.auth_date && initData.append('auth_date', tg.initDataUnsafe.auth_date);
+                tg.initDataUnsafe.hash && initData.append('hash', tg.initDataUnsafe.hash);
+                
+                const response = await fetch('/api/user/withdraw?tgWebAppData=' + initData.toString(), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount, wallet })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    userData.quanhash = data.quanhash;
+                    updateUI();
+                    closeModal('withdraw-modal');
+                    tg.showAlert('Заявка на вывод создана!');
+                } else {
+                    tg.showAlert(data.error || 'Ошибка');
+                }
+            } catch (error) {
+                tg.showAlert('Ошибка');
+            }
+        }
+
+        function openShop() {
+            const shop = document.getElementById('shop-section');
+            shop.style.display = shop.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function buyEnergy() {
+            rechargeEnergy();
+        }
+
+        function buyQuanHash() {
+            // Покупка QuanHash за монеты
+            tg.showAlert('Функция в разработке');
+        }
+
+        // Инициализация
+        loadUserData();
+    </script>
+</body>
+</html>
+
