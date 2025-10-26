@@ -50,6 +50,26 @@ app.use((req, res, next) => {
 const dbPath = 'quantum_nexus.db';
 const db = new sqlite3.Database(dbPath);
 
+// Проверяем подключение к базе данных
+db.get('SELECT name FROM sqlite_master WHERE type="table" AND name="users"', (err, row) => {
+    if (err) {
+        console.error('Ошибка проверки базы данных:', err);
+    } else if (row) {
+        console.log('✅ Таблица users существует');
+    } else {
+        console.log('❌ Таблица users не найдена');
+    }
+    
+    // Проверяем количество пользователей
+    db.get('SELECT COUNT(*) as count FROM users', (err, row) => {
+        if (err) {
+            console.error('Ошибка подсчета пользователей:', err);
+        } else {
+            console.log('👥 Пользователей в базе:', row.count);
+        }
+    });
+});
+
 // Создание таблиц
 db.serialize(() => {
     // Сначала создаем таблицу пользователей
@@ -537,22 +557,20 @@ app.post('/api/auth', (req, res) => {
         
         console.log('Поиск пользователя:', telegramUser.id, 'Найден:', !!user);
         
-        // Принудительно создаем пользователя, если не найден
-        if (!user) {
-            console.log('Пользователь не найден, создаем принудительно:', telegramUser.username);
-            const referralCode = generateReferralCode();
-            
-            db.run(`INSERT OR REPLACE INTO users (telegram_id, username, referral_code, tap_start_time, balance, quanhash, level, experience, energy, max_energy) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
-                [telegramUser.id, telegramUser.username, referralCode, Date.now(), 0, 0, 1, 0, 1000, 1000], 
-                function(err) {
-                    if (err) {
-                        console.error('Ошибка принудительного создания пользователя:', err);
-                    } else {
-                        console.log('Пользователь создан принудительно:', telegramUser.username, 'ID:', this.lastID);
-                    }
-                });
-        }
+        // ВСЕГДА создаем/обновляем пользователя
+        console.log('Создаем/обновляем пользователя:', telegramUser.username);
+        const referralCode = generateReferralCode();
+        
+        db.run(`INSERT OR REPLACE INTO users (telegram_id, username, referral_code, tap_start_time, balance, quanhash, level, experience, energy, max_energy, last_login) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`, 
+            [telegramUser.id, telegramUser.username, referralCode, Date.now(), 0, 0, 1, 0, 1000, 1000], 
+            function(err) {
+                if (err) {
+                    console.error('Ошибка создания/обновления пользователя:', err);
+                } else {
+                    console.log('Пользователь создан/обновлен:', telegramUser.username, 'ID:', this.lastID);
+                }
+            });
         
         if (user) {
             // Обновляем время последнего входа
