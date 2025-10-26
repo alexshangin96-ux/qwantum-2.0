@@ -584,6 +584,23 @@ app.post('/api/auth', (req, res) => {
         
         console.log('Поиск пользователя:', telegramUser.id, 'Найден:', !!user);
         
+        // Принудительно создаем пользователя, если не найден
+        if (!user) {
+            console.log('Пользователь не найден, создаем принудительно:', telegramUser.username);
+            const referralCode = generateReferralCode();
+            
+            db.run(`INSERT OR REPLACE INTO users (telegram_id, username, referral_code, tap_start_time, balance, quanhash, level, experience, energy, max_energy) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+                [telegramUser.id, telegramUser.username, referralCode, Date.now(), 0, 0, 1, 0, 1000, 1000], 
+                function(err) {
+                    if (err) {
+                        console.error('Ошибка принудительного создания пользователя:', err);
+                    } else {
+                        console.log('Пользователь создан принудительно:', telegramUser.username, 'ID:', this.lastID);
+                    }
+                });
+        }
+        
         if (user) {
             // Обновляем время последнего входа
             db.run('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE telegram_id = ?', [telegramUser.id]);
@@ -677,19 +694,19 @@ app.post('/api/tap', requireAuth, async (req, res) => {
             }
             
             if (!user) {
-                console.log('Пользователь не найден в тапе, создаем:', userId);
-                // Создаем пользователя
+                console.log('Пользователь не найден в тапе, создаем принудительно:', userId);
+                // Создаем пользователя с полными данными
                 const referralCode = generateReferralCode();
-                db.run(`INSERT INTO users (telegram_id, username, referral_code, tap_start_time) 
-                        VALUES (?, ?, ?, ?)`, 
-                    [userId, req.telegramUser.username || 'Unknown', referralCode, Date.now()], 
+                db.run(`INSERT OR REPLACE INTO users (telegram_id, username, referral_code, tap_start_time, balance, quanhash, level, experience, energy, max_energy) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+                    [userId, req.telegramUser.username || 'Unknown', referralCode, Date.now(), 0, 0, 1, 0, 1000, 1000], 
                     function(err) {
                         if (err) {
-                            console.error('Ошибка создания пользователя в тапе:', err);
+                            console.error('Ошибка принудительного создания пользователя в тапе:', err);
                             return res.status(500).json({ error: 'Ошибка создания пользователя' });
                         }
                         
-                        console.log('Пользователь создан в тапе:', req.telegramUser.username, 'ID:', this.lastID);
+                        console.log('Пользователь создан принудительно в тапе:', req.telegramUser.username, 'ID:', this.lastID);
                         
                         // Возвращаем успешный ответ
                         res.json({
