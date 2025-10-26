@@ -567,8 +567,11 @@ app.post('/api/auth', (req, res) => {
     
     db.get('SELECT * FROM users WHERE telegram_id = ?', [telegramUser.id], (err, user) => {
         if (err) {
+            console.error('Ошибка поиска пользователя:', err);
             return res.status(500).json({ error: 'Ошибка базы данных' });
         }
+        
+        console.log('Поиск пользователя:', telegramUser.id, 'Найден:', !!user);
         
         if (user) {
             // Обновляем время последнего входа
@@ -602,20 +605,19 @@ app.post('/api/auth', (req, res) => {
             });
         } else {
             // Создаем нового пользователя
+            console.log('Создаем нового пользователя:', telegramUser.username);
             const referralCode = generateReferralCode();
-            const referredBy = req.body.referralCode ? 
-                db.get('SELECT id FROM users WHERE referral_code = ?', [req.body.referralCode]) : null;
             
-            db.run(`INSERT INTO users (telegram_id, username, referral_code, referred_by, tap_start_time) 
-                    VALUES (?, ?, ?, ?, ?)`, 
-                [telegramUser.id, telegramUser.username, referralCode, referredBy?.id || null, Date.now()], 
+            db.run(`INSERT INTO users (telegram_id, username, referral_code, tap_start_time) 
+                    VALUES (?, ?, ?, ?)`, 
+                [telegramUser.id, telegramUser.username, referralCode, Date.now()], 
                 function(err) {
                     if (err) {
                         console.error('Ошибка создания пользователя:', err);
                         return res.status(500).json({ error: 'Ошибка создания пользователя' });
                     }
                     
-                    console.log('Пользователь создан:', telegramUser.username, 'ID:', this.lastID);
+                    console.log('Пользователь создан успешно:', telegramUser.username, 'ID:', this.lastID);
                     
                     res.json({
                         success: true,
@@ -658,8 +660,40 @@ app.post('/api/tap', requireAuth, async (req, res) => {
         await checkAntiClicker(userId, Date.now());
         
         db.get('SELECT * FROM users WHERE telegram_id = ?', [userId], (err, user) => {
-            if (err || !user) {
+            if (err) {
+                console.error('Ошибка поиска пользователя в тапе:', err);
                 return res.status(500).json({ error: 'Ошибка получения данных пользователя' });
+            }
+            
+            if (!user) {
+                console.log('Пользователь не найден в тапе, создаем:', userId);
+                // Создаем пользователя
+                const referralCode = generateReferralCode();
+                db.run(`INSERT INTO users (telegram_id, username, referral_code, tap_start_time) 
+                        VALUES (?, ?, ?, ?)`, 
+                    [userId, req.telegramUser.username || 'Unknown', referralCode, Date.now()], 
+                    function(err) {
+                        if (err) {
+                            console.error('Ошибка создания пользователя в тапе:', err);
+                            return res.status(500).json({ error: 'Ошибка создания пользователя' });
+                        }
+                        
+                        console.log('Пользователь создан в тапе:', req.telegramUser.username, 'ID:', this.lastID);
+                        
+                        // Возвращаем успешный ответ
+                        res.json({
+                            success: true,
+                            coinsEarned: 1,
+                            experienceEarned: 0,
+                            newBalance: 1,
+                            newExperience: 0,
+                            newLevel: 1,
+                            newEnergy: 999,
+                            newMaxEnergy: 1000,
+                            levelUp: false
+                        });
+                    });
+                return;
             }
             
             if (user.is_banned) {
