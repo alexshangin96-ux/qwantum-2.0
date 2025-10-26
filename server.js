@@ -36,7 +36,8 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // Инициализация базы данных
-const db = new sqlite3.Database('quantum_nexus.db');
+const dbPath = 'quantum_nexus.db';
+const db = new sqlite3.Database(dbPath);
 
 // Создание таблиц
 db.serialize(() => {
