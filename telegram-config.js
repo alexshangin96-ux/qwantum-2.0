@@ -2,6 +2,16 @@ const TELEGRAM_CONFIG = {
     BOT_TOKEN: '8426192106:AAGGlkfOYAhaQKPp-bcL-3oHXBE50tzAMog',
     WEB_APP_URL: 'https://quantum-nexus.ru',
     
+    // Настройки для Telegram Web App
+    WEB_APP_CONFIG: {
+        theme: 'dark',
+        headerColor: '#1e293b',
+        backgroundColor: '#0f172a',
+        textColor: '#ffffff',
+        buttonColor: '#00ffff',
+        buttonTextColor: '#000000'
+    },
+    
     // Валидация Telegram Web App
     validateWebApp: function(initData) {
         try {

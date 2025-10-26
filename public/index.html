@@ -52,14 +52,17 @@
             background-size: 400% 400%;
             animation: backgroundFlow 20s ease-in-out infinite;
             min-height: 100vh;
+            height: 100vh;
             color: var(--white);
             overflow-x: hidden;
+            overflow-y: auto;
             user-select: none;
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             touch-action: manipulation;
             position: relative;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
         @keyframes backgroundFlow {
@@ -2664,6 +2667,95 @@
         }
 
         /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+                max-width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+                margin-bottom: 0.75rem;
+            }
+            
+            .stat-card {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+            
+            .stat-value {
+                font-size: 1.1rem;
+            }
+            
+            .tap-button {
+                width: 160px;
+                height: 160px;
+                font-size: 1rem;
+                margin: 1rem auto;
+            }
+            
+            .shop-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .mining-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+            }
+            
+            .tab-content {
+                padding: 0.75rem;
+            }
+            
+            .section-title {
+                font-size: 1.1rem;
+                margin-bottom: 0.75rem;
+            }
+            
+            .boost-card {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+            
+            .mining-card {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+            
+            .card-item {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* Специальные стили для Telegram Web App */
+        @media (max-height: 800px) {
+            .container {
+                padding: 0.25rem;
+            }
+            
+            .stats-grid {
+                margin-bottom: 0.5rem;
+            }
+            
+            .tap-button {
+                width: 140px;
+                height: 140px;
+                margin: 0.5rem auto;
+            }
+            
+            .tab-content {
+                padding: 0.5rem;
+            }
+        }
+        
         @media (max-width: 480px) {
             .container {
                 padding: 10px;
@@ -3113,9 +3205,38 @@
 
         // Initialize Telegram Web App
         if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.ready();
-            window.Telegram.WebApp.expand();
-            window.Telegram.WebApp.MainButton.hide();
+            const tg = window.Telegram.WebApp;
+            
+            // Настройка темы и цветов
+            tg.setHeaderColor('#1e293b');
+            tg.setBackgroundColor('#0f172a');
+            
+            // Инициализация
+            tg.ready();
+            tg.expand();
+            
+            // Скрыть кнопки
+            tg.MainButton.hide();
+            tg.BackButton.hide();
+            
+            // Настройка главной кнопки
+            tg.MainButton.setText('🎮 Играть');
+            tg.MainButton.color = '#00ffff';
+            tg.MainButton.textColor = '#000000';
+            
+            // Обработка закрытия
+            tg.onEvent('mainButtonClicked', () => {
+                tg.close();
+            });
+            
+            // Обработка кнопки назад
+            tg.onEvent('backButtonClicked', () => {
+                tg.close();
+            });
+            
+            console.log('Telegram Web App initialized successfully');
+        } else {
+            console.log('Telegram Web App not available');
         }
 
         // Create crypto particles

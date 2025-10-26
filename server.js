@@ -256,8 +256,19 @@ function saveDeviceInfo(telegramId, fingerprint, ipAddress) {
 // Функция проверки Telegram Web App
 function validateTelegramWebApp(initData) {
     try {
+        if (!initData) {
+            console.log('No initData provided');
+            return false;
+        }
+        
         const urlParams = new URLSearchParams(initData);
         const hash = urlParams.get('hash');
+        
+        if (!hash) {
+            console.log('No hash found in initData');
+            return false;
+        }
+        
         urlParams.delete('hash');
         
         const dataCheckString = Array.from(urlParams.entries())
@@ -268,8 +279,17 @@ function validateTelegramWebApp(initData) {
         const secretKey = crypto.createHash('sha256').update('8426192106:AAGGlkfOYAhaQKPp-bcL-3oHXBE50tzAMog').digest();
         const calculatedHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
         
-        return calculatedHash === hash;
+        const isValid = calculatedHash === hash;
+        
+        if (!isValid) {
+            console.log('Hash validation failed');
+            console.log('Expected:', calculatedHash);
+            console.log('Received:', hash);
+        }
+        
+        return isValid;
     } catch (error) {
+        console.error('Error validating Telegram Web App:', error);
         return false;
     }
 }
@@ -297,11 +317,35 @@ function extractUserData(initData) {
 function requireAuth(req, res, next) {
     const initData = req.headers['x-telegram-init-data'];
     
-    if (!initData || !validateTelegramWebApp(initData)) {
-        return res.status(401).json({ error: 'Неавторизованный доступ' });
+    console.log('Auth check - initData:', initData ? 'present' : 'missing');
+    
+    if (!initData) {
+        console.log('No initData header found');
+        return res.status(401).json({ 
+            error: 'Неавторизованный доступ - отсутствуют данные Telegram',
+            code: 'NO_INIT_DATA'
+        });
+    }
+    
+    if (!validateTelegramWebApp(initData)) {
+        console.log('Telegram validation failed');
+        return res.status(401).json({ 
+            error: 'Неавторизованный доступ - неверные данные Telegram',
+            code: 'INVALID_TELEGRAM_DATA'
+        });
     }
     
     req.telegramUser = extractUserData(initData);
+    
+    if (!req.telegramUser) {
+        console.log('Failed to extract user data');
+        return res.status(401).json({ 
+            error: 'Неавторизованный доступ - не удалось извлечь данные пользователя',
+            code: 'USER_DATA_EXTRACTION_FAILED'
+        });
+    }
+    
+    console.log('User authenticated:', req.telegramUser.username);
     
     // Проверяем мультиаккаунты
     const fingerprint = generateDeviceFingerprint(req);
