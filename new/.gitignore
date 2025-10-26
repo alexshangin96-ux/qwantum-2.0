@@ -1,7 +1,0 @@
-node_modules/
-quantum_nexus.db
-logs/
-*.log
-.env
-.DS_Store
-
