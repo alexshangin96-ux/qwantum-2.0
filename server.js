@@ -41,35 +41,7 @@ const db = new sqlite3.Database(dbPath);
 
 // Создание таблиц
 db.serialize(() => {
-    // Миграция базы данных - добавление недостающих колонок
-    const migrations = [
-        { sql: `ALTER TABLE users ADD COLUMN energy_regen_rate REAL DEFAULT 0.1`, name: 'energy_regen_rate' },
-        { sql: `ALTER TABLE users ADD COLUMN coins_per_hour INTEGER DEFAULT 0`, name: 'coins_per_hour' },
-        { sql: `ALTER TABLE users ADD COLUMN hash_per_hour INTEGER DEFAULT 0`, name: 'hash_per_hour' },
-        { sql: `ALTER TABLE users ADD COLUMN tap_power INTEGER DEFAULT 1`, name: 'tap_power' },
-        { sql: `ALTER TABLE users ADD COLUMN auto_tap_hours INTEGER DEFAULT 0`, name: 'auto_tap_hours' },
-        { sql: `ALTER TABLE users ADD COLUMN auto_tap_end_time INTEGER DEFAULT 0`, name: 'auto_tap_end_time' },
-        { sql: `ALTER TABLE users ADD COLUMN is_banned INTEGER DEFAULT 0`, name: 'is_banned' },
-        { sql: `ALTER TABLE users ADD COLUMN is_frozen INTEGER DEFAULT 0`, name: 'is_frozen' },
-        { sql: `ALTER TABLE users ADD COLUMN freeze_end_time INTEGER DEFAULT 0`, name: 'freeze_end_time' },
-        { sql: `ALTER TABLE users ADD COLUMN referral_code TEXT`, name: 'referral_code' },
-        { sql: `ALTER TABLE users ADD COLUMN referred_by INTEGER`, name: 'referred_by' },
-        { sql: `ALTER TABLE users ADD COLUMN achievements TEXT DEFAULT '[]'`, name: 'achievements' },
-        { sql: `ALTER TABLE users ADD COLUMN cards TEXT DEFAULT '[]'`, name: 'cards' },
-        { sql: `ALTER TABLE users ADD COLUMN mining_machines TEXT DEFAULT '[]'`, name: 'mining_machines' }
-    ];
-    
-    migrations.forEach(migration => {
-        db.run(migration.sql, (err) => {
-            if (err && !err.message.includes('duplicate column name')) {
-                console.error(`Ошибка добавления колонки ${migration.name}:`, err);
-            } else if (!err) {
-                console.log(`Колонка ${migration.name} добавлена успешно`);
-            }
-        });
-    });
-    
-    // Таблица пользователей
+    // Сначала создаем таблицу пользователей
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         telegram_id INTEGER UNIQUE,
@@ -216,6 +188,34 @@ db.run(`CREATE INDEX IF NOT EXISTS idx_device_fingerprint ON device_fingerprints
 db.run(`CREATE INDEX IF NOT EXISTS idx_device_telegram_id ON device_fingerprints (telegram_id)`);
 db.run(`CREATE INDEX IF NOT EXISTS idx_ip_address ON ip_tracking (ip_address)`);
 db.run(`CREATE INDEX IF NOT EXISTS idx_ip_telegram_id ON ip_tracking (telegram_id)`);
+
+    // Миграция базы данных - добавление недостающих колонок
+    const migrations = [
+        { sql: `ALTER TABLE users ADD COLUMN energy_regen_rate REAL DEFAULT 0.1`, name: 'energy_regen_rate' },
+        { sql: `ALTER TABLE users ADD COLUMN coins_per_hour INTEGER DEFAULT 0`, name: 'coins_per_hour' },
+        { sql: `ALTER TABLE users ADD COLUMN hash_per_hour INTEGER DEFAULT 0`, name: 'hash_per_hour' },
+        { sql: `ALTER TABLE users ADD COLUMN tap_power INTEGER DEFAULT 1`, name: 'tap_power' },
+        { sql: `ALTER TABLE users ADD COLUMN auto_tap_hours INTEGER DEFAULT 0`, name: 'auto_tap_hours' },
+        { sql: `ALTER TABLE users ADD COLUMN auto_tap_end_time INTEGER DEFAULT 0`, name: 'auto_tap_end_time' },
+        { sql: `ALTER TABLE users ADD COLUMN is_banned INTEGER DEFAULT 0`, name: 'is_banned' },
+        { sql: `ALTER TABLE users ADD COLUMN is_frozen INTEGER DEFAULT 0`, name: 'is_frozen' },
+        { sql: `ALTER TABLE users ADD COLUMN freeze_end_time INTEGER DEFAULT 0`, name: 'freeze_end_time' },
+        { sql: `ALTER TABLE users ADD COLUMN referral_code TEXT`, name: 'referral_code' },
+        { sql: `ALTER TABLE users ADD COLUMN referred_by INTEGER`, name: 'referred_by' },
+        { sql: `ALTER TABLE users ADD COLUMN achievements TEXT DEFAULT '[]'`, name: 'achievements' },
+        { sql: `ALTER TABLE users ADD COLUMN cards TEXT DEFAULT '[]'`, name: 'cards' },
+        { sql: `ALTER TABLE users ADD COLUMN mining_machines TEXT DEFAULT '[]'`, name: 'mining_machines' }
+    ];
+    
+    migrations.forEach(migration => {
+        db.run(migration.sql, (err) => {
+            if (err && !err.message.includes('duplicate column name')) {
+                console.error(`Ошибка добавления колонки ${migration.name}:`, err);
+            } else if (!err) {
+                console.log(`Колонка ${migration.name} добавлена успешно`);
+            }
+        });
+    });
 });
 
 // Функция генерации отпечатка устройства
