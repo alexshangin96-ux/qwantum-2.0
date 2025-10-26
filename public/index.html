@@ -434,9 +434,10 @@
         position: relative;
         overflow: hidden;
         box-shadow: 
-            0 0 60px rgba(243, 156, 18, 0.8),
-            0 0 120px rgba(243, 156, 18, 0.4),
-            0 0 180px rgba(243, 156, 18, 0.2),
+            0 0 80px rgba(0, 255, 255, 0.8),
+            0 0 160px rgba(0, 255, 255, 0.6),
+            0 0 240px rgba(0, 255, 255, 0.4),
+            0 0 320px rgba(0, 255, 255, 0.2),
             inset 0 2px 0 rgba(255, 255, 255, 0.3),
             inset 0 -2px 0 rgba(0, 0, 0, 0.3);
         transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -449,18 +450,20 @@
         0%, 100% { 
             transform: translateY(0px) scale(1);
             box-shadow: 
-                0 0 60px rgba(243, 156, 18, 0.8),
-                0 0 120px rgba(243, 156, 18, 0.4),
-                0 0 180px rgba(243, 156, 18, 0.2),
+                0 0 80px rgba(0, 255, 255, 0.8),
+                0 0 160px rgba(0, 255, 255, 0.6),
+                0 0 240px rgba(0, 255, 255, 0.4),
+                0 0 320px rgba(0, 255, 255, 0.2),
                 inset 0 2px 0 rgba(255, 255, 255, 0.3),
                 inset 0 -2px 0 rgba(0, 0, 0, 0.3);
         }
         50% { 
             transform: translateY(-8px) scale(1.02);
             box-shadow: 
-                0 0 80px rgba(243, 156, 18, 1),
-                0 0 140px rgba(243, 156, 18, 0.6),
-                0 0 200px rgba(243, 156, 18, 0.3),
+                0 0 120px rgba(0, 255, 255, 1),
+                0 0 200px rgba(0, 255, 255, 0.8),
+                0 0 280px rgba(0, 255, 255, 0.6),
+                0 0 360px rgba(0, 255, 255, 0.4),
                 inset 0 2px 0 rgba(255, 255, 255, 0.4),
                 inset 0 -2px 0 rgba(0, 0, 0, 0.4);
         }
@@ -523,9 +526,10 @@
     .tap-button:hover {
         transform: translateY(-12px) scale(1.08);
         box-shadow: 
-            0 0 100px rgba(243, 156, 18, 1),
-            0 0 160px rgba(243, 156, 18, 0.7),
-            0 0 220px rgba(243, 156, 18, 0.4),
+            0 0 140px rgba(0, 255, 255, 1),
+            0 0 220px rgba(0, 255, 255, 0.8),
+            0 0 300px rgba(0, 255, 255, 0.6),
+            0 0 380px rgba(0, 255, 255, 0.4),
             0 20px 40px rgba(0, 0, 0, 0.3),
             inset 0 3px 0 rgba(255, 255, 255, 0.5),
             inset 0 -3px 0 rgba(0, 0, 0, 0.5);
@@ -536,9 +540,10 @@
     .tap-button:active {
         transform: translateY(-6px) scale(0.95);
         box-shadow: 
-            0 0 120px rgba(243, 156, 18, 1.2),
-            0 0 180px rgba(243, 156, 18, 0.8),
-            0 0 240px rgba(243, 156, 18, 0.5),
+            0 0 180px rgba(0, 255, 255, 1.2),
+            0 0 260px rgba(0, 255, 255, 1),
+            0 0 340px rgba(0, 255, 255, 0.8),
+            0 0 420px rgba(0, 255, 255, 0.6),
             0 10px 20px rgba(0, 0, 0, 0.4),
             inset 0 4px 8px rgba(0, 0, 0, 0.4),
             inset 0 -2px 4px rgba(255, 255, 255, 0.2);
@@ -2060,12 +2065,16 @@
         position: absolute;
         width: 20px;
         height: 20px;
-        border: 3px solid rgba(243, 156, 18, 0.8);
+        border: 3px solid rgba(0, 255, 255, 0.9);
         border-radius: 50%;
         transform: translate(-50%, -50%);
         animation: tapWaveExpand 0.6s ease-out;
         pointer-events: none;
         z-index: 10;
+        box-shadow: 
+            0 0 20px rgba(0, 255, 255, 0.8),
+            0 0 40px rgba(0, 255, 255, 0.6),
+            0 0 60px rgba(0, 255, 255, 0.4);
     }
 
     @keyframes tapWaveExpand {
@@ -2083,14 +2092,18 @@
 
     .tap-particle {
         position: absolute;
-        width: 6px;
-        height: 6px;
-        background: radial-gradient(circle, #f39c12, #e67e22);
+        width: 8px;
+        height: 8px;
+        background: radial-gradient(circle, #00ffff, #0080ff);
         border-radius: 50%;
         transform: translate(-50%, -50%);
         animation: tapParticleFly 0.8s ease-out;
         pointer-events: none;
         z-index: 10;
+        box-shadow: 
+            0 0 10px rgba(0, 255, 255, 0.8),
+            0 0 20px rgba(0, 255, 255, 0.6),
+            0 0 30px rgba(0, 255, 255, 0.4);
     }
 
     @keyframes tapParticleFly {
@@ -2777,7 +2790,6 @@
         <!-- Tap Button -->
         <div class="tap-section">
             <button class="tap-button" id="tapButton" onclick="tap(event)">
-                ⚛️
             </button>
             <div class="tap-power" id="tapPower">+1 за клик</div>
         </div>
