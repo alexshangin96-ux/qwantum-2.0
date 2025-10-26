@@ -11,6 +11,19 @@
     <title>⚛️ Quantum Nexus - Ultra Crypto Tapper</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // Инициализация Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        
+        // Применяем тему Telegram
+        if (tg.themeParams.bg_color) {
+            document.body.style.backgroundColor = tg.themeParams.bg_color;
+        }
+        
+        console.log('Telegram Web App initialized');
+    </script>
     <style>
         :root {
             --primary: #00d4aa;
