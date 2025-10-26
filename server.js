@@ -351,7 +351,24 @@ function generateReferralCode() {
 function requireAuth(req, res, next) {
     const initData = req.headers['x-telegram-init-data'];
     
-    console.log('Auth check - initData:', initData ? 'present' : 'missing');
+    console.log('=== AUTH DEBUG ===');
+    console.log('initData header:', initData ? 'PRESENT' : 'MISSING');
+    if (initData) {
+        console.log('initData value (first 100 chars):', initData.substring(0, 100));
+        try {
+            const urlParams = new URLSearchParams(initData);
+            const userParam = urlParams.get('user');
+            console.log('user parameter in initData:', userParam ? 'PRESENT' : 'MISSING');
+            if (userParam) {
+                const user = JSON.parse(decodeURIComponent(userParam));
+                console.log('User data:', JSON.stringify(user));
+            }
+        } catch (e) {
+            console.log('Error parsing initData:', e.message);
+        }
+    }
+    console.log('All headers:', JSON.stringify(req.headers, null, 2));
+    console.log('==================');
     
     // Временно отключаем проверку initData для тестирования
     if (!initData) {
