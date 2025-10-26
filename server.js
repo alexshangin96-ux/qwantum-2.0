@@ -27,13 +27,24 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static('public'));
 
-// Rate limiting
+// Настройка trust proxy для корректной работы rate limiting
+app.set('trust proxy', 1);
+
+// Rate limiting - временно отключен для тестирования
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 минут
     max: 1000, // лимит запросов
-    message: 'Слишком много запросов, попробуйте позже'
+    message: 'Слишком много запросов, попробуйте позже',
+    skip: () => true // Пропускаем все запросы для тестирования
 });
 app.use('/api/', limiter);
+
+// Логирование всех запросов для отладки
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    console.log('Headers:', JSON.stringify(req.headers, null, 2));
+    next();
+});
 
 // Инициализация базы данных
 const dbPath = 'quantum_nexus.db';
