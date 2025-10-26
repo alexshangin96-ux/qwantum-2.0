@@ -30,19 +30,18 @@ app.use(express.static('public'));
 // Настройка trust proxy для корректной работы rate limiting
 app.set('trust proxy', 1);
 
-// Rate limiting - временно отключен для тестирования
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 минут
-    max: 1000, // лимит запросов
-    message: 'Слишком много запросов, попробуйте позже',
-    skip: () => true // Пропускаем все запросы для тестирования
-});
-app.use('/api/', limiter);
+// Rate limiting - ПОЛНОСТЬЮ ОТКЛЮЧЕНО ДЛЯ ТЕСТИРОВАНИЯ
+// const limiter = rateLimit({
+//     windowMs: 15 * 60 * 1000, // 15 минут
+//     max: 1000, // лимит запросов
+//     message: 'Слишком много запросов, попробуйте позже',
+//     skip: () => true // Пропускаем все запросы для тестирования
+// });
+// app.use('/api/', limiter);
 
-// Логирование всех запросов для отладки
+// Логирование запросов - упрощено для отладки
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-    console.log('Headers:', JSON.stringify(req.headers, null, 2));
     next();
 });
 
