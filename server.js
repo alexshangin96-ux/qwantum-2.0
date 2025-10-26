@@ -38,11 +38,30 @@ bot.onText(/\/start/, (msg) => {
         }
         
         if (!user) {
-            // Создаем нового пользователя
-            db.run('INSERT INTO users (telegram_id, username, balance, energy) VALUES (?, ?, 0, 100)',
-                [userId, username], (err) => {
+            // Создаем нового пользователя с обработкой ошибок
+            db.run('INSERT OR IGNORE INTO users (telegram_id, username, balance, energy) VALUES (?, ?, 0, 100)',
+                [userId, username], function(err) {
                     if (err) {
                         console.error('Error creating user:', err);
+                        bot.sendMessage(chatId, '❌ Ошибка создания аккаунта');
+                        return;
+                    }
+                    
+                    // Проверяем что пользователь был создан
+                    if (this.changes === 0) {
+                        // Пользователь уже существует, просто показываем меню
+                        bot.sendMessage(chatId, `🎮 Добро пожаловать обратно, ${username}!
+                        
+💰 Баланс: 0
+⚡ Энергия: 100
+
+👆 Тапай кнопку ниже, чтобы заработать монеты!`, {
+                            reply_markup: {
+                                inline_keyboard: [[
+                                    { text: '⚛️ ТАПАЙ!', callback_data: 'tap' }
+                                ]]
+                            }
+                        });
                         return;
                     }
                     
