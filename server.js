@@ -1766,7 +1766,8 @@ cron.schedule('0 * * * *', () => {
 });
 
 // Запуск сервера
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+console.log('Starting server on port:', PORT);
 server.listen(PORT, () => {
     console.log(`🚀 Quantum Nexus сервер запущен на порту ${PORT}`);
     console.log(`⚛️ Квантовая тапалка готова к игре!`);
