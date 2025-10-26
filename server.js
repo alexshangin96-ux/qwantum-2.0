@@ -362,12 +362,17 @@ function requireAuth(req, res, next) {
     
     console.log('Auth check - initData:', initData ? 'present' : 'missing');
     
+    // Временно отключаем проверку initData для тестирования
     if (!initData) {
-        console.log('No initData header found');
-        return res.status(401).json({ 
-            error: 'Неавторизованный доступ - отсутствуют данные Telegram',
-            code: 'NO_INIT_DATA'
-        });
+        console.log('No initData header found - creating test user');
+        req.telegramUser = {
+            id: 5133414666,
+            username: 'SmartFix_Nsk',
+            first_name: 'SmartFix',
+            last_name: 'Test'
+        };
+        console.log('Test user created:', req.telegramUser.username);
+        return next();
     }
     
     // Временно отключаем валидацию для тестирования
